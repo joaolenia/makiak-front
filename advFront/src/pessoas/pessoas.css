@@ -1,0 +1,249 @@
+/* ============================== 
+   BASE
+================================ */
+body {
+  margin: 0;
+  font-family: 'Georgia', serif;
+  background-color: #2e251b;
+  color: #fff;
+  height: 100vh;       /* altura fixa */
+  overflow: hidden;    /* sem scroll na tela */
+}
+
+/* ==============================
+   CONTAINER GERAL
+================================ */
+.container {
+  width: 100%;
+  height: 100vh;  
+  background-color: #2e251b;     /* ocupa a altura toda */
+  display: flex;
+  flex-direction: column;
+}
+
+/* ==============================
+   CABEÇALHO
+================================ */
+header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background-color: #2e251b;
+  padding: 10px 20px;
+  flex-shrink: 0;      /* não reduz altura */
+}
+
+.title {
+  font-size: 24px;
+  font-weight: bold;
+  font-size: 2.5em;
+
+  color: #f4f6fc;
+}
+
+.logo {
+  text-align: center;
+  font-size: 18px;
+}
+
+.voltar {
+  color: #f5efdd;
+  font-weight: bold;
+  font-size: 1.7em;
+  text-decoration: none;
+}
+
+/* ==============================
+   CONTEÚDO WRAPPER
+================================ */
+.content-wrapper {
+  padding: 0 3%;
+  flex: 1;                  /* ocupa o espaço restante */
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;         /* impede scroll aqui */
+}
+
+/* ==============================
+   BARRA DE PESQUISA
+================================ */
+.search {
+  margin: 15px 0 10px 0;
+  flex-shrink: 0;
+}
+
+.search input {
+  width: 30%;
+  height: 100%;
+  padding: 12px;
+  border-radius: 10px;
+  border: none;
+  background-color: #3b3327;
+  color: #fff;
+  font-size: 22px;
+}
+
+/* ==============================
+   CONTEÚDO PRINCIPAL COM LATERAL
+================================ */
+.content {
+  display: flex;
+  flex: 1;
+  gap: 16px;
+  overflow: hidden;          /* sem scroll geral */
+}
+
+/* ==============================
+   ASIDE (LATERAL)
+================================ */
+aside {
+  width: 30%;
+  background-color: #393529 ;
+  padding: 10px;
+  border-radius: 14px;
+  overflow-y: auto;          /* só aqui rola */
+  max-height: 90%;          /* limita altura */
+}
+
+/* ==============================
+   MAIN (CONTEÚDO CENTRAL)
+================================ */
+main {
+  flex: 1;
+  background-color: #f4f6fc;
+  color: #2e251b;
+  padding: 20px;
+  font-size: 14px;
+  border-radius: 14px;
+  overflow-y: auto;          /* só aqui rola */
+  max-height: 90%;          /* limita altura */
+}
+
+/* Outros estilos permanecem iguais */
+
+.pessoa-lista {
+  list-style: none;
+  padding: 22px;
+  margin: 0;
+}
+
+.pessoa-lista li {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border: 1px solid #7e7460;   
+  border-radius: 10px;
+  background-color: #534d3b;
+  margin-bottom: 5px;
+  padding: 12px;
+  cursor: pointer;
+  font-size: 1.3em;
+  color: white;
+}
+
+.pessoa-lista li.active {
+  background-color: #998666;
+  font-weight: bold;
+}
+
+.edit-btn {
+  background: none;
+  border: none;
+  font-size: 1.4em;
+  color: white;
+  cursor: pointer;
+}
+
+main h2 {
+  font-size: 3em;
+  margin-bottom: 10px;
+  color: #2e271f;
+}
+
+.main-grid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 20px;
+}
+
+.col-esquerda,
+.col-direita {
+  width: 48%;
+}
+
+.col-direita {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+.col-esquerda p {
+  font-size: 1.3em;
+  color: #2e271f;
+}
+
+.processos strong {
+  font-size: 1.7em;
+  color: #2e271f;
+  display: inline-block;
+  margin-bottom: 8px;
+  margin-top: 4%;
+}
+
+.processos ul {
+  list-style: none;
+  padding-left: 0;
+  margin: 0;
+}
+
+.observacoes {
+  margin-top: 20px;
+}
+
+.observacoes strong {
+  color: #2e271f;
+  font-size: 1.7em;
+}
+
+.observacoes p {
+  margin-top: 5px;
+  color: #2e271f;
+  font-size: 1.4em;
+}
+
+.btn-direita {
+  text-align: right;
+  margin-top: 10px;
+}
+
+.copiar-btn {
+  margin-right: 5%;
+  margin-top: 5px;
+  background-color: #998666;
+  color: #f5efdd;
+  border: none;
+  width: 20%;
+  font-size: 1.6em;
+  border-radius: 30px;
+  padding: 15px 10px;
+  cursor: pointer;
+}
+
+
+
+.btn-cadastrar-container {
+  display: flex;
+  justify-content: flex-end;
+  padding: 10px 20px;
+  margin-top: -30px;
+}
+
+.cadastrar-btn {
+  background-color: #865a21;
+  color: #f5efdd;
+  border-radius: 10px;
+  border: none;
+  font-size: 1.6em;
+  margin-right:-1% ;
+  padding: 12px 24px;
+  cursor: pointer;
+}

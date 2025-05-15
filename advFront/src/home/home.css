@@ -1,0 +1,52 @@
+.banner {
+    position: relative;
+    width: 100%;
+    height: 100vh;
+    background-image: url('../img/home/fundoHome.png');
+    background-size: cover;
+    background-position: center;
+  }
+  
+  .overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.5);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    text-align: center;
+  }
+  
+  .services {
+    display: flex;
+    justify-content: center;
+    gap: 6rem;;
+  }
+  
+  .service {
+    margin-top: 30%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+  
+  .service img {
+    width: 200px;              
+    height: 200px;
+    margin-bottom: 0.5rem;
+    z-index: 99;
+    border: 2px solid #fffcf7;   
+    border-radius: 10%;        
+    object-fit: cover;         
+  }
+  
+  
+  .service p {
+    font-size: 1rem;
+  }
+  
