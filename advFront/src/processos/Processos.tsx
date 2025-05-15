@@ -40,7 +40,7 @@ export default function Processos() {
       <div className="filtros">
         <div className="busca">
           <span className="icone">🔍</span>
-          <input type="text" placeholder="jo" />
+          <input type="text" placeholder="Buscar processo..." />
         </div>
         <button className="btn-filtro">FILTROS ▾</button>
         <button className="btn-filtro">DATA ▾</button>
@@ -53,18 +53,21 @@ export default function Processos() {
             className={`card-processo ${selectedIndex === idx ? 'selecionado' : ''}`}
             onClick={() => setSelectedIndex(idx)}
           >
-            <div className="dados">
-              <div><span className="numero">Nº {p.numero}</span></div>
-              <div>PASTA: {p.pasta}</div>
-              <div>DATA: {p.data}</div>
-              <div>SITUAÇÃO: {p.situacao}</div>
-              <br />
-              <div><strong>TIPO:</strong> {p.tipo}</div>
-              <div><strong>AUTOR:</strong> {p.autor}</div>
-              <div><strong>RÉU:</strong> {p.reu}</div>
-              <div><strong>CIDADE:</strong> {p.cidade}</div>
+            <div className="card-conteudo">
+              <div className="col-esquerda">
+                <div><span className="numero">Nº {p.numero}</span></div>
+                <div>PASTA: {p.pasta}</div>
+                <div>DATA: {p.data}</div>
+                <div>SITUAÇÃO: {p.situacao}</div>
+              </div>
+              <div className="col-direita">
+                <div><strong>TIPO:</strong> {p.tipo}</div>
+                <div><strong>AUTOR:</strong> {p.autor}</div>
+                <div><strong>RÉU:</strong> {p.reu}</div>
+                <div><strong>CIDADE:</strong> {p.cidade}</div>
+              </div>
             </div>
-            <button className="edit-btn">✎</button>
+            <button className="edit-btn" title="Editar">✎</button>
           </div>
         ))}
       </div>

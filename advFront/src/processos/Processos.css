@@ -86,14 +86,20 @@ body {
   display: flex;
   flex-direction: column;
   gap: 15px;
+  width: 90%;
+  max-height: 70%;
   padding-right: 5px;
+  border: 1px solid #7e7460;
+  border-radius: 12px;
+  margin-left: 5%;
 }
+
+/* --- CARD --- */
 
 .card-processo {
   display: flex;
-  justify-content: space-between;
   background-color: #534a38;
-  border-radius: 10px;
+  border-radius: 8px;
   padding: 15px 20px;
   color: #fff;
   cursor: pointer;
@@ -106,12 +112,28 @@ body {
 
 .card-processo.selecionado {
   background-color: #998666;
-  font-weight: bold;
 }
 
-.dados {
+.card-conteudo {
+  display: flex;
+  flex: 1;
+  gap: 16px;
+}
+
+.col-esquerda,
+.col-direita {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
   font-size: 1em;
-  line-height: 1.6;
+}
+
+.col-esquerda {
+  flex:1;
+}
+
+.col-direita {
+  flex: 10;
 }
 
 .numero {
@@ -125,8 +147,11 @@ body {
   font-size: 2em;
   color: #fff;
   cursor: pointer;
+  margin-left: 15px;
   align-self: flex-start;
 }
+
+/* --- BOTÃO CADASTRAR --- */
 
 .btn-cadastrar-wrapper {
   display: flex;
