@@ -1,0 +1,145 @@
+body {
+  margin: 0;
+  font-family: 'Georgia', serif;
+  background-color: #2e251b;
+  color: #fff;
+}
+
+.processos-container {
+  display: flex;
+  flex-direction: column;
+  padding: 20px;
+  height: 100vh;
+  box-sizing: border-box;
+}
+
+.top-bar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.titulo {
+  font-size: 2em;
+  font-weight: bold;
+  color: #f4f6fc;
+}
+
+.logo {
+  text-align: center;
+  color: #fff;
+  font-size: 1.5em;
+}
+
+.sub-logo {
+  font-size: 0.9em;
+}
+
+.voltar {
+  color: #f5efdd;
+  font-weight: bold;
+  font-size: 1.3em;
+  text-decoration: none;
+}
+
+.filtros {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin: 20px 0;
+}
+
+.busca {
+  background-color: #3b3327;
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  padding: 8px 12px;
+}
+
+.busca .icone {
+  margin-right: 8px;
+  font-size: 1.2em;
+}
+
+.busca input {
+  border: none;
+  background: none;
+  color: #fff;
+  font-size: 1.2em;
+  outline: none;
+}
+
+.btn-filtro {
+  background-color: #3b3327;
+  color: #fff;
+  border: none;
+  padding: 10px 16px;
+  border-radius: 8px;
+  font-size: 1em;
+  cursor: pointer;
+}
+
+.lista-processos {
+  flex: 1;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+  padding-right: 5px;
+}
+
+.card-processo {
+  display: flex;
+  justify-content: space-between;
+  background-color: #534a38;
+  border-radius: 10px;
+  padding: 15px 20px;
+  color: #fff;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+}
+
+.card-processo:hover {
+  background-color: #695c44;
+}
+
+.card-processo.selecionado {
+  background-color: #998666;
+  font-weight: bold;
+}
+
+.dados {
+  font-size: 1em;
+  line-height: 1.6;
+}
+
+.numero {
+  color: red;
+  font-weight: bold;
+}
+
+.edit-btn {
+  background: none;
+  border: none;
+  font-size: 2em;
+  color: #fff;
+  cursor: pointer;
+  align-self: flex-start;
+}
+
+.btn-cadastrar-wrapper {
+  display: flex;
+  justify-content: flex-end;
+  margin-top: 10px;
+}
+
+.btn-cadastrar {
+  background-color: #865a21;
+  color: #f5efdd;
+  border-radius: 10px;
+  border: none;
+  font-size: 1.2em;
+  padding: 10px 20px;
+  cursor: pointer;
+}
