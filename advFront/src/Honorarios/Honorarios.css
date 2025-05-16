@@ -1,58 +1,50 @@
-body {
-  margin: 0;
-  font-family: 'Georgia', serif;
-  background-color: #2e271f;
-  color: #fff;
-}
 
-.processos-container {
+.honorario-container-p {
   display: flex;
   flex-direction: column;
   padding: 20px;
   height: 100vh;
   box-sizing: border-box;
   background-color: #1a1612;
-
 }
 
-.processos-top-bar {
-   background-color: #1a1612;
+.honorario-top-bar-p {
   display: flex;
   justify-content: space-between;
   align-items: center;
 }
 
-.processos-titulo {
+.honorario-titulo-p {
   font-size: 2em;
   font-weight: bold;
   color: #f4f6fc;
 }
 
-.processos-logo {
+.honorario-logo-p {
   text-align: center;
   color: #fff;
   font-size: 1.5em;
 }
 
-.processos-sub-logo {
+.honorario-sub-logo-p {
   font-size: 0.9em;
 }
 
-.processos-voltar {
+.honorario-voltar-p {
   color: #f5efdd;
   font-weight: bold;
   font-size: 1.3em;
   text-decoration: none;
 }
 
-.processos-filtros {
+.honorario-filtros-p {
   display: flex;
   align-items: center;
   gap: 10px;
   margin: 20px 0;
 }
 
-.processos-busca {
+.honorario-busca-p {
   margin-left: 5%;
   background-color: #443e32;
   border-radius: 10px;
@@ -62,12 +54,12 @@ body {
   padding: 8px 12px;
 }
 
-.processos-icone {
+.honorario-icone-p {
   margin-right: 8px;
   font-size: 1.2em;
 }
 
-.processos-busca input {
+.honorario-busca-p input {
   border: none;
   background: none;
   color: #fff;
@@ -75,7 +67,7 @@ body {
   outline: none;
 }
 
-.processos-btn-filtro {
+.honorario-btn-filtro-p {
   color: #fff;
   padding: 11px 40px;
   font-size: 1em;
@@ -85,7 +77,7 @@ body {
   border: 1px solid #a9a18f;
 }
 
-.processos-lista-processos {
+.honorario-lista-p {
   flex: 1;
   overflow-y: auto;
   display: flex;
@@ -99,68 +91,48 @@ body {
   margin-left: 5%;
 }
 
-.processos-card-processo {
+.honorario-card-p {
   display: flex;
+  justify-content: space-between;
   background-color: #393529;
   border-radius: 8px;
   padding: 15px 20px;
-  color: #fff;
   cursor: pointer;
   transition: background-color 0.2s ease;
 }
 
-.processos-card-processo:hover {
+.honorario-card-p:hover {
   background-color: #695c44;
 }
 
-.processos-selecionado {
+.honorario-selecionado-p {
   background-color: #66573c;
 }
 
-.processos-card-conteudo {
-  display: flex;
-  flex: 1;
-  gap: 16px;
-}
-
-.processos-col-esquerda,
-.processos-col-direita {
+.honorario-card-esquerda-p,
+.honorario-card-direita-p {
   display: flex;
   flex-direction: column;
-  gap: 4px;
+  gap: 1 4px;
   font-size: 1em;
 }
 
-.processos-col-esquerda {
-  flex: 1;
-}
-
-.processos-col-direita {
-  flex: 8;
-}
-
-.processos-numero {
-  color: red;
-  font-weight: bold;
-}
-
-.processos-edit-btn {
+.honorario-edit-btn-p {
   background: none;
   border: none;
   font-size: 2em;
   color: #fff;
   cursor: pointer;
-  margin-left: 15px;
   align-self: flex-start;
 }
 
-.processos-btn-cadastrar-wrapper {
+.honorario-btn-cadastrar-wrapper-p {
   display: flex;
   justify-content: flex-end;
   margin-top: 10px;
 }
 
-.processos-btn-cadastrar {
+.honorario-btn-cadastrar-p {
   background-color: #865a21;
   color: #f5efdd;
   border-radius: 10px;

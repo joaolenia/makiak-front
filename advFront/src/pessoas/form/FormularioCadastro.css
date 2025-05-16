@@ -1,0 +1,57 @@
+.formulario-modal {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  background-color: #b5a98a;
+  padding: 20px;
+  border-radius: 10px;
+  width: 30%;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+  z-index: 1000;
+}
+
+.formulario-fechar {
+  background: none;
+  border: none;
+  font-size: 1.2em;
+  font-weight: bold;
+  color: #000;
+  position: absolute;
+  top: 10px;
+  right: 15px;
+  cursor: pointer;
+}
+
+.formulario {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin-top: 20px;
+}
+
+.formulario input,
+.formulario select,
+.formulario textarea {
+  padding: 8px;
+  border: 1px solid #000;
+  border-radius: 3px;
+  font-size: 1em;
+  background-color: #f5f5f5;
+}
+
+.formulario textarea {
+  resize: none;
+  height: 60px;
+}
+
+.formulario-btn {
+  background-color: #865a21;
+  color: #f5efdd;
+  border: none;
+  padding: 10px;
+  border-radius: 6px;
+  font-size: 1em;
+  cursor: pointer;
+  font-weight: bold;
+}
