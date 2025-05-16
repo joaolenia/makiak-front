@@ -28,52 +28,52 @@ export default function Processos() {
 
   return (
     <div className="processos-container">
-      <header className="top-bar">
-        <div className="titulo">PROCESSOS</div>
-        <div className="logo">
+      <header className="processos-top-bar">
+        <div className="processos-titulo">PROCESSOS</div>
+        <div className="processos-logo">
           <strong>STASIAK & MAKIAK</strong>
-          <div className="sub-logo">Advogados Associados</div>
+          <div className="processos-sub-logo">Advogados Associados</div>
         </div>
-        <a href="#" className="voltar">VOLTAR</a>
+        <a href="#" className="processos-voltar">VOLTAR</a>
       </header>
 
-      <div className="filtros">
-        <div className="busca">
-          <span className="icone">🔍</span>
+      <div className="processos-filtros">
+        <div className="processos-busca">
+          <span className="processos-icone">🔍</span>
           <input type="text" placeholder="Buscar processo..." />
         </div>
-        <button className="btn-filtro">FILTROS ▾</button>
-        <button className="btn-filtro">DATA ▾</button>
+        <button className="processos-btn-filtro">FILTROS ▾</button>
+        <button className="processos-btn-filtro">DATA ▾</button>
       </div>
 
-      <div className="lista-processos">
+      <div className="processos-lista-processos">
         {processos.map((p, idx) => (
           <div
             key={idx}
-            className={`card-processo ${selectedIndex === idx ? 'selecionado' : ''}`}
+            className={`processos-card-processo ${selectedIndex === idx ? 'processos-selecionado' : ''}`}
             onClick={() => setSelectedIndex(idx)}
           >
-            <div className="card-conteudo">
-              <div className="col-esquerda">
-                <div><span className="numero">Nº {p.numero}</span></div>
+            <div className="processos-card-conteudo">
+              <div className="processos-col-esquerda">
+                <div><span className="processos-numero">Nº {p.numero}</span></div>
                 <div>PASTA: {p.pasta}</div>
                 <div>DATA: {p.data}</div>
                 <div>SITUAÇÃO: {p.situacao}</div>
               </div>
-              <div className="col-direita">
+              <div className="processos-col-direita">
                 <div><strong>TIPO:</strong> {p.tipo}</div>
                 <div><strong>AUTOR:</strong> {p.autor}</div>
                 <div><strong>RÉU:</strong> {p.reu}</div>
                 <div><strong>CIDADE:</strong> {p.cidade}</div>
               </div>
             </div>
-            <button className="edit-btn" title="Editar">✎</button>
+            <button className="processos-edit-btn" title="Editar">✎</button>
           </div>
         ))}
       </div>
 
-      <div className="btn-cadastrar-wrapper">
-        <button className="btn-cadastrar">CADASTRAR</button>
+      <div className="processos-btn-cadastrar-wrapper">
+        <button className="processos-btn-cadastrar">CADASTRAR</button>
       </div>
     </div>
   );

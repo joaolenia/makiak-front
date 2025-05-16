@@ -1,7 +1,7 @@
 body {
   margin: 0;
   font-family: 'Georgia', serif;
-  background-color: #2e251b;
+  background-color: #2e271f;
   color: #fff;
 }
 
@@ -11,58 +11,62 @@ body {
   padding: 20px;
   height: 100vh;
   box-sizing: border-box;
+  background-color: #2e271f;
 }
 
-.top-bar {
+.processos-top-bar {
+  background-color: #2e271f;
   display: flex;
   justify-content: space-between;
   align-items: center;
 }
 
-.titulo {
+.processos-titulo {
   font-size: 2em;
   font-weight: bold;
   color: #f4f6fc;
 }
 
-.logo {
+.processos-logo {
   text-align: center;
   color: #fff;
   font-size: 1.5em;
 }
 
-.sub-logo {
+.processos-sub-logo {
   font-size: 0.9em;
 }
 
-.voltar {
+.processos-voltar {
   color: #f5efdd;
   font-weight: bold;
   font-size: 1.3em;
   text-decoration: none;
 }
 
-.filtros {
+.processos-filtros {
   display: flex;
   align-items: center;
   gap: 10px;
   margin: 20px 0;
 }
 
-.busca {
-  background-color: #3b3327;
+.processos-busca {
+  margin-left: 5%;
+  background-color: #443e32;
   border-radius: 10px;
+  border: 1px solid #a9a18f;
   display: flex;
   align-items: center;
   padding: 8px 12px;
 }
 
-.busca .icone {
+.processos-icone {
   margin-right: 8px;
   font-size: 1.2em;
 }
 
-.busca input {
+.processos-busca input {
   border: none;
   background: none;
   color: #fff;
@@ -70,17 +74,17 @@ body {
   outline: none;
 }
 
-.btn-filtro {
-  background-color: #3b3327;
+.processos-btn-filtro {
   color: #fff;
-  border: none;
-  padding: 10px 16px;
-  border-radius: 8px;
+  padding: 11px 40px;
   font-size: 1em;
   cursor: pointer;
+  background-color: #443e32;
+  border-radius: 10px;
+  border: 1px solid #a9a18f;
 }
 
-.lista-processos {
+.processos-lista-processos {
   flex: 1;
   overflow-y: auto;
   display: flex;
@@ -94,11 +98,9 @@ body {
   margin-left: 5%;
 }
 
-/* --- CARD --- */
-
-.card-processo {
+.processos-card-processo {
   display: flex;
-  background-color: #534a38;
+  background-color: #393529;
   border-radius: 8px;
   padding: 15px 20px;
   color: #fff;
@@ -106,42 +108,42 @@ body {
   transition: background-color 0.2s ease;
 }
 
-.card-processo:hover {
+.processos-card-processo:hover {
   background-color: #695c44;
 }
 
-.card-processo.selecionado {
-  background-color: #998666;
+.processos-selecionado {
+  background-color: #66573c;
 }
 
-.card-conteudo {
+.processos-card-conteudo {
   display: flex;
   flex: 1;
   gap: 16px;
 }
 
-.col-esquerda,
-.col-direita {
+.processos-col-esquerda,
+.processos-col-direita {
   display: flex;
   flex-direction: column;
   gap: 4px;
   font-size: 1em;
 }
 
-.col-esquerda {
-  flex:1;
+.processos-col-esquerda {
+  flex: 1;
 }
 
-.col-direita {
-  flex: 10;
+.processos-col-direita {
+  flex: 8;
 }
 
-.numero {
+.processos-numero {
   color: red;
   font-weight: bold;
 }
 
-.edit-btn {
+.processos-edit-btn {
   background: none;
   border: none;
   font-size: 2em;
@@ -151,15 +153,13 @@ body {
   align-self: flex-start;
 }
 
-/* --- BOTÃO CADASTRAR --- */
-
-.btn-cadastrar-wrapper {
+.processos-btn-cadastrar-wrapper {
   display: flex;
   justify-content: flex-end;
   margin-top: 10px;
 }
 
-.btn-cadastrar {
+.processos-btn-cadastrar {
   background-color: #865a21;
   color: #f5efdd;
   border-radius: 10px;

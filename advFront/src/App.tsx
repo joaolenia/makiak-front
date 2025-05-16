@@ -1,5 +1,6 @@
 import './App.css'
 import Pessoas from './pessoas/pessoas'
+import ProcessoDetalhado from './processos/ProcessoDetalhado'
 import Processos from './processos/processos'
 
 function App() {
@@ -7,8 +8,9 @@ function App() {
 
   return (
    <div>
-    <Processos></Processos>
-    Pe
+    {/* <Pessoas></Pessoas> */}
+    {/* <Processos></Processos> */}
+    {/* <ProcessoDetalhado></ProcessoDetalhado> */}
    </div>
   )
 }
