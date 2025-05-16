@@ -1,5 +1,10 @@
 import React, { useState } from 'react';
 import './Processos.css';
+import ProcessoDetalhado from './ProcessoDetalhado';
+import CadastroProcesso from './form/CadastroProcesso';
+import EditarProcesso from './form/EditarProcesso';
+import { Link,useNavigate } from 'react-router-dom';
+
 
 interface Processo {
   numero: string;
@@ -25,6 +30,15 @@ export default function Processos() {
   });
 
   const [selectedIndex, setSelectedIndex] = useState<number | null>(null);
+  const [showCadastro, setShowCadastro] = useState(false);
+  const [showEditar, setShowEditar] = useState(false);
+  const [showDetalhado, setShowDetalhado] = useState(false);
+  const navigate = useNavigate();
+
+const handleCardClick = (idx: number) => {
+  const processoId = idx + 1; 
+  navigate(`/processos/${processoId}`);
+};
 
   return (
     <div className="processos-container">
@@ -34,7 +48,7 @@ export default function Processos() {
           <strong>STASIAK & MAKIAK</strong>
           <div className="processos-sub-logo">Advogados Associados</div>
         </div>
-        <a href="#" className="processos-voltar">VOLTAR</a>
+        <Link to="/" className="processos-voltar">VOLTAR</Link>
       </header>
 
       <div className="processos-filtros">
@@ -51,7 +65,7 @@ export default function Processos() {
           <div
             key={idx}
             className={`processos-card-processo ${selectedIndex === idx ? 'processos-selecionado' : ''}`}
-            onClick={() => setSelectedIndex(idx)}
+            onClick={() => handleCardClick(idx)}
           >
             <div className="processos-card-conteudo">
               <div className="processos-col-esquerda">
@@ -67,14 +81,42 @@ export default function Processos() {
                 <div><strong>CIDADE:</strong> {p.cidade}</div>
               </div>
             </div>
-            <button className="processos-edit-btn" title="Editar">✎</button>
+            <button
+              className="processos-edit-btn"
+              title="Editar"
+              onClick={(e) => {
+                e.stopPropagation();
+                setSelectedIndex(idx);
+                setShowEditar(true);
+              }}
+            >✎</button>
           </div>
         ))}
       </div>
 
       <div className="processos-btn-cadastrar-wrapper">
-        <button className="processos-btn-cadastrar">CADASTRAR</button>
+        <button className="processos-btn-cadastrar" onClick={() => setShowCadastro(true)}>
+          CADASTRAR
+        </button>
       </div>
+
+      {/* Modal Cadastro */}
+      {showCadastro && (
+        <div className="modal-overlay">
+          <div className="modal-content">
+            <CadastroProcesso onClose={() => setShowCadastro(false)} />
+          </div>
+        </div>
+      )}
+
+      {/* Modal Edição */}
+      {showEditar && (
+        <div className="modal-overlay">
+          <div className="modal-content">
+            <EditarProcesso onClose={() => setShowEditar(false)} />
+          </div>
+        </div>
+      )}
     </div>
   );
 }

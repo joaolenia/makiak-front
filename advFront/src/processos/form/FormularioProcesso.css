@@ -1,0 +1,137 @@
+.formulario-modal {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  background-color: #b5a98a;
+  padding: 20px;
+  border-radius: 10px;
+  width: 30%;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+  z-index: 1000;
+}
+
+.formulario-fechar {
+  background: none;
+  border: none;
+  font-size: 1.2em;
+  font-weight: bold;
+  color: #000;
+  position: absolute;
+  top: 10px;
+  right: 15px;
+  cursor: pointer;
+}
+
+.formulario {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin-top: 20px;
+}
+
+.formulario input,
+.formulario select {
+  padding: 8px;
+  border: 1px solid #000;
+  border-radius: 3px;
+  font-size: 1em;
+  background-color: #f5f5f5;
+}
+
+.select-multiplos {
+  font-size: 1em;
+  position: relative;
+}
+
+/* Reforço para o portal dropdown */
+.select-multiplos__menu {
+  z-index: 10000 !important;
+  color: black;
+}
+
+.formulario-botoes {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 10px;
+}
+
+.btn-cadastrar {
+  background-color: #8a5b25;
+  color: white;
+  border: none;
+  padding: 10px 15px;
+  border-radius: 5px;
+  font-weight: bold;
+  cursor: pointer;
+}
+
+.btn-excluir {
+  background-color: #e53935;
+  color: white;
+  border: none;
+  padding: 10px 15px;
+  border-radius: 5px;
+  font-weight: bold;
+  cursor: pointer;
+}
+
+.btn-confirmar {
+  background-color: #43a047;
+  color: white;
+  border: none;
+  padding: 10px 15px;
+  border-radius: 5px;
+  font-weight: bold;
+  cursor: pointer;
+}
+.formulario-modal {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  background-color: #b5a98a;
+  padding: 20px;
+  border-radius: 10px;
+  width: 30%;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+  z-index: 1000;
+}
+
+.formulario-fechar {
+  background: none;
+  border: none;
+  font-size: 1.2em;
+  font-weight: bold;
+  color: #000;
+  position: absolute;
+  top: 10px;
+  right: 15px;
+  cursor: pointer;
+}
+
+.formulario {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin-top: 20px;
+}
+
+.formulario input,
+.formulario select {
+  padding: 8px;
+  border: 1px solid #000;
+  border-radius: 3px;
+  font-size: 1em;
+  background-color: #f5f5f5;
+}
+
+.btn-cadastrar {
+  background-color: #8a5b25;
+  color: white;
+  border: none;
+  padding: 10px 15px;
+  border-radius: 5px;
+  font-weight: bold;
+  cursor: pointer;
+}

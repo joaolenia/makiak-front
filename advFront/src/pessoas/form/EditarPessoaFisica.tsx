@@ -1,11 +1,14 @@
-// EditarPessoaFisica.tsx
 import React from 'react';
 import './FormularioEdicao.css';
 
-export default function EditarPessoaFisica() {
+interface Props {
+  onClose: () => void;
+}
+
+export default function EditarPessoaFisica({ onClose }: Props) {
   return (
     <div className="formulario-modal">
-      <button className="formulario-fechar">X</button>
+      <button className="formulario-fechar" onClick={onClose}>X</button>
       <form className="formulario">
         <input type="text" placeholder="Nome" />
         <input type="text" placeholder="Nacionalidade" />

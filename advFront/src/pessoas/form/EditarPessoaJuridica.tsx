@@ -2,10 +2,14 @@
 import React from 'react';
 import './FormularioEdicao.css';
 
-export default function EditarPessoaJuridica() {
+interface Props {
+  onClose: () => void;
+}
+
+export default function EditarPessoaJuridica({ onClose }: Props) {
   return (
     <div className="formulario-modal">
-      <button className="formulario-fechar">X</button>
+      <button className="formulario-fechar" onClick={onClose}>X</button>
       <form className="formulario">
         <input type="text" placeholder="Razão Social" />
         <input type="text" placeholder="CNPJ" />

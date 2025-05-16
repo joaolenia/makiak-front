@@ -1,11 +1,14 @@
-// FormPessoaJuridica.tsx
 import React from 'react';
 import './FormularioCadastro.css';
 
-export default function FormPessoaJuridica() {
+interface Props {
+  onClose: () => void;
+}
+
+export default function FormPessoaJuridica({ onClose }: Props) {
   return (
     <div className="formulario-modal">
-      <button className="formulario-fechar">X</button>
+      <button className="formulario-fechar" onClick={onClose}>X</button>
       <form className="formulario">
         <input type="text" placeholder="Razão Social" />
         <input type="text" placeholder="CNPJ" />

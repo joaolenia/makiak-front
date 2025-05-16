@@ -1,5 +1,8 @@
 import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import './Honorarios.css';
+import EditarHonorarios from './form/EditarHonorarios';
+import CadastroHonorarios from './form/CadastroHonorarios';
 
 interface Honorario {
   numero: string;
@@ -13,6 +16,8 @@ interface Honorario {
 }
 
 export default function Honorarios() {
+  const navigate = useNavigate();
+
   const honorarios: Honorario[] = Array(4).fill({
     numero: '000001112',
     pasta: '127',
@@ -25,6 +30,13 @@ export default function Honorarios() {
   });
 
   const [selectedIndex, setSelectedIndex] = useState<number | null>(null);
+  const [mostrarCadastro, setMostrarCadastro] = useState(false);
+  const [mostrarEdicao, setMostrarEdicao] = useState(false);
+
+  const handleCardClick = (idx: number) => {
+    const honorario = honorarios[idx];
+    navigate(`/honorarios/${honorario.numero}`); // ou use id real
+  };
 
   return (
     <div className="honorario-container-p">
@@ -34,7 +46,7 @@ export default function Honorarios() {
           <strong>STASIAK & MAKIAK</strong>
           <div className="honorario-sub-logo-p">Advogados Associados</div>
         </div>
-        <a href="#" className="honorario-voltar-p">VOLTAR</a>
+        <a href="" className="honorario-voltar-p" onClick={() => navigate('/')}>VOLTAR</a>
       </header>
 
       <div className="honorario-filtros-p">
@@ -51,7 +63,7 @@ export default function Honorarios() {
           <div
             key={idx}
             className={`honorario-card-p ${selectedIndex === idx ? 'honorario-selecionado' : ''}`}
-            onClick={() => setSelectedIndex(idx)}
+            onClick={() => handleCardClick(idx)}
           >
             <div className="honorario-card-esquerda-p">
               <div><strong>PROCESSO:</strong> Nº {h.numero}</div>
@@ -67,14 +79,33 @@ export default function Honorarios() {
               <div><strong>VALOR DA PARCELA:</strong> {h.valorParcela}</div>
             </div>
 
-            <button className="honorario-edit-btn-p" title="Editar">✎</button>
+            <button
+              className="honorario-edit-btn-p"
+              title="Editar"
+              onClick={(e) => {
+                e.stopPropagation(); // impede o clique no card
+                setMostrarEdicao(true);
+              }}
+            >
+              ✎
+            </button>
           </div>
         ))}
       </div>
 
       <div className="honorario-btn-cadastrar-wrapper-p">
-        <button className="honorario-btn-cadastrar-p">CADASTRAR</button>
+        <button className="honorario-btn-cadastrar-p" onClick={() => setMostrarCadastro(true)}>
+          CADASTRAR
+        </button>
       </div>
+
+      {/* Pop-ups */}
+      {mostrarCadastro && (
+        <CadastroHonorarios onClose={() => setMostrarCadastro(false)} />
+      )}
+      {mostrarEdicao && (
+        <EditarHonorarios onClose={() => setMostrarEdicao(false)} />
+      )}
     </div>
   );
 }

@@ -1,5 +1,7 @@
-import React from 'react';
+import React, { useState } from 'react';
 import './HonorarioDetalhado.css';
+import { useParams, useNavigate } from 'react-router-dom';
+import EditarHonorarios from './form/EditarHonorarios'; // Importa o formulário
 
 interface Parcela {
   data: string;
@@ -9,28 +11,33 @@ interface Parcela {
 }
 
 export default function HonorariosDetalhado() {
+  const navigate = useNavigate();
+  const { id } = useParams();
+  const [mostrarEditar, setMostrarEditar] = useState(false); // controla pop-up
+
+  console.log(id);
+
   const parcelas: Parcela[] = [
     { data: '22/12/2005', valor: 'R$ 110,00', status: 'PENDENTE', tipo: '' },
     { data: '22/11/2005', valor: 'R$ 110,00', status: 'PAGO', tipo: 'PIX' },
     { data: '22/11/2005', valor: 'R$ 110,00', status: 'PAGO', tipo: 'PIX' },
-     { data: '22/11/2005', valor: 'R$ 110,00', status: 'PAGO', tipo: 'PIX' },
     { data: '22/11/2005', valor: 'R$ 110,00', status: 'PAGO', tipo: 'PIX' },
-     { data: '22/11/2005', valor: 'R$ 110,00', status: 'PAGO', tipo: 'PIX' },
     { data: '22/11/2005', valor: 'R$ 110,00', status: 'PAGO', tipo: 'PIX' },
-     { data: '22/11/2005', valor: 'R$ 110,00', status: 'PAGO', tipo: 'PIX' },
     { data: '22/11/2005', valor: 'R$ 110,00', status: 'PAGO', tipo: 'PIX' },
-    // ...adicione mais parcelas conforme necessário
+    { data: '22/11/2005', valor: 'R$ 110,00', status: 'PAGO', tipo: 'PIX' },
+    { data: '22/11/2005', valor: 'R$ 110,00', status: 'PAGO', tipo: 'PIX' },
+    { data: '22/11/2005', valor: 'R$ 110,00', status: 'PAGO', tipo: 'PIX' },
   ];
 
   return (
     <div className="honorario-container">
       <div className="honorario-top-bar">
-        <button className="honorario-btn">EDITAR</button>
+        <button className="honorario-btn" onClick={() => setMostrarEditar(true)}>EDITAR</button>
         <div className="honorario-logo">
           <strong>STASIAK & MAKIAK</strong>
           <div className="honorario-sub-logo">Advogados Associados</div>
         </div>
-        <a href="#" className="honorario-voltar">VOLTAR</a>
+        <a href="#" className="honorario-voltar" onClick={() => navigate('/honorarios')}>VOLTAR</a>
       </div>
 
       <div className="honorario-corpo">
@@ -76,6 +83,11 @@ export default function HonorariosDetalhado() {
           </div>
         </div>
       </div>
+
+      {/* Pop-up de edição */}
+      {mostrarEditar && (
+        <EditarHonorarios onClose={() => setMostrarEditar(false)} />
+      )}
     </div>
   );
 }

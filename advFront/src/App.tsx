@@ -1,30 +1,26 @@
-import './App.css'
-import Honorarios from './Honorarios/Honorarios'
-import Pessoas from './pessoas/pessoas'
-import HonorariosDetalhado from './Honorarios/HonorarioDetalhado'
-import ProcessoDetalhado from './processos/ProcessoDetalhado'
-import Processos from './processos/processos'
-import FormPessoaFisica from './pessoas/form/FormPessoaFisica'
-import FormPessoaJuridica from './pessoas/form/FormPessoaJuridica'
-import EditarPessoaFisica from './pessoas/form/EditarPessoaFisica'
-import EditarPessoaJuridica from './pessoas/form/EditarPessoaJuridica'
+import { BrowserRouter, Routes, Route } from 'react-router-dom';
+
+import Home from './home/home';
+import Pessoas from './pessoas/pessoas';
+import Processos from './processos/Processos';
+import Honorarios from './Honorarios/Honorarios';
+import ProcessoDetalhado from './processos/ProcessoDetalhado';
+import HonorariosDetalhado from './Honorarios/HonorarioDetalhado';
 
 function App() {
-
-
   return (
-   <div>
-    {/* <Pessoas></Pessoas> */}
-    {/* <Processos></Processos> */}
-    {/* <ProcessoDetalhado></ProcessoDetalhado> */}
-    {/* <HonorariosDetalhado></HonorariosDetalhado> */}
-    {/* <Honorarios></Honorarios> */}
-    {/* <FormPessoaFisica></FormPessoaFisica> */}
-    {/* <FormPessoaJuridica></FormPessoaJuridica> */}
-    {/* <EditarPessoaFisica></EditarPessoaFisica> */}
-    {/* <EditarPessoaJuridica></EditarPessoaJuridica> */}
-   </div>
-  )
+    <BrowserRouter>
+      <Routes>
+        <Route path="/" element={<Home />} />
+        <Route path="/pessoas" element={<Pessoas />} />
+        <Route path="/processos" element={<Processos />} />
+        <Route path="/processos/:id" element={<ProcessoDetalhado />} />
+        <Route path="/honorarios/:id" element={<HonorariosDetalhado />} />
+        <Route path="/honorarios" element={<Honorarios />} />
+  
+      </Routes>
+    </BrowserRouter>
+  );
 }
 
-export default App
+export default App;
