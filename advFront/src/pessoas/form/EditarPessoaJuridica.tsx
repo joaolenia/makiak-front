@@ -1,12 +1,13 @@
 // EditarPessoaJuridica.tsx
-import React from 'react';
 import './FormularioEdicao.css';
 
 interface Props {
+  id:string;
   onClose: () => void;
 }
 
-export default function EditarPessoaJuridica({ onClose }: Props) {
+export default function EditarPessoaJuridica({ id,onClose }: Props) {
+  console.log(id)
   return (
     <div className="formulario-modal">
       <button className="formulario-fechar" onClick={onClose}>X</button>

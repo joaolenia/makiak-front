@@ -1,4 +1,4 @@
-.formulario-modal {
+.cad-formulario-modal {
   position: fixed;
   top: 50%;
   left: 50%;
@@ -11,7 +11,7 @@
   z-index: 1000;
 }
 
-.formulario-fechar {
+.cad-formulario-fechar {
   background: none;
   border: none;
   font-size: 1.2em;
@@ -23,16 +23,16 @@
   cursor: pointer;
 }
 
-.formulario {
+.cad-formulario {
   display: flex;
   flex-direction: column;
   gap: 10px;
   margin-top: 20px;
 }
 
-.formulario input,
-.formulario select,
-.formulario textarea {
+.cad-formulario input,
+.cad-formulario select,
+.cad-formulario textarea {
   padding: 8px;
   border: 1px solid #000;
   border-radius: 3px;
@@ -40,12 +40,12 @@
   background-color: #f5f5f5;
 }
 
-.formulario textarea {
+.cad-formulario textarea {
   resize: none;
   height: 60px;
 }
 
-.formulario-btn {
+.cad-formulario-btn {
   background-color: #865a21;
   color: #f5efdd;
   border: none;
