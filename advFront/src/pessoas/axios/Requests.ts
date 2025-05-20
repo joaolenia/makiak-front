@@ -6,13 +6,13 @@ const api = axios.create({
 interface PessoaFisicaData {
   nome: string;
   nacionalidade: string;
-  estadoCivil: string;
+  estadoCivil: string| null;
   profissao?: string | null;
-  rg: string;
-  orgaoExpedidorRg: string;
-  cpf: string;
-  endereco: string;
-  cep: string;
+  rg: string | null;
+  orgaoExpedidorRg: string | null;
+  cpf: string | null;
+  endereco: string ;
+  cep: string | null;
   uf: string;
   email?: string | null;
   whatsapp?: string | null;
@@ -25,12 +25,8 @@ interface PessoaJuridicaData {
   endereco: string;
   cep: string;
   uf: string;
-  municipio: string;
   email?: string | null;
   telefone?: string | null;
-  whatsapp?: string | null;
-  inscricaoEstadual?: string | null;
-  inscricaoMunicipal?: string | null;
   observacoes?: string | null;
   representantesIds: number[];
 }
@@ -61,6 +57,16 @@ export async function criarPessoaFisica(data: PessoaFisicaData) {
     return response.data;
   } catch (error) {
     console.error('Erro ao criar pessoa física:', error);
+    throw error;
+  }
+
+}
+export async function criarPessoajuridica(data: PessoaJuridicaData) {
+  try {
+    const response = await api.post('pessoa-juridica', data);
+    return response.data;
+  } catch (error) {
+    console.error('Erro ao criar pessoa Jurídica:', error);
     throw error;
   }
 

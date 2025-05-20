@@ -10,7 +10,7 @@ interface Props {
 export default function EditarPessoaFisica({ id, onClose }: Props) {
   const [formData, setFormData] = useState({
     nome: '',
-    nacionalidade: 'Brasileira',
+    nacionalidade: 'Brasileiro(a)',
     estadoCivil: '',
     profissao: '',
     rg: '',
@@ -34,7 +34,7 @@ export default function EditarPessoaFisica({ id, onClose }: Props) {
         const pessoa = await getPessoaFisicaById(id);
         setFormData({
           nome: pessoa.nome || '',
-          nacionalidade: pessoa.nacionalidade || 'Brasileira',
+          nacionalidade: pessoa.nacionalidade || 'Brasileiro(a)',
           estadoCivil: pessoa.estadoCivil || '',
           profissao: pessoa.profissao || '',
           rg: pessoa.rg || '',

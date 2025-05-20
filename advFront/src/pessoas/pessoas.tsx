@@ -23,14 +23,14 @@ interface Pessoa {
 interface PessoaDetalhes {
   nome: string;
   nacionalidade: string;
-  estadoCivil: string;
+  estadoCivil: string | null;
   profissao?: string | null;
-  rg: string;
-  orgaoExpedidorRg: string;
-  cpf: string;
+  rg: string | null;
+  orgaoExpedidorRg: string | null;
+  cpf: string | null;
   endereco: string;
-  cep: string;
-  uf: string;
+  cep: string | null;
+  uf: string | null;
   email?: string | null;
   whatsapp?: string | null;
   telefone?: string | null;
@@ -190,15 +190,15 @@ export default function Pessoas() {
           <>
             <h2>{(detalhesPessoa as PessoaDetalhes).nome}</h2>
             <p>
-              <strong>Nacionalidade:</strong> {(detalhesPessoa as PessoaDetalhes).nacionalidade}<br />
-              <strong>Estado civil:</strong> {(detalhesPessoa as PessoaDetalhes).estadoCivil}<br />
-              <strong>Profissão:</strong> {(detalhesPessoa as PessoaDetalhes).profissao ?? 'N/A'}<br />
-              <strong>RG:</strong> {(detalhesPessoa as PessoaDetalhes).rg} {(detalhesPessoa as PessoaDetalhes).orgaoExpedidorRg}<br />
-              <strong>CPF:</strong> {(detalhesPessoa as PessoaDetalhes).cpf}<br />
-              <strong>Endereço:</strong> {(detalhesPessoa as PessoaDetalhes).endereco}, {(detalhesPessoa as PessoaDetalhes).uf}, {(detalhesPessoa as PessoaDetalhes).cep}<br />
-              <strong>Email:</strong> {(detalhesPessoa as PessoaDetalhes).email ?? 'N/A'}<br />
-              <strong>WhatsApp:</strong> {(detalhesPessoa as PessoaDetalhes).whatsapp ?? 'N/A'}<br />
-              <strong>Telefone Fixo:</strong> {(detalhesPessoa as PessoaDetalhes).telefone ?? 'N/A'}
+              <strong>Nacionalidade:</strong>{''} {(detalhesPessoa as PessoaDetalhes).nacionalidade}<br />
+              <strong>Estado civil:</strong>{' '} {(detalhesPessoa as PessoaDetalhes).estadoCivil}<br />
+              <strong>Profissão:</strong>{' '} {(detalhesPessoa as PessoaDetalhes).profissao }<br />
+              <strong>RG:</strong>{' '} {(detalhesPessoa as PessoaDetalhes).rg} {(detalhesPessoa as PessoaDetalhes).orgaoExpedidorRg}<br />
+              <strong>CPF:</strong>{' '} {(detalhesPessoa as PessoaDetalhes).cpf}<br />
+              <strong>Endereço:</strong>{' '} {(detalhesPessoa as PessoaDetalhes).endereco}, {(detalhesPessoa as PessoaDetalhes).uf}, {(detalhesPessoa as PessoaDetalhes).cep}<br />
+              <strong>Email:</strong>{' '} {(detalhesPessoa as PessoaDetalhes).email }<br />
+              <strong>WhatsApp:</strong>{' '} {(detalhesPessoa as PessoaDetalhes).whatsapp }<br />
+              <strong>Telefone Fixo:</strong>{' '} {(detalhesPessoa as PessoaDetalhes).telefone }
             </p>
             <div className="observacoes">
               <strong>OBSERVAÇÕES</strong>
@@ -209,11 +209,11 @@ export default function Pessoas() {
           <>
             <h2>{(detalhesPessoa as PessoaJuridicaDetalhes).razaoSocial}</h2>
             <p>
-              <strong>Razão Social:</strong> {(detalhesPessoa as PessoaJuridicaDetalhes).razaoSocial}<br />
-              <strong>CNPJ:</strong> {(detalhesPessoa as PessoaJuridicaDetalhes).cnpj}<br />
-              <strong>Endereço:</strong> {(detalhesPessoa as PessoaJuridicaDetalhes).endereco}, {(detalhesPessoa as PessoaJuridicaDetalhes).uf}, {(detalhesPessoa as PessoaJuridicaDetalhes).cep}<br />
-              <strong>Email:</strong> {(detalhesPessoa as PessoaJuridicaDetalhes).email ?? 'N/A'}<br />
-              <strong>Telefone:</strong> {(detalhesPessoa as PessoaJuridicaDetalhes).telefone ?? 'N/A'}<br />
+              <strong>Razão Social:</strong>{' '} {(detalhesPessoa as PessoaJuridicaDetalhes).razaoSocial}<br />
+              <strong>CNPJ:</strong>{' '} {(detalhesPessoa as PessoaJuridicaDetalhes).cnpj}<br />
+              <strong>Endereço:</strong>{' '} {(detalhesPessoa as PessoaJuridicaDetalhes).endereco}, {(detalhesPessoa as PessoaJuridicaDetalhes).uf}, {(detalhesPessoa as PessoaJuridicaDetalhes).cep}<br />
+              <strong>Email:</strong>{' '} {(detalhesPessoa as PessoaJuridicaDetalhes).email ?? 'N/A'}<br />
+              <strong>Telefone:</strong>{' '} {(detalhesPessoa as PessoaJuridicaDetalhes).telefone ?? 'N/A'}<br />
               <strong>Representante(s):</strong>
               <ul>
                 {(detalhesPessoa as PessoaJuridicaDetalhes).representantes?.map((rep) => (
@@ -246,6 +246,7 @@ export default function Pessoas() {
     <button className="copiar-btn" onClick={handleCopiar}>COPIAR</button>
   </div>
 </main>
+
 
         </div>
 

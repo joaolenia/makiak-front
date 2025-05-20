@@ -301,3 +301,8 @@ main h2 {
   font-weight: bold;
   cursor: pointer;
 }
+.cad-formulario-erro {
+  color: red;
+  font-weight: bold;
+  margin-bottom: 10px;
+}

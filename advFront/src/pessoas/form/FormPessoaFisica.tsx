@@ -9,7 +9,7 @@ interface Props {
 export default function FormPessoaFisica({ onClose }: Props) {
   const [formData, setFormData] = useState({
     nome: '',
-    nacionalidade: 'Brasileira',
+    nacionalidade: 'Brasileiro(a)',
     estadoCivil: '',
     profissao: '',
     rg: '',
@@ -42,59 +42,50 @@ export default function FormPessoaFisica({ onClose }: Props) {
     setErrorMessage('');
   };
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
+const handleSubmit = async (e: React.FormEvent) => {
+  e.preventDefault();
 
-    const {
-      nome, nacionalidade, estadoCivil, rg, orgaoExpedidorRg,
-      cpf, endereco, cep, uf,
-    } = formData;
+  const { nome, endereco, uf } = formData;
 
-    if (!nome || !nacionalidade || !estadoCivil || !rg || !orgaoExpedidorRg || !cpf || !endereco || !cep || !uf) {
-      setErrorMessage('Por favor, preencha todos os campos obrigatórios.');
-      return;
-    }
+  if (!nome || !endereco || !uf) {
+    setErrorMessage('Por favor, preencha os campos obrigatórios: Nome, Endereço e UF.');
+    return;
+  }
 
-    try {
-      await criarPessoaFisica({
-        nome,
-        nacionalidade,
-        estadoCivil,
-        rg,
-        orgaoExpedidorRg,
-        cpf,
-        endereco,
-        cep,
-        uf,
-        profissao: formData.profissao || null,
-        email: formData.email || null,
-        whatsapp: formData.whatsapp || null,
-        telefone: formData.telefone || null,
-        observacoes: formData.observacoes || null,
-      });
+  try {
+    await criarPessoaFisica({
+      ...formData,
+      profissao: formData.profissao || null,
+      email: formData.email || null,
+      whatsapp: formData.whatsapp || null,
+      telefone: formData.telefone || null,
+      observacoes: formData.observacoes || null,
+    });
 
-      setFormData({
-        nome: '',
-        nacionalidade: 'Brasileira',
-        estadoCivil: '',
-        profissao: '',
-        rg: '',
-        orgaoExpedidorRg: '',
-        cpf: '',
-        endereco: '',
-        cep: '',
-        uf: '',
-        email: '',
-        whatsapp: '',
-        telefone: '',
-        observacoes: '',
-      });
-      setErrorMessage('');
-    } catch (error: any) {
-      const msg = error?.response?.data?.message || 'Erro ao cadastrar. Verifique os dados.';
-      setErrorMessage(msg);
-    }
-  };
+    // Reset do formulário
+    setFormData({
+      nome: '',
+      nacionalidade: 'Brasileiro(a)',
+      estadoCivil: '',
+      profissao: '',
+      rg: '',
+      orgaoExpedidorRg: '',
+      cpf: '',
+      endereco: '',
+      cep: '',
+      uf: '',
+      email: '',
+      whatsapp: '',
+      telefone: '',
+      observacoes: '',
+    });
+    setErrorMessage('');
+  } catch (error: any) {
+    const msg = error?.response?.data?.message || 'Erro ao cadastrar. Verifique os dados.';
+    setErrorMessage(msg);
+  }
+};
+
 
 return (
   <div className="cad-formulario-modal">
@@ -105,7 +96,7 @@ return (
       <input type="text" name="nome" placeholder="Nome *" value={formData.nome} onChange={handleChange} />
       <input type="text" name="nacionalidade" placeholder="Nacionalidade *" value={formData.nacionalidade} onChange={handleChange} />
       <select name="estadoCivil" value={formData.estadoCivil} onChange={handleChange}>
-        <option value="">Estado Civil *</option>
+        <option value="">Estado Civil </option>
         <option value="Solteiro(a)">Solteiro(a)</option>
         <option value="Casado(a)">Casado(a)</option>
         <option value="Divorciado(a)">Divorciado(a)</option>
@@ -115,11 +106,11 @@ return (
       </select>
 
       <input type="text" name="profissao" placeholder="Profissão" value={formData.profissao} onChange={handleChange} />
-      <input type="text" name="rg" placeholder="RG *" value={formData.rg} onChange={handleChange} />
-      <input type="text" name="orgaoExpedidorRg" placeholder="Órgão expedidor *" value={formData.orgaoExpedidorRg} onChange={handleChange} />
-      <input type="text" name="cpf" placeholder="CPF *" value={formData.cpf} onChange={handleChange} />
+      <input type="text" name="rg" placeholder="RG " value={formData.rg} onChange={handleChange} />
+      <input type="text" name="orgaoExpedidorRg" placeholder="Órgão expedidor " value={formData.orgaoExpedidorRg} onChange={handleChange} />
+      <input type="text" name="cpf" placeholder="CPF " value={formData.cpf} onChange={handleChange} />
       <input type="text" name="endereco" placeholder="Endereço *" value={formData.endereco} onChange={handleChange} />
-      <input type="text" name="cep" placeholder="CEP *" value={formData.cep} onChange={handleChange} />
+      <input type="text" name="cep" placeholder="CEP " value={formData.cep} onChange={handleChange} />
 
       <select name="uf" value={formData.uf} onChange={handleChange}>
         <option value="">UF *</option>
