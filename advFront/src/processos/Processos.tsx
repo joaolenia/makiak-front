@@ -1,10 +1,9 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import './Processos.css';
-import ProcessoDetalhado from './ProcessoDetalhado';
+import { Link, useNavigate } from 'react-router-dom';
+import { buscarProcessos } from './axios/Requests';
 import CadastroProcesso from './form/CadastroProcesso';
 import EditarProcesso from './form/EditarProcesso';
-import { Link,useNavigate } from 'react-router-dom';
-
 
 interface Processo {
   numero: string;
@@ -12,33 +11,40 @@ interface Processo {
   data: string;
   situacao: string;
   tipo: string;
-  autor: string;
-  reu: string;
-  cidade: string;
+  autores: string[];
+  reus: string[];
+  terceiros: string[];
 }
 
 export default function Processos() {
-  const processos: Processo[] = Array(10).fill({
-    numero: '000001112',
-    pasta: '127',
-    data: '12/02/2005',
-    situacao: 'Ativo',
-    tipo: 'Ação Trabalhista de desvio de função',
-    autor: 'Joao Da Silva',
-    reu: 'Petrobras',
-    cidade: 'União da Vitória PR',
-  });
-
+  const [filtro, setFiltro] = useState<number>(1);
+  const [termoBusca, setTermoBusca] = useState('');
+  const [processos, setProcessos] = useState<Processo[]>([]);
+  const [debouncedTermo, setDebouncedTermo] = useState('');
   const [selectedIndex, setSelectedIndex] = useState<number | null>(null);
   const [showCadastro, setShowCadastro] = useState(false);
   const [showEditar, setShowEditar] = useState(false);
-  const [showDetalhado, setShowDetalhado] = useState(false);
   const navigate = useNavigate();
 
-const handleCardClick = (idx: number) => {
-  const processoId = idx + 1; 
-  navigate(`/processos/${processoId}`);
-};
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setDebouncedTermo(termoBusca);
+    }, 300);
+    return () => clearTimeout(timer);
+  }, [termoBusca]);
+
+  useEffect(() => {
+    if (debouncedTermo.trim()) {
+      buscarProcessos(debouncedTermo, filtro)
+        .then((res) => setProcessos(res))
+        .catch((err) => console.error('Erro ao buscar processos:', err));
+    }
+  }, [debouncedTermo, filtro]);
+
+  const handleCardClick = (idx: number) => {
+    const processoId = idx + 1;
+    navigate(`/processos/${processoId}`);
+  };
 
   return (
     <div className="processos-container">
@@ -53,11 +59,25 @@ const handleCardClick = (idx: number) => {
 
       <div className="processos-filtros">
         <div className="processos-busca">
-          <span className="processos-icone">🔍</span>
-          <input type="text" placeholder="Buscar processo..." />
+          <input
+            type="text"
+            placeholder="Buscar processo..."
+            value={termoBusca}
+            onChange={(e) => setTermoBusca(e.target.value)}
+          />
         </div>
-        <button className="processos-btn-filtro">FILTROS ▾</button>
-        <button className="processos-btn-filtro">DATA ▾</button>
+
+        <select
+          className="processos-select-filtro"
+          value={filtro}
+          onChange={(e) => setFiltro(Number(e.target.value))}
+        >
+          <option value={1}>Número do processo</option>
+          <option value={2}>Nome do autor</option>
+          <option value={3}>Nome do réu</option>
+          <option value={4}>Nome do terceiro</option>
+          <option value={5}>Tipo do processo</option>
+        </select>
       </div>
 
       <div className="processos-lista-processos">
@@ -70,15 +90,15 @@ const handleCardClick = (idx: number) => {
             <div className="processos-card-conteudo">
               <div className="processos-col-esquerda">
                 <div><span className="processos-numero">Nº {p.numero}</span></div>
-                <div>PASTA: {p.pasta}</div>
+                <div>PASTA: {p.pasta || '—'}</div>
                 <div>DATA: {p.data}</div>
                 <div>SITUAÇÃO: {p.situacao}</div>
               </div>
               <div className="processos-col-direita">
                 <div><strong>TIPO:</strong> {p.tipo}</div>
-                <div><strong>AUTOR:</strong> {p.autor}</div>
-                <div><strong>RÉU:</strong> {p.reu}</div>
-                <div><strong>CIDADE:</strong> {p.cidade}</div>
+                <div><strong>AUTOR:</strong> {p.autores.join(', ')}</div>
+                <div><strong>RÉU:</strong> {p.reus.join(', ')}</div>
+                <div><strong>TERCEIRO:</strong> {p.terceiros.join(', ') || '—'}</div>
               </div>
             </div>
             <button
@@ -100,7 +120,6 @@ const handleCardClick = (idx: number) => {
         </button>
       </div>
 
-      {/* Modal Cadastro */}
       {showCadastro && (
         <div className="modal-overlay">
           <div className="modal-content">
@@ -109,7 +128,6 @@ const handleCardClick = (idx: number) => {
         </div>
       )}
 
-      {/* Modal Edição */}
       {showEditar && (
         <div className="modal-overlay">
           <div className="modal-content">

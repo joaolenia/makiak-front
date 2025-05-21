@@ -133,15 +133,19 @@ body {
 
 .processos-col-esquerda {
   flex: 1;
+    white-space: nowrap;
 }
 
 .processos-col-direita {
-  flex: 8;
+  flex:3.5;
 }
 
 .processos-numero {
   color: red;
   font-weight: bold;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .processos-edit-btn {
@@ -168,4 +172,12 @@ body {
   font-size: 1.2em;
   padding: 10px 20px;
   cursor: pointer;
+}
+.processos-select-filtro {
+  background-color: #443e32;
+  border: 1px solid #a9a18f;
+  border-radius: 10px;
+  color: #fff;
+  padding: 10px 16px;
+  font-size: 1em;
 }
