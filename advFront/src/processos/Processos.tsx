@@ -6,6 +6,7 @@ import CadastroProcesso from './form/CadastroProcesso';
 import EditarProcesso from './form/EditarProcesso';
 
 interface Processo {
+  id: number;
   numero: string;
   pasta: string;
   data: string;
@@ -22,9 +23,19 @@ export default function Processos() {
   const [processos, setProcessos] = useState<Processo[]>([]);
   const [debouncedTermo, setDebouncedTermo] = useState('');
   const [selectedIndex, setSelectedIndex] = useState<number | null>(null);
+  const [selectedProcessoId, setSelectedProcessoId] = useState<number | null>(null);
   const [showCadastro, setShowCadastro] = useState(false);
   const [showEditar, setShowEditar] = useState(false);
   const navigate = useNavigate();
+
+  useEffect(() => {
+  if (!showCadastro && !showEditar && termoBusca.trim()) {
+    buscarProcessos(termoBusca, filtro)
+      .then((res) => setProcessos(res))
+      .catch((err) => console.error('Erro ao buscar processos:', err));
+  }
+}, [showCadastro, showEditar]);
+
 
   useEffect(() => {
     const timer = setTimeout(() => {
@@ -42,7 +53,7 @@ export default function Processos() {
   }, [debouncedTermo, filtro]);
 
   const handleCardClick = (idx: number) => {
-    const processoId = idx + 1;
+    const processoId = processos[idx].id;
     navigate(`/processos/${processoId}`);
   };
 
@@ -83,7 +94,7 @@ export default function Processos() {
       <div className="processos-lista-processos">
         {processos.map((p, idx) => (
           <div
-            key={idx}
+            key={p.id}
             className={`processos-card-processo ${selectedIndex === idx ? 'processos-selecionado' : ''}`}
             onClick={() => handleCardClick(idx)}
           >
@@ -107,6 +118,7 @@ export default function Processos() {
               onClick={(e) => {
                 e.stopPropagation();
                 setSelectedIndex(idx);
+                setSelectedProcessoId(p.id);
                 setShowEditar(true);
               }}
             >✎</button>
@@ -128,10 +140,10 @@ export default function Processos() {
         </div>
       )}
 
-      {showEditar && (
+      {showEditar && selectedProcessoId !== null && (
         <div className="modal-overlay">
           <div className="modal-content">
-            <EditarProcesso onClose={() => setShowEditar(false)} />
+            <EditarProcesso id={selectedProcessoId} onClose={() => setShowEditar(false)} />
           </div>
         </div>
       )}

@@ -22,14 +22,12 @@ export interface ProcessoPayload {
   terceiros?: Parte[]; 
 }
 
-// Função de cadastro
 export async function createProcesso(payload: ProcessoPayload) {
   console.log(payload);
   const response = await api.post('/processos', payload);
   return response.data;
 }
 
-// NOVA FUNÇÃO: Buscar processos por termo e filtro
 export async function buscarProcessos(termo: string, filtro: number) {
   const response = await api.get('/processos/buscar', {
     params: {
@@ -39,6 +37,7 @@ export async function buscarProcessos(termo: string, filtro: number) {
   });
 
   return response.data as {
+    id:number;
     numero: string;
     tipo: string;
     data: string;
@@ -49,3 +48,40 @@ export async function buscarProcessos(termo: string, filtro: number) {
     terceiros: string[];
   }[];
 }
+
+export async function updateProcesso(id: number, payload: ProcessoPayload) {
+  const response = await api.put(`/processos/${id}`, payload);
+  return response.data;
+}
+
+export async function getProcessoById(id: number) {
+  const response = await api.get(`/processos/${id}`);
+  return response.data as {
+    id: number;
+    numero: string;
+    tipo: string;
+    cidade: string;
+    pasta: string;
+    vara: string;
+    data: string;
+    valorCausa: string;
+    situacao: string;
+    autores: {
+      id: number;
+      nome: string;
+      tipoPessoa: 'FISICA' | 'JURIDICA';
+    }[];
+    reus: {
+      id: number;
+      nome: string;
+      tipoPessoa: 'FISICA' | 'JURIDICA';
+    }[];
+    terceiros: {
+      id: number;
+      nome: string;
+      tipoPessoa: 'FISICA' | 'JURIDICA';
+    }[];
+  };
+}
+
+
