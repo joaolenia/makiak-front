@@ -2,13 +2,14 @@ import React, { useState, useEffect } from 'react';
 import './ProcessoDetalhado.css';
 import { useParams, useNavigate } from 'react-router-dom';
 import EditarProcesso from './form/EditarProcesso';
+
 import {
   getProcessoById,
   getDescricoesByProcessoId,
   createDescricao,
   updateDescricao
 } from './axios/Requests';
-
+import { gerarPDFProcesso } from './relatórios/gerarPDFProcesso';
 interface Pessoa {
   id: number;
   nome: string;
@@ -210,7 +211,17 @@ export default function ProcessoDetalhado() {
               DESCRIÇÃO
             </button>
             <button className="detalhado-acao">VALORES</button>
-            <button className="detalhado-acao">RELATÓRIO</button>
+            <button
+              className="detalhado-acao"
+              onClick={() => {
+                if (processo) {
+                  gerarPDFProcesso(processo, descricoes);
+                }
+              }}
+            >
+              RELATÓRIO
+            </button>
+
           </div>
 
           {mostrarFormDescricao && (

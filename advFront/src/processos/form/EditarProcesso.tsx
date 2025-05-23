@@ -148,17 +148,31 @@ export default function EditarProcesso({ id, onClose }: Props) {
   return (
     <div className="formulario-modal">
       <button className="formulario-fechar" onClick={onClose}>X</button>
-      <form className="formulario" onSubmit={handleSubmit}>
-        {erro && <div className="formulario-erro">{erro}</div>}
+      <form className="cadpro-formulario" onSubmit={handleSubmit}>
+        {erro && <div className="cadpro-erro">{erro}</div>}
 
-        <input name="numero" value={formData.numero} onChange={handleChange} placeholder="Nº" />
-        <input name="tipo" value={formData.tipo} onChange={handleChange} placeholder="Tipo" />
-        <input name="pasta" value={formData.pasta} onChange={handleChange} placeholder="Pasta" />
-        <input name="cidade" value={formData.cidade} onChange={handleChange} placeholder="Cidade" />
-        <input name="vara" value={formData.vara} onChange={handleChange} placeholder="Vara" />
+        <label className="cadpro-label">Número do Processo</label>
+        <input name="numero" value={formData.numero} onChange={handleChange} />
+
+        <label className="cadpro-label">Tipo</label>
+        <input name="tipo" value={formData.tipo} onChange={handleChange} />
+
+        <label className="cadpro-label">Pasta</label>
+        <input name="pasta" value={formData.pasta} onChange={handleChange} />
+
+        <label className="cadpro-label">Cidade</label>
+        <input name="cidade" value={formData.cidade} onChange={handleChange} />
+
+        <label className="cadpro-label">Vara</label>
+        <input name="vara" value={formData.vara} onChange={handleChange} />
+
+        <label className="cadpro-label">Data</label>
         <input name="data" type="date" value={formData.data} onChange={handleChange} />
-        <input name="valorCausa" value={formData.valorCausa} onChange={handleChange} placeholder="Valor da Causa" />
 
+        <label className="cadpro-label">Valor da Causa</label>
+        <input name="valorCausa" value={formData.valorCausa} onChange={handleChange} />
+
+        <label className="cadpro-label">Situação</label>
         <select name="situacao" value={formData.situacao} onChange={handleChange}>
           <option value="">Situação</option>
           <option value="EM ANDAMENTO">Em Andamento</option>
@@ -166,44 +180,47 @@ export default function EditarProcesso({ id, onClose }: Props) {
           <option value="SUSPENSO">Suspenso</option>
         </select>
 
+        <label className="cadpro-label">Autor(es)</label>
         <AsyncSelect
           isMulti
           loadOptions={debouncedBuscarPessoas}
           onChange={handleSelectChange('autores')}
           value={formData.autores}
-          placeholder="Autor(es) *"
-          classNamePrefix="cadpro-select-multiplos"
-          styles={customStyles}
-          defaultOptions
-          cacheOptions
-        />
-        <AsyncSelect
-          isMulti
-          loadOptions={debouncedBuscarPessoas}
-          onChange={handleSelectChange('reus')}
-          value={formData.reus}
-          placeholder="Réu(s) *"
-          classNamePrefix="cadpro-select-multiplos"
-          styles={customStyles}
-          defaultOptions
-          cacheOptions
-        />
-        <AsyncSelect
-          isMulti
-          loadOptions={debouncedBuscarPessoas}
-          onChange={handleSelectChange('terceiros')}
-          value={formData.terceiros}
-          placeholder="Terceiro(s)"
           classNamePrefix="cadpro-select-multiplos"
           styles={customStyles}
           defaultOptions
           cacheOptions
         />
 
-        <div className="formulario-botoes">
-          <button type="submit" className="btn-confirmar">CONFIRMAR</button>
+        <label className="cadpro-label">Réu(s)</label>
+        <AsyncSelect
+          isMulti
+          loadOptions={debouncedBuscarPessoas}
+          onChange={handleSelectChange('reus')}
+          value={formData.reus}
+          classNamePrefix="cadpro-select-multiplos"
+          styles={customStyles}
+          defaultOptions
+          cacheOptions
+        />
+
+        <label className="cadpro-label">Terceiro(s)</label>
+        <AsyncSelect
+          isMulti
+          loadOptions={debouncedBuscarPessoas}
+          onChange={handleSelectChange('terceiros')}
+          value={formData.terceiros}
+          classNamePrefix="cadpro-select-multiplos"
+          styles={customStyles}
+          defaultOptions
+          cacheOptions
+        />
+
+        <div className="cadpro-formulario-botoes">
+          <button type="submit" className="cadpro-btn-confirmar">CONFIRMAR</button>
         </div>
       </form>
+
     </div>
   );
 }

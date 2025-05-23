@@ -90,3 +90,8 @@
   color: red;
   font-weight: bold;
 }
+.cadpro-label {
+  margin-top: 10px;
+  margin-bottom: -5px;
+  color: #000;
+}
