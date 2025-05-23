@@ -55,7 +55,7 @@ export default function Processos() {
   const handleCardClick = (idx: number) => {
     const processoId = processos[idx].id;
     navigate(`/processos/${processoId}`);
-  };
+  }; 
 
   return (
     <div className="processos-container">

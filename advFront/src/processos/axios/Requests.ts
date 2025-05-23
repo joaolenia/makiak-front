@@ -9,6 +9,12 @@ export interface Parte {
   tipoPessoa: 'FISICA' | 'JURIDICA';
 }
 
+export interface DescricaoPayload {
+  processoId?: number; 
+  descricao: string;
+  data: string;
+}
+
 export interface ProcessoPayload {
   numero: string;
   tipo: string;
@@ -84,4 +90,23 @@ export async function getProcessoById(id: number) {
   };
 }
 
+export async function createDescricao(payload: DescricaoPayload) {
+  const response = await api.post('/processos/descricao', payload);
+  return response.data;
+}
+
+export async function getDescricoesByProcessoId(processoId: number) {
+  const response = await api.get(`/processos/${processoId}/descricoes`);
+  return response.data as {
+    id:number;
+    descricao: string;
+    data: string;
+  }[];
+}
+
+export async function updateDescricao(id: number, payload: DescricaoPayload) {
+  console.log(payload)
+  const response = await api.put(`/processos/descricao/${id}`, payload);
+  return response.data;
+}
 
