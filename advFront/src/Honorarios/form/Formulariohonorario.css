@@ -135,3 +135,14 @@
   font-weight: bold;
   cursor: pointer;
 }
+.mensagem-erro {
+  color: red;
+  margin-bottom: 10px;
+  font-weight: bold;
+}
+
+.mensagem-sucesso {
+  color: green;
+  margin-bottom: 10px;
+  font-weight: bold;
+}

@@ -22,11 +22,11 @@ interface Props {
   onClose: () => void;
 }
 export default function EditarHonorarios({onClose}:Props) {
-  const [valorTotal, setValorTotal] = useState('1000'); // Exemplo valor inicial
+  const [valorTotal, setValorTotal] = useState('1000'); 
   const [formaPagamento, setFormaPagamento] = useState('boleto');
   const [parcelado, setParcelado] = useState(false);
   const [quantidadeParcelas, setQuantidadeParcelas] = useState('1');
-  const [desconto, setDesconto] = useState(''); // valor desconto opcional
+  const [desconto, setDesconto] = useState(''); 
   const [processoSelecionado, setProcessoSelecionado] = useState(opcoesProcessos[0]);
 
   const valorComDesconto = () => {

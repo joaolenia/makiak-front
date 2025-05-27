@@ -146,3 +146,85 @@
   flex: 1;
   cursor: pointer;
 }
+.pagamento-modal {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0,0,0,0.4);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.pagamento-modal h3 {
+ color:black;
+}
+.pagamento-modal label {
+ color:black;
+}
+
+.pagamento-formulario {
+  background: white;
+  padding: 30px 20px 20px;
+  border-radius: 10px;
+  min-width: 350px;
+  position: relative;
+  box-shadow: 0 0 15px rgba(0,0,0,0.5);
+  font-family: Arial, sans-serif;
+}
+
+.pagamento-formulario h3 {
+  margin-top: 0;
+  text-align: center;
+  color: #333;
+}
+
+.pagamento-formulario label {
+  color: #333;
+  font-weight: bold;
+  margin-bottom: 5px;
+}
+
+.pagamento-formulario select {
+  width: 100%;
+  padding: 8px;
+  border-radius: 5px;
+  border: 1px solid #ccc;
+  margin-bottom: 15px;
+}
+
+.pagamento-botoes {
+  display: flex;
+  justify-content: space-between;
+}
+
+.pagamento-botoes button {
+  background-color: #a36c2d;
+  color: white;
+  padding: 8px 14px;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  font-weight: bold;
+}
+
+.pagamento-botoes button:hover {
+  background-color: #8a571e;
+}
+
+.pagamento-close {
+  position: absolute;
+  top: 8px;
+  right: 12px;
+  font-size: 20px;
+  font-weight: bold;
+  color: #333;
+  background: none;
+  border: none;
+  cursor: pointer;
+}
+
+.pagamento-close:hover {
+  color: red;
+}
