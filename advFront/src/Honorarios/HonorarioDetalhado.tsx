@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import  { useEffect, useState } from 'react';
 import './HonorarioDetalhado.css';
 import { useParams, useNavigate } from 'react-router-dom';
 import EditarHonorarios from './form/EditarHonorarios';
@@ -84,15 +84,6 @@ const [parcelasPendentes, setParcelasPendentes] = useState<Parcela[]>([]);
         <div className="honorario-dados">
           <div className="honorario-info-scroll">
             <div className="honorario-total">TOTAL: R$ {honorario.valorTotal}</div>
-            <div className="honorario-subnumero">Nº {honorario.id.toString().padStart(9, '0')}</div>
-
-            {/* Dados fixos fictícios para exemplo */}
-            <div><strong>PASTA:</strong> 127</div>
-            <div><strong>AUTOR:</strong> Petrobras</div>
-            <div><strong>RÉU:</strong> João da Silva</div>
-            <div><strong>TERCEIRO:</strong> União da Vitória PR</div>
-
-            <br />
             <div><strong>PAGAMENTO</strong></div>
             <div style={{ color: honorario.situacao === 'PAGO' ? 'green' : 'red' }}>
               <strong>{honorario.situacao ?? 'PENDENTE'}</strong>

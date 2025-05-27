@@ -1,4 +1,4 @@
-import React, { useState, useRef } from 'react';
+import React, { useState } from 'react';
 
 import './Formulariohonorario.css';
 import { criarHonorarioAvista, criarHonorarioParcelado } from '../axios/Requests';

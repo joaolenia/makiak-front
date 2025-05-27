@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import  { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import './Honorarios.css';
 import EditarHonorarios from './form/EditarHonorarios';
@@ -23,7 +23,7 @@ export default function Honorarios() {
           buscarHonorariosPorAutorAvista(busca).then(setHonorarios);
         }
       } else {
-        setHonorarios([]); // limpa se busca vazia
+        setHonorarios([]);
       }
     }, 300);
     return () => clearTimeout(timeout);
@@ -81,7 +81,7 @@ const handleCardClick = (idHonorario: number) => {
             <div className="honorario-card-esquerda-p">
               <div><strong>PROCESSO:</strong> Nº {h.processo.numero}</div>
               <div><strong>PASTA:</strong> {h.processo.pasta}</div>
-              <div><strong>CIDADE:</strong> {h.processo.cidade}</div>
+              <div><strong>AUTOR:</strong> {h.processo.cidade}</div>
               <div><strong>TOTAL:</strong> <span style={{ color: 'green' }}>R$ {Number(h.valorTotal).toFixed(2)}</span></div>
             </div>
 
@@ -127,7 +127,6 @@ const handleCardClick = (idHonorario: number) => {
         </button>
       </div>
 
-      {/* Pop-ups */}
       {mostrarCadastro && <CadastroHonorarios onClose={() => setMostrarCadastro(false)} />}
       {mostrarEdicao && <EditarHonorarios onClose={() => setMostrarEdicao(false)} />}
     </div>

@@ -145,7 +145,7 @@ export default function ProcessoDetalhado() {
       <div className="detalhado-corpo">
         <div className="detalhado-observacoes">
           {[...descricoes]
-            .sort((a, b) => b.data.localeCompare(a.data)) // Ordenar diretamente pelas strings ISO
+            .sort((a, b) => b.data.localeCompare(a.data)) 
             .map((desc) => (
               <div className="detalhado-observacao" key={desc.id}>
                 <span className="detalhado-bolinha" />
