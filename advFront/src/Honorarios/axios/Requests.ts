@@ -43,6 +43,7 @@ export const buscarHonorariosPorAutorAvista = async (nome: string) => {
 };
 
 export const buscarHonorarioPorId = async (id: number) => {
+  console.log(id)
   const response = await api.get(`/honorarios/${id}`);
   return response.data;
 };
@@ -53,3 +54,18 @@ export const pagarParcela = async (parcelaId: number, formaPagamento: string) =>
   });
   return response.data;
 };
+
+export const buscarHonorariosProximosVencimento = async () => {
+  const response = await api.get('/honorarios/proximos-vencimentos');
+  return response.data;
+};
+
+export const atualizarHonorario = async (
+  idHonorario: number,
+  dados: HonorarioAvistaDTO | HonorarioParceladoDTO
+) => {
+  const response = await api.put(`/honorarios/${idHonorario}`, dados);
+  return response.data;
+};
+
+

@@ -1,134 +1,233 @@
-import { useState } from 'react';
-import Select from 'react-select';
-import  './Formulariohonorario.css'
-
-const opcoesProcessos = [
-  { value: 'proc1', label: 'Processo 1' },
-  { value: 'proc2', label: 'Processo 2' },
-  { value: 'proc3', label: 'Processo 3' }
-];
+import React, { useEffect, useState } from 'react';
+import AsyncSelect from 'react-select/async';
+import { getProcessoById } from '../../processos/axios/Requests';
+import type { HonorarioAvistaDTO } from '../axios/Requests';
+import type { HonorarioParceladoDTO } from '../axios/Requests';
+import {
+  buscarHonorarioPorId,
+  atualizarHonorario,
+} from '../axios/Requests';
+import { buscarProcessos } from '../../processos/axios/Requests';
+import './Formulariohonorario.css';
 
 const customStyles = {
-  menu: (provided: any) => ({
-    ...provided,
-    zIndex: 10000,
-  }),
-  option: (provided: any) => ({
-    ...provided,
-    color: 'black',
-  }),
+  menu: (provided: any) => ({ ...provided, zIndex: 10000 }),
+  option: (provided: any) => ({ ...provided, color: 'black' }),
 };
+
+const carregarProcessos = (() => {
+  let timeoutRef: NodeJS.Timeout | null = null;
+  return async (inputValue: string) => {
+    return new Promise<any[]>(resolve => {
+      if (timeoutRef) clearTimeout(timeoutRef);
+      timeoutRef = setTimeout(async () => {
+        if (!inputValue.trim()) return resolve([]);
+        try {
+          const processos = await buscarProcessos(inputValue, 2);
+          const options = processos.map((p) => ({
+            value: p.id,
+            label: `Nº ${p.numero} | Autor: ${p.autores.join(', ')} | Réu: ${p.reus.join(', ')}`,
+          }));
+          resolve(options);
+        } catch (err) {
+          console.error('Erro ao carregar processos:', err);
+          resolve([]);
+        }
+      }, 300);
+    });
+  };
+})();
+
 interface Props {
+  id: number;
   onClose: () => void;
 }
-export default function EditarHonorarios({onClose}:Props) {
-  const [valorTotal, setValorTotal] = useState('1000'); 
+
+export default function EditarHonorarios({ id, onClose }: Props) {
+  const [valorTotal, setValorTotal] = useState('');
   const [formaPagamento, setFormaPagamento] = useState('boleto');
   const [parcelado, setParcelado] = useState(false);
-  const [quantidadeParcelas, setQuantidadeParcelas] = useState('1');
-  const [desconto, setDesconto] = useState(''); 
-  const [processoSelecionado, setProcessoSelecionado] = useState(opcoesProcessos[0]);
+  const [quantidadeParcelas, setQuantidadeParcelas] = useState('');
+  const [entrada, setEntrada] = useState('');
+  const [diaVencimento, setDiaVencimento] = useState('');
+  const [valorPago, setValorPago] = useState(0);
+  const [processoSelecionado, setProcessoSelecionado] = useState<any>(null);
+  const [mensagemErro, setMensagemErro] = useState('');
+  const [mensagemSucesso, setMensagemSucesso] = useState('');
 
-  const valorComDesconto = () => {
-    const total = parseFloat(valorTotal) || 0;
-    const desc = parseFloat(desconto) || 0;
-    return total - desc >= 0 ? total - desc : 0;
-  };
+  useEffect(() => {
+    const carregarDados = async () => {
+      try {
+        const honorario = await buscarHonorarioPorId(id);
+        const processo = await getProcessoById(honorario.processo.id);
+
+        setValorTotal(honorario.valorTotal.toString());
+        setParcelado(honorario.tipoPagamento === 'PARCELADO');
+        setFormaPagamento(honorario.formaPagamento || 'boleto');
+        setQuantidadeParcelas(honorario.quantidadeParcelas?.toString() || '');
+        setEntrada(honorario.entrada?.toString() || '');
+        setDiaVencimento(honorario.diaVencimento || '');
+        setValorPago(honorario.valorPago || 0);
+
+        setProcessoSelecionado({
+          value: processo.id,
+          label: `Nº ${processo.numero} | Autor: ${processo.autores.join(', ')} | Réu: ${processo.reus.join(', ')}`,
+        });
+      } catch (error) {
+        console.error('Erro ao carregar honorário:', error);
+        setMensagemErro('Erro ao carregar dados do honorário.');
+      }
+    };
+
+    carregarDados();
+  }, [id]);
 
   const calcularParcela = () => {
     if (parcelado && valorTotal && quantidadeParcelas) {
-      const valor = valorComDesconto();
+      const total = parseFloat(valorTotal) - (parseFloat(entrada) || 0);
       const parcelas = parseInt(quantidadeParcelas);
-      if (!isNaN(valor) && !isNaN(parcelas) && parcelas > 0) {
-        return (valor / parcelas).toFixed(2);
+      if (!isNaN(total) && !isNaN(parcelas) && parcelas > 0) {
+        return (total / parcelas).toFixed(2);
       }
     }
     return '';
   };
 
-  return (
-    <div className="formulario-modal">
-      <button className="formulario-fechar"  onClick={onClose}>X</button>
-      <form className="formulario">
-        <Select 
-          options={opcoesProcessos} 
-          placeholder="Processo"
-          value={processoSelecionado}
-          styles={customStyles}
-        />
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setMensagemErro('');
+    setMensagemSucesso('');
 
-        <input 
-          type="number" 
-          placeholder="Valor total" 
-          value={valorTotal} 
-          onChange={e => setValorTotal(e.target.value)} 
-          min="0"
-          step="0.01"
-        />
+    const processoId = processoSelecionado?.value;
+    if (!processoId || !valorTotal) {
+      setMensagemErro('Preencha todos os campos obrigatórios.');
+      return;
+    }
 
-        <div className="opcoes-pagamento">
-          <label>
-            <input 
-              type="radio" 
-              checked={!parcelado} 
-              onChange={() => setParcelado(false)} 
-            />
-            À vista
-          </label>
-          <label>
-            <input 
-              type="radio" 
-              checked={parcelado} 
-              onChange={() => setParcelado(true)} 
-            />
-            Parcelado
-          </label>
-        </div>
+    try {
+      const payload: HonorarioParceladoDTO | HonorarioAvistaDTO = parcelado
+        ? {
+          valorTotal: parseFloat(valorTotal),
+          tipoPagamento: 'PARCELADO',
+          quantidadeParcelas: parseInt(quantidadeParcelas),
+          entrada: entrada ? parseFloat(entrada) : undefined,
+          diaVencimento,
+          processoId: Number(processoId),
+        }
+        : {
+          valorTotal: parseFloat(valorTotal),
+          tipoPagamento: 'AVISTA',
+          formaPagamento,
+          processoId: Number(processoId),
+        };
 
-        <select 
-          value={formaPagamento} 
-          onChange={e => setFormaPagamento(e.target.value)}
-        >
-          <option value="boleto">Boleto</option>
-          <option value="dinheiro">Dinheiro</option>
-          <option value="cartao">Cartão</option>
-          <option value="pix">PIX</option>
-          <option value="transferencia">Transferência</option>
-        </select>
+      await atualizarHonorario(id, payload);
 
-        {parcelado && (
-          <>
-            <input 
-              type="number" 
-              placeholder="Quantidade de parcelas" 
-              value={quantidadeParcelas} 
-              onChange={e => setQuantidadeParcelas(e.target.value)} 
-              min="1" 
-            />
+      setMensagemSucesso('Honorário atualizado com sucesso!');
+      setTimeout(() => {
+        setMensagemSucesso('');
+        onClose();
+      }, 2000);
+    } catch (error: any) {
+      const mensagemBackend =
+        error?.response?.data?.message || error?.message || 'Erro ao atualizar honorário.';
+      setMensagemErro(mensagemBackend);
+    }
+  };
 
-            <input 
-              type="number" 
-              placeholder="Desconto (opcional)" 
-              value={desconto} 
-              onChange={e => setDesconto(e.target.value)} 
-              min="0" 
-              step="0.01" 
-            />
+return (
+  <div className="formulario-modal">
+    <button className="formulario-fechar" onClick={onClose}>X</button>
+    <form className="formulario" onSubmit={handleSubmit}>
+      
+      <label>Processo</label>
+      <AsyncSelect
+        cacheOptions
+        defaultOptions
+        loadOptions={carregarProcessos}
+        placeholder="Buscar processo por nome do autor..."
+        styles={customStyles}
+        value={processoSelecionado}
+        onChange={setProcessoSelecionado}
+        isClearable
+      />
 
-            <input 
-              type="text" 
-              placeholder="Valor por parcela" 
-              value={calcularParcela()} 
-              readOnly 
-            />
-          </>
-        )}
+      <label>Valor total</label>
+      <input
+        type="number"
+        placeholder="Valor total"
+        value={valorTotal}
+        onChange={e => setValorTotal(e.target.value)}
+        min="0"
+        step="0.01"
+      />
 
-        <div className="formulario-botoes">
-          <button type="button" className="btn-excluir">EXCLUIR</button>
-          <button type="submit" className="btn-confirmar">CONFIRMAR</button>
-        </div>
-      </form>
-    </div>
-  );
+      {!parcelado ? (
+        <>
+          <label>Forma de pagamento</label>
+          <select
+            value={formaPagamento}
+            onChange={e => setFormaPagamento(e.target.value)}
+          >
+            <option value="boleto">Boleto</option>
+            <option value="dinheiro">Dinheiro</option>
+            <option value="cartao">Cartão</option>
+            <option value="pix">PIX</option>
+            <option value="transferencia">Transferência</option>
+          </select>
+        </>
+      ) : (
+        <>
+          <label>Quantidade de parcelas</label>
+          <input
+            type="number"
+            placeholder="Quantidade de parcelas"
+            value={quantidadeParcelas}
+            onChange={e => setQuantidadeParcelas(e.target.value)}
+            min="1"
+          />
+
+          <label>Data de vencimento</label>
+          <input
+            type="date"
+            value={diaVencimento}
+            onChange={e => setDiaVencimento(e.target.value)}
+          />
+
+          <label>Valor de entrada (opcional)</label>
+          <input
+            type="number"
+            placeholder="Entrada (opcional)"
+            value={entrada}
+            onChange={e => setEntrada(e.target.value)}
+            min="0"
+            step="0.01"
+          />
+
+          <label>Valor por parcela</label>
+          <input
+            type="text"
+            placeholder="Valor por parcela"
+            value={calcularParcela()}
+            readOnly
+          />
+
+          <label>Valor já pago</label>
+          <input
+            type="text"
+            placeholder="Valor já pago"
+            value={`R$ ${valorPago.toFixed(2)}`}
+            readOnly
+          />
+        </>
+      )}
+
+      <button type="submit" className="btn-confirmar">SALVAR</button>
+    </form>
+
+    {mensagemErro && <div className="mensagem-erro">{mensagemErro}</div>}
+    {mensagemSucesso && <div className="mensagem-sucesso">{mensagemSucesso}</div>}
+  </div>
+);
+
 }

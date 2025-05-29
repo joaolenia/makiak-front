@@ -125,7 +125,7 @@ const [parcelasPendentes, setParcelasPendentes] = useState<Parcela[]>([]);
       </div>
 
       {mostrarEditar && (
-        <EditarHonorarios onClose={() => setMostrarEditar(false)} />
+        <EditarHonorarios id={Number(id)} onClose={() => setMostrarEditar(false)} />
       )}
 
 {mostrarPagamento && (

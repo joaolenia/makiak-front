@@ -1,9 +1,13 @@
-import  { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import './Honorarios.css';
 import EditarHonorarios from './form/EditarHonorarios';
 import CadastroHonorarios from './form/CadastroHonorarios';
-import { buscarHonorariosPorAutor, buscarHonorariosPorAutorAvista } from './axios/Requests';
+import {
+  buscarHonorariosPorAutor,
+  buscarHonorariosPorAutorAvista,
+  buscarHonorariosProximosVencimento,
+} from './axios/Requests';
 
 export default function Honorarios() {
   const navigate = useNavigate();
@@ -13,6 +17,18 @@ export default function Honorarios() {
   const [tipoPagamento, setTipoPagamento] = useState<'PARCELADO' | 'AVISTA'>('PARCELADO');
   const [busca, setBusca] = useState('');
   const [honorarios, setHonorarios] = useState<any[]>([]);
+  const [honorariosProximos, setHonorariosProximos] = useState<any[]>([]);
+
+  useEffect(() => {
+    const carregarHonorariosProximos = async () => {
+      const dados = await buscarHonorariosProximosVencimento();
+      setHonorariosProximos(dados);
+      if (!busca.trim()) {
+        setHonorarios(dados);
+      }
+    };
+    carregarHonorariosProximos();
+  }, []);
 
   useEffect(() => {
     const timeout = setTimeout(() => {
@@ -23,22 +39,21 @@ export default function Honorarios() {
           buscarHonorariosPorAutorAvista(busca).then(setHonorarios);
         }
       } else {
-        setHonorarios([]);
+        setHonorarios(honorariosProximos);
       }
     }, 300);
+
     return () => clearTimeout(timeout);
-  }, [busca, tipoPagamento]);
+  }, [busca, tipoPagamento, honorariosProximos]);
 
   useEffect(() => {
     setBusca('');
-    setHonorarios([]);
-  }, [tipoPagamento]);
+    setHonorarios(honorariosProximos);
+  }, [tipoPagamento, honorariosProximos]);
 
-
-const handleCardClick = (idHonorario: number) => {
-  navigate(`/honorarios/${idHonorario}`);
-};
-;
+  const handleCardClick = (idHonorario: number) => {
+    navigate(`/honorarios/${idHonorario}`);
+  };
 
   return (
     <div className="honorario-container-p">
@@ -48,7 +63,9 @@ const handleCardClick = (idHonorario: number) => {
           <strong>STASIAK & MAKIAK</strong>
           <div className="honorario-sub-logo-p">Advogados Associados</div>
         </div>
-        <a href="#" className="honorario-voltar-p" onClick={() => navigate('/')}>VOLTAR</a>
+        <a href="#" className="honorario-voltar-p" onClick={() => navigate('/')}>
+          VOLTAR
+        </a>
       </header>
 
       <div className="honorario-filtros-p">
@@ -79,30 +96,54 @@ const handleCardClick = (idHonorario: number) => {
             onClick={() => handleCardClick(h.id)}
           >
             <div className="honorario-card-esquerda-p">
-              <div><strong>PROCESSO:</strong> Nº {h.processo.numero}</div>
-              <div><strong>PASTA:</strong> {h.processo.pasta}</div>
-              <div><strong>AUTOR:</strong> {h.processo.cidade}</div>
-              <div><strong>TOTAL:</strong> <span style={{ color: 'green' }}>R$ {Number(h.valorTotal).toFixed(2)}</span></div>
+              <div>
+                <strong>PROCESSO:</strong> Nº {h.processo.numero}
+              </div>
+              <div>
+                <strong>PASTA:</strong> {h.processo.pasta}
+              </div>
+              <div>
+                <strong>AUTOR:</strong>{' '}
+                <div>
+                  {h.processo.partes
+                    ?.filter((p: any) => p.papel === 'AUTOR')
+                    .map((p: any) => p.pessoaFisica?.nome || p.pessoaJuridica?.razaoSocial)
+                    .join(', ') || 'Desconhecido'}
+                </div>
+              </div>
+              <div>
+                <strong>TOTAL:</strong>{' '}
+                <span style={{ color: 'green' }}>R$ {Number(h.valorTotal).toFixed(2)}</span>
+              </div>
             </div>
 
             <div className="honorario-card-direita-p">
               {tipoPagamento === 'PARCELADO' ? (
                 <>
-                  <div><strong>QTD PARCELAS:</strong> {h.quantidadeParcelas}</div>
-                  <div><strong>PAGAS:</strong> {h.parcelasPagas}/{h.quantidadeParcelas}</div>
-                  <div><strong>SITUAÇÃO:</strong> <span style={{ color: 'red' }}>{h.situacao || 'PENDENTE'}</span></div>
                   <div>
-                    <strong>VALOR PARCELA:</strong> R$
-                    {Array.isArray(h.parcelas) && h.parcelas.length > 0
-                      ? Number(h.parcelas[0].valor).toFixed(2)
-                      : '-'}
+                    <strong>QTD PARCELAS:</strong> {h.quantidadeParcelas}
                   </div>
-
+                  <div>
+                    <strong>PAGAS:</strong> {h.parcelasPagas}/{h.quantidadeParcelas}
+                  </div>
+                  <div>
+                    <strong>SITUAÇÃO:</strong>{' '}
+                    <span style={{ color: h.situacao === 'PENDENTE' || !h.situacao ? 'red' : 'green' }}>
+                      {h.situacao || 'PENDENTE'}
+                    </span>
+                  </div>
+                  <div>
+                    <strong>ENTRADA:</strong> {h.entrada || '-'}
+                  </div>
                 </>
               ) : (
                 <>
-                  <div><strong>FORMA DE PAGAMENTO:</strong> {h.formaPagamento}</div>
-                  <div><strong>SITUAÇÃO:</strong> <span style={{ color: 'green' }}>{h.situacao}</span></div>
+                  <div>
+                    <strong>FORMA DE PAGAMENTO:</strong> {h.formaPagamento}
+                  </div>
+                  <div>
+                    <strong>SITUAÇÃO:</strong> <span style={{ color: 'green' }}>{h.situacao}</span>
+                  </div>
                 </>
               )}
             </div>
@@ -128,7 +169,7 @@ const handleCardClick = (idHonorario: number) => {
       </div>
 
       {mostrarCadastro && <CadastroHonorarios onClose={() => setMostrarCadastro(false)} />}
-      {mostrarEdicao && <EditarHonorarios onClose={() => setMostrarEdicao(false)} />}
+      {mostrarEdicao && <EditarHonorarios id={21} onClose={() => setMostrarEdicao(false)} />}
     </div>
   );
 }
