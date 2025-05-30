@@ -48,6 +48,12 @@ const [parcelasPendentes, setParcelasPendentes] = useState<Parcela[]>([]);
 
   const isParcelado = honorario.tipoPagamento === 'PARCELADO';
 
+  function formatarDataLocal(dataISO: string) {
+  console.log(dataISO)
+  if (!dataISO) return '';
+  return dataISO.split('T')[0];
+}
+
   return (
     <div className="honorario-container">
       <div className="honorario-top-bar">
@@ -66,7 +72,7 @@ const [parcelasPendentes, setParcelasPendentes] = useState<Parcela[]>([]);
               <span className="honorario-bolinha" />
               <div className="honorario-textos">
                 <div className="honorario-data">
-                  {new Date(parcela.dataVencimento).toLocaleDateString()}
+                  {formatarDataLocal(parcela.dataVencimento)}
                 </div>
                 <div className="honorario-descricao">
                   R$ {parcela.valor}{' '}
@@ -142,7 +148,7 @@ const [parcelasPendentes, setParcelasPendentes] = useState<Parcela[]>([]);
         <option value="">-- Selecione --</option>
         {parcelasPendentes.map(parcela => (
           <option key={parcela.id} value={parcela.id}>
-            #{parcela.id} - {new Date(parcela.dataVencimento).toLocaleDateString()} - R$ {parcela.valor}
+            #{parcela.id} - {formatarDataLocal(parcela.dataVencimento)} - R$ {parcela.valor}
           </option>
         ))}
       </select>
