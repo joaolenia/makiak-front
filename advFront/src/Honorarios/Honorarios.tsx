@@ -1,7 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import './Honorarios.css';
-import EditarHonorarios from './form/EditarHonorarios';
 import CadastroHonorarios from './form/CadastroHonorarios';
 import {
   buscarHonorariosPorAutor,
@@ -13,7 +12,6 @@ export default function Honorarios() {
   const navigate = useNavigate();
   const [selectedIndex, setSelectedIndex] = useState<number | null>(null);
   const [mostrarCadastro, setMostrarCadastro] = useState(false);
-  const [mostrarEdicao, setMostrarEdicao] = useState(false);
   const [tipoPagamento, setTipoPagamento] = useState<'PARCELADO' | 'AVISTA'>('PARCELADO');
   const [busca, setBusca] = useState('');
   const [honorarios, setHonorarios] = useState<any[]>([]);
@@ -147,17 +145,6 @@ export default function Honorarios() {
                 </>
               )}
             </div>
-
-            <button
-              className="honorario-edit-btn-p"
-              title="Editar"
-              onClick={(e) => {
-                e.stopPropagation();
-                setMostrarEdicao(true);
-              }}
-            >
-              ✎
-            </button>
           </div>
         ))}
       </div>
@@ -169,7 +156,6 @@ export default function Honorarios() {
       </div>
 
       {mostrarCadastro && <CadastroHonorarios onClose={() => setMostrarCadastro(false)} />}
-      {mostrarEdicao && <EditarHonorarios id={21} onClose={() => setMostrarEdicao(false)} />}
     </div>
   );
 }

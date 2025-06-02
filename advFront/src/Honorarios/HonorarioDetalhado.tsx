@@ -98,6 +98,7 @@ const [parcelasPendentes, setParcelasPendentes] = useState<Parcela[]>([]);
             {isParcelado ? (
               <>
                 <div><strong>QTD PARCELAS:</strong> {honorario.quantidadeParcelas}</div>
+                <div><strong>ENTRADA:</strong> {honorario.entrada}</div>
                 <div><strong>VALOR DA PARCELA:</strong> R$ {(+honorario.valorTotal / (honorario.quantidadeParcelas ?? 1)).toFixed(2)}</div>
                 <div><strong>PARCELAS PAGAS:</strong> {honorario.parcelasPagas}/{honorario.quantidadeParcelas}</div>
               </>
@@ -148,7 +149,7 @@ const [parcelasPendentes, setParcelasPendentes] = useState<Parcela[]>([]);
         <option value="">-- Selecione --</option>
         {parcelasPendentes.map(parcela => (
           <option key={parcela.id} value={parcela.id}>
-            #{parcela.id} - {formatarDataLocal(parcela.dataVencimento)} - R$ {parcela.valor}
+           {formatarDataLocal(parcela.dataVencimento)} - R$ {parcela.valor}
           </option>
         ))}
       </select>

@@ -1,8 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import AsyncSelect from 'react-select/async';
 import { getProcessoById } from '../../processos/axios/Requests';
-import type { HonorarioAvistaDTO } from '../axios/Requests';
-import type { HonorarioParceladoDTO, } from '../axios/Requests';
+import type { HonorarioAvistaDTO, HonorarioParceladoDTO } from '../axios/Requests';
 import {
   buscarHonorarioPorId,
   atualizarHonorario,
@@ -15,12 +14,12 @@ const customStyles = {
   option: (provided: any) => ({ ...provided, color: 'black' }),
 };
 
+// ... (importações permanecem as mesmas)
+
 function formatarDataLocal(dataISO: string) {
-  console.log(dataISO)
   if (!dataISO) return '';
   return dataISO.split('T')[0];
 }
-
 
 const carregarProcessos = (() => {
   let timeoutRef: NodeJS.Timeout | null = null;
@@ -31,7 +30,7 @@ const carregarProcessos = (() => {
         if (!inputValue.trim()) return resolve([]);
         try {
           const processos = await buscarProcessos(inputValue, 2);
-          const options = processos.map((p) => ({
+          const options = processos.map((p: any) => ({
             value: p.id,
             label: `Nº ${p.numero} | Autor: ${p.autores.join(', ')} | Réu: ${p.reus.join(', ')}`,
           }));
@@ -45,12 +44,16 @@ const carregarProcessos = (() => {
   };
 })();
 
+interface Parcela {
+  valor: string;
+  situacao: string;
+  dataVencimento: string;
+}
+
 interface Props {
   id: number;
   onClose: () => void;
 }
-
-
 
 export default function EditarHonorarios({ id, onClose }: Props) {
   const [valorTotal, setValorTotal] = useState('');
@@ -72,34 +75,30 @@ export default function EditarHonorarios({ id, onClose }: Props) {
         const processo = await getProcessoById(honorario.processo.id);
 
         const valorTotalNumber = parseFloat(honorario.valorTotal);
-        const parcelasPagas = honorario.parcelas?.filter(p => p.situacao === 'PAGO') || [];
-        const valorPagoCalculado = parcelasPagas.reduce((soma: number, p: { valor: string }) => soma + parseFloat(p.valor), 0);
-
-
+        const entradaValor = parseFloat(honorario.entrada || '0');
+        const parcelasPagas = honorario.parcelas?.filter((p: Parcela) => p.situacao === 'PAGO') || [];
+        const valorParcelasPagas = parcelasPagas.reduce(
+          (soma: number, p: Parcela) => soma + parseFloat(p.valor),
+          0
+        );
+        const valorPagoCalculado = valorParcelasPagas + entradaValor;
+        const restanteCalculado = valorTotalNumber - valorPagoCalculado;
 
         setValorTotal(valorTotalNumber.toString());
+        setEntrada(entradaValor.toFixed(2));
         setValorPago(valorPagoCalculado);
-        setRestante(valorTotalNumber - valorPagoCalculado);
+        setRestante(restanteCalculado);
         setParcelado(honorario.tipoPagamento === 'PARCELADO');
         setFormaPagamento(honorario.formaPagamento || 'boleto');
         setQuantidadeParcelas(honorario.quantidadeParcelas?.toString() || '');
-        setEntrada(honorario.entrada?.toString() || '');
-        if (honorario.parcelas && honorario.parcelas.length > 0) {
-          const ultimaParcela = honorario.parcelas.reduce(
-            (
-              maisRecente: { dataVencimento: string },
-              atual: { dataVencimento: string }
-            ) => {
-              return new Date(atual.dataVencimento) > new Date(maisRecente.dataVencimento)
-                ? atual
-                : maisRecente;
-            }
-          );
 
+        if (honorario.parcelas?.length > 0) {
+          const ultimaParcela = honorario.parcelas.reduce(
+            (maisRecente: Parcela, atual: Parcela) =>
+              new Date(atual.dataVencimento) > new Date(maisRecente.dataVencimento) ? atual : maisRecente
+          );
           setDiaVencimento(formatarDataLocal(ultimaParcela.dataVencimento));
         }
-
-
 
         setProcessoSelecionado({
           value: processo.id,
@@ -120,11 +119,9 @@ export default function EditarHonorarios({ id, onClose }: Props) {
   }, [valorTotal, valorPago]);
 
   const calcularParcela = () => {
-    if (parcelado && restante && quantidadeParcelas) {
-      const parcelas = parseInt(quantidadeParcelas);
-      if (!isNaN(restante) && !isNaN(parcelas) && parcelas > 0) {
-        return (restante / parcelas).toFixed(2);
-      }
+    const parcelas = parseInt(quantidadeParcelas);
+    if (parcelado && !isNaN(restante) && !isNaN(parcelas) && parcelas > 0) {
+      return (restante / parcelas).toFixed(2);
     }
     return '';
   };
@@ -143,18 +140,18 @@ export default function EditarHonorarios({ id, onClose }: Props) {
     try {
       const payload: HonorarioParceladoDTO | HonorarioAvistaDTO = parcelado
         ? {
-          valorTotal: parseFloat(valorTotal),
-          tipoPagamento: 'PARCELADO',
-          quantidadeParcelas: parseInt(quantidadeParcelas),
-          diaVencimento,
-          processoId: Number(processoId),
-        }
+            valorTotal: parseFloat(valorTotal),
+            tipoPagamento: 'PARCELADO',
+            quantidadeParcelas: parseInt(quantidadeParcelas),
+            diaVencimento,
+            processoId: Number(processoId),
+          }
         : {
-          valorTotal: parseFloat(valorTotal),
-          tipoPagamento: 'AVISTA',
-          formaPagamento,
-          processoId: Number(processoId),
-        };
+            valorTotal: parseFloat(valorTotal),
+            tipoPagamento: 'AVISTA',
+            formaPagamento,
+            processoId: Number(processoId),
+          };
 
       await atualizarHonorario(id, payload);
 
@@ -164,8 +161,7 @@ export default function EditarHonorarios({ id, onClose }: Props) {
         onClose();
       }, 2000);
     } catch (error: any) {
-      const mensagemBackend =
-        error?.response?.data?.message || error?.message || 'Erro ao atualizar honorário.';
+      const mensagemBackend = error?.response?.data?.message || error?.message || 'Erro ao atualizar honorário.';
       setMensagemErro(mensagemBackend);
     }
   };
@@ -198,6 +194,9 @@ export default function EditarHonorarios({ id, onClose }: Props) {
 
         {parcelado ? (
           <>
+            <label>Entrada</label>
+            <input type="text" value={`R$ ${entrada}`} readOnly />
+
             <label>Quantidade de parcelas</label>
             <input
               type="number"
@@ -215,33 +214,18 @@ export default function EditarHonorarios({ id, onClose }: Props) {
             />
 
             <label>Valor já pago</label>
-            <input
-              type="text"
-              value={`R$ ${valorPago.toFixed(2)}`}
-              readOnly
-            />
+            <input type="text" value={`R$ ${valorPago.toFixed(2)}`} readOnly />
 
             <label>Restante</label>
-            <input
-              type="text"
-              value={`R$ ${restante.toFixed(2)}`}
-              readOnly
-            />
+            <input type="text" value={`R$ ${restante.toFixed(2)}`} readOnly />
 
             <label>Valor por parcela</label>
-            <input
-              type="text"
-              value={calcularParcela()}
-              readOnly
-            />
+            <input type="text" value={calcularParcela()} readOnly />
           </>
         ) : (
           <>
             <label>Forma de pagamento</label>
-            <select
-              value={formaPagamento}
-              onChange={e => setFormaPagamento(e.target.value)}
-            >
+            <select value={formaPagamento} onChange={e => setFormaPagamento(e.target.value)}>
               <option value="boleto">Boleto</option>
               <option value="dinheiro">Dinheiro</option>
               <option value="cartao">Cartão</option>
@@ -259,4 +243,3 @@ export default function EditarHonorarios({ id, onClose }: Props) {
     </div>
   );
 }
-
