@@ -5,16 +5,19 @@ import type { HonorarioAvistaDTO, HonorarioParceladoDTO } from '../axios/Request
 import {
   buscarHonorarioPorId,
   atualizarHonorario,
+  deletarHonorario,
 } from '../axios/Requests';
 import { buscarProcessos } from '../../processos/axios/Requests';
 import './Formulariohonorario.css';
+import { Navigate, useNavigate } from 'react-router-dom';
+import ModalConfirmacao from '../modal';
 
 const customStyles = {
   menu: (provided: any) => ({ ...provided, zIndex: 10000 }),
   option: (provided: any) => ({ ...provided, color: 'black' }),
 };
 
-// ... (importações permanecem as mesmas)
+
 
 function formatarDataLocal(dataISO: string) {
   if (!dataISO) return '';
@@ -56,6 +59,7 @@ interface Props {
 }
 
 export default function EditarHonorarios({ id, onClose }: Props) {
+  const navigate = useNavigate();
   const [valorTotal, setValorTotal] = useState('');
   const [formaPagamento, setFormaPagamento] = useState('boleto');
   const [parcelado, setParcelado] = useState(false);
@@ -67,13 +71,14 @@ export default function EditarHonorarios({ id, onClose }: Props) {
   const [processoSelecionado, setProcessoSelecionado] = useState<any>(null);
   const [mensagemErro, setMensagemErro] = useState('');
   const [mensagemSucesso, setMensagemSucesso] = useState('');
+  const [mostrarConfirmacao, setMostrarConfirmacao] = useState(false);
+
 
   useEffect(() => {
     const carregarDados = async () => {
       try {
         const honorario = await buscarHonorarioPorId(id);
         const processo = await getProcessoById(honorario.processo.id);
-
         const valorTotalNumber = parseFloat(honorario.valorTotal);
         const entradaValor = parseFloat(honorario.entrada || '0');
         const parcelasPagas = honorario.parcelas?.filter((p: Parcela) => p.situacao === 'PAGO') || [];
@@ -166,6 +171,19 @@ export default function EditarHonorarios({ id, onClose }: Props) {
     }
   };
 
+const excluir = async () => {
+  try {
+    await deletarHonorario(Number(id));
+    alert('Honorário excluído com sucesso.');
+    navigate('/honorarios');
+  } catch (error) {
+    console.error('Erro ao excluir honorário:', error);
+    alert('Erro ao excluir honorário.');
+  }
+};
+
+
+
   return (
     <div className="formulario-modal">
       <button className="formulario-fechar" onClick={onClose}>X</button>
@@ -235,11 +253,25 @@ export default function EditarHonorarios({ id, onClose }: Props) {
           </>
         )}
 
-        <button type="submit" className="btn-confirmar">SALVAR</button>
+        <button type="submit" className="btn-salvar">SALVAR</button>
+         <button  type="button" className="btn-excluir" onClick={() => setMostrarConfirmacao(true)}>EXCLUIR</button>
+
       </form>
 
       {mensagemErro && <div className="mensagem-erro">{mensagemErro}</div>}
       {mensagemSucesso && <div className="mensagem-sucesso">{mensagemSucesso}</div>}
+
+        {mostrarConfirmacao && (
+        <ModalConfirmacao
+          mensagem="Tem certeza que deseja excluir este honorário? Essa ação não poderá ser desfeita."
+          onConfirmar={() => {
+            setMostrarConfirmacao(false);
+            excluir();
+          }}
+          onCancelar={() => setMostrarConfirmacao(false)}
+        />
+      )}
+
     </div>
   );
 }

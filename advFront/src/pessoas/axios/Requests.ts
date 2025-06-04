@@ -3,6 +3,17 @@ const api = axios.create({
   baseURL: import.meta.env.VITE_API_URL,
 });
 
+interface ProcessoResumo {
+  id: number;
+  numero: string;
+  pasta:string;
+  tipo: string;
+  cidade: string;
+  vara: string;
+  valorCausa: string;
+  situacao: string;
+}
+
 interface PessoaFisicaData {
   nome: string;
   nacionalidade: string;
@@ -50,6 +61,14 @@ export interface PessoaJuridicaDetalhes {
   observacoes?: string | null;
    representantes: (PessoaFisicaData & { id: number })[];
 }
+export interface PessoaFisicaDetalhes extends PessoaFisicaData {
+  id: number;
+  processos: ProcessoResumo[];
+}
+
+export interface PessoaJuridicaDetalhesComProcessos extends PessoaJuridicaDetalhes {
+  processos: ProcessoResumo[];
+}
 
 export async function criarPessoaFisica(data: PessoaFisicaData) {
   try {
@@ -82,7 +101,7 @@ export async function criarPessoajuridica(data: PessoaJuridicaData) {
 
   
 }
-export async function getPessoaFisicaById(id: string): Promise<PessoaFisicaData> {
+export async function getPessoaFisicaById(id: string): Promise<PessoaFisicaDetalhes> {
   try {
     const response = await api.get(`pessoa-fisica/${id}`);
     return response.data;
@@ -91,6 +110,17 @@ export async function getPessoaFisicaById(id: string): Promise<PessoaFisicaData>
     throw error;
   }
 }
+
+export async function getPessoaJuridicaById(id: string): Promise<PessoaJuridicaDetalhesComProcessos> {
+  try {
+    const response = await api.get(`pessoa-juridica/${id}`);
+    return response.data;
+  } catch (error) {
+    console.error('Erro ao buscar pessoa jurídica:', error);
+    throw error;
+  }
+}
+
 export async function buscarPessoaFisicaPorNome(nome: string): Promise<PessoaFisicaBusca[]> {
   try {
     const response = await api.get(`pessoa-fisica/buscar`, {
@@ -149,15 +179,6 @@ export async function updatePessoaJuridica(id: string, data: PessoaJuridicaData)
     return response.data;
   } catch (error) {
     console.error('Erro ao editar pessoa jurídica:', error);
-    throw error;
-  }
-}
-export async function getPessoaJuridicaById(id: string): Promise<PessoaJuridicaDetalhes> {
-  try {
-    const response = await api.get(`pessoa-juridica/${id}`);
-    return response.data;
-  } catch (error) {
-    console.error('Erro ao buscar pessoa juridica:', error);
     throw error;
   }
 }

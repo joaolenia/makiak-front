@@ -1,8 +1,8 @@
-import  { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import './HonorarioDetalhado.css';
 import { useParams, useNavigate } from 'react-router-dom';
 import EditarHonorarios from './form/EditarHonorarios';
-import { buscarHonorarioPorId } from './axios/Requests';
+import { buscarHonorarioPorId, deletarHonorario } from './axios/Requests';
 import { gerarPDFHonorario } from './relatorios/gerarPdfHonorario';
 import { pagarParcela } from './axios/Requests';
 
@@ -25,7 +25,19 @@ interface Honorario {
   quantidadeParcelas?: number | null;
   parcelasPagas: number;
   parcelas: Parcela[];
+  processo: ProcessoResumo[];
 }
+interface ProcessoResumo {
+  id: number;
+  numero: string;
+  pasta: string;
+  tipo: string;
+  cidade: string;
+  vara: string;
+  valorCausa: string;
+  situacao: string;
+}
+
 
 export default function HonorariosDetalhado() {
   const navigate = useNavigate();
@@ -33,9 +45,10 @@ export default function HonorariosDetalhado() {
   const [honorario, setHonorario] = useState<Honorario | null>(null);
   const [mostrarEditar, setMostrarEditar] = useState(false);
   const [mostrarPagamento, setMostrarPagamento] = useState(false);
-const [parcelaSelecionada, setParcelaSelecionada] = useState<number | null>(null);
-const [formaPagamento, setFormaPagamento] = useState('');
-const [parcelasPendentes, setParcelasPendentes] = useState<Parcela[]>([]);
+  const [parcelaSelecionada, setParcelaSelecionada] = useState<number | null>(null);
+  const [formaPagamento, setFormaPagamento] = useState('');
+  const [parcelasPendentes, setParcelasPendentes] = useState<Parcela[]>([]);
+
 
 
   useEffect(() => {
@@ -49,10 +62,14 @@ const [parcelasPendentes, setParcelasPendentes] = useState<Parcela[]>([]);
   const isParcelado = honorario.tipoPagamento === 'PARCELADO';
 
   function formatarDataLocal(dataISO: string) {
-  console.log(dataISO)
-  if (!dataISO) return '';
-  return dataISO.split('T')[0];
-}
+    console.log(dataISO)
+    if (!dataISO) return '';
+    return dataISO.split('T')[0];
+  }
+
+
+
+
 
   return (
     <div className="honorario-container">
@@ -99,7 +116,6 @@ const [parcelasPendentes, setParcelasPendentes] = useState<Parcela[]>([]);
               <>
                 <div><strong>QTD PARCELAS:</strong> {honorario.quantidadeParcelas}</div>
                 <div><strong>ENTRADA:</strong> {honorario.entrada}</div>
-                <div><strong>VALOR DA PARCELA:</strong> R$ {(+honorario.valorTotal / (honorario.quantidadeParcelas ?? 1)).toFixed(2)}</div>
                 <div><strong>PARCELAS PAGAS:</strong> {honorario.parcelasPagas}/{honorario.quantidadeParcelas}</div>
               </>
             ) : (
@@ -132,63 +148,70 @@ const [parcelasPendentes, setParcelasPendentes] = useState<Parcela[]>([]);
       </div>
 
       {mostrarEditar && (
-        <EditarHonorarios id={Number(id)} onClose={() => setMostrarEditar(false)} />
+        <EditarHonorarios
+          id={Number(id)}
+          onClose={async () => {
+            setMostrarEditar(false);
+            const atualizado = await buscarHonorarioPorId(Number(id));
+            setHonorario(atualizado);
+          }}
+        />
       )}
 
-{mostrarPagamento && (
-  <div className="pagamento-modal">
-    <div className="pagamento-formulario">
-      <button className="pagamento-close" onClick={() => setMostrarPagamento(false)}>×</button>
-      <h3>Pagamento de Parcela</h3>
+      {mostrarPagamento && (
+        <div className="pagamento-modal">
+          <div className="pagamento-formulario">
+            <button className="pagamento-close" onClick={() => setMostrarPagamento(false)}>×</button>
+            <h3>Pagamento de Parcela</h3>
 
-      <label>Selecione a parcela:</label>
-      <select
-        value={parcelaSelecionada ?? ''}
-        onChange={(e) => setParcelaSelecionada(Number(e.target.value))}
-      >
-        <option value="">-- Selecione --</option>
-        {parcelasPendentes.map(parcela => (
-          <option key={parcela.id} value={parcela.id}>
-           {formatarDataLocal(parcela.dataVencimento)} - R$ {parcela.valor}
-          </option>
-        ))}
-      </select>
+            <label>Selecione a parcela:</label>
+            <select
+              value={parcelaSelecionada ?? ''}
+              onChange={(e) => setParcelaSelecionada(Number(e.target.value))}
+            >
+              <option value="">-- Selecione --</option>
+              {parcelasPendentes.map(parcela => (
+                <option key={parcela.id} value={parcela.id}>
+                  {formatarDataLocal(parcela.dataVencimento)} - R$ {parcela.valor}
+                </option>
+              ))}
+            </select>
 
-      <label>Forma de pagamento:</label>
-      <select
-        value={formaPagamento}
-        onChange={(e) => setFormaPagamento(e.target.value)}
-      >
-        <option value="">-- Selecione --</option>
-        <option value="DINHEIRO">Dinheiro</option>
-        <option value="PIX">Pix</option>
-        <option value="TRANSFERENCIA">Transferência</option>
-        <option value="CARTAO">Cartão</option>
-        <option value="BOLETO">Boleto</option>
-      </select>
+            <label>Forma de pagamento:</label>
+            <select
+              value={formaPagamento}
+              onChange={(e) => setFormaPagamento(e.target.value)}
+            >
+              <option value="">-- Selecione --</option>
+              <option value="DINHEIRO">Dinheiro</option>
+              <option value="PIX">Pix</option>
+              <option value="TRANSFERENCIA">Transferência</option>
+              <option value="CARTAO">Cartão</option>
+              <option value="BOLETO">Boleto</option>
+            </select>
 
-      <div className="pagamento-botoes">
-        <button
-          onClick={async () => {
-            if (parcelaSelecionada && formaPagamento) {
-              await pagarParcela(parcelaSelecionada, formaPagamento);
-              const atualizado = await buscarHonorarioPorId(Number(id));
-              setHonorario(atualizado);
-              setMostrarPagamento(false);
-              setParcelaSelecionada(null);
-              setFormaPagamento('');
-            } else {
-              alert('Selecione a parcela e a forma de pagamento.');
-            }
-          }}
-        >
-          Confirmar Pagamento
-        </button>
-        <button onClick={() => setMostrarPagamento(false)}>Cancelar</button>
-      </div>
-    </div>
-  </div>
-)}
+            <div className="pagamento-botoes">
+              <button
+                onClick={async () => {
+                  if (parcelaSelecionada && formaPagamento) {
+                    await pagarParcela(parcelaSelecionada, formaPagamento);
+                    const atualizado = await buscarHonorarioPorId(Number(id));
+                    setHonorario(atualizado);
+                    setMostrarPagamento(false);
+                    setParcelaSelecionada(null);
+                    setFormaPagamento('');
+                  } else {
+                    alert('Selecione a parcela e a forma de pagamento.');
+                  }
+                }}
+              >
+                Confirmar Pagamento
+              </button>
+              <button onClick={() => setMostrarPagamento(false)}>Cancelar</button>
+            </div>
+          </div>
+        </div>
+      )}
 
 
     </div>

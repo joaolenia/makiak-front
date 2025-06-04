@@ -135,6 +135,25 @@
   font-weight: bold;
   cursor: pointer;
 }
+
+.btn-excluir {
+  background-color: #700000;
+  color: white;
+  border: none;
+  padding: 10px 15px;
+  border-radius: 5px;
+  font-weight: bold;
+  cursor: pointer;
+}
+.btn-salvar{
+  background-color: #147008;
+  color: white;
+  border: none;
+  padding: 10px 15px;
+  border-radius: 5px;
+  font-weight: bold;
+  cursor: pointer;
+}
 .mensagem-erro {
   color: red;
   margin-bottom: 10px;

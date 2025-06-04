@@ -81,7 +81,7 @@ export default function EditarPessoaFisica({ id, onClose }: Props) {
       cpf, endereco, cep, uf,
     } = formData;
 
-    if (!nome || !nacionalidade || !estadoCivil || !rg || !orgaoExpedidorRg || !cpf || !endereco || !cep || !uf) {
+    if (!nome || !nacionalidade || !endereco || !uf) {
       setErrorMessage('Por favor, preencha todos os campos obrigatórios.');
       return;
     }
@@ -148,7 +148,7 @@ export default function EditarPessoaFisica({ id, onClose }: Props) {
             name="estadoCivil"
             value={formData.estadoCivil}
             onChange={handleChange}
-            required
+            
           >
             <option value="">Selecione</option>
             <option value="Solteiro(a)">Solteiro(a)</option>
@@ -177,7 +177,7 @@ export default function EditarPessoaFisica({ id, onClose }: Props) {
             name="rg"
             value={formData.rg}
             onChange={handleChange}
-            required
+            
           />
         </label>
 
@@ -188,7 +188,7 @@ export default function EditarPessoaFisica({ id, onClose }: Props) {
             name="orgaoExpedidorRg"
             value={formData.orgaoExpedidorRg}
             onChange={handleChange}
-            required
+            
           />
         </label>
 
@@ -199,7 +199,7 @@ export default function EditarPessoaFisica({ id, onClose }: Props) {
             name="cpf"
             value={formData.cpf}
             onChange={handleChange}
-            required
+            
           />
         </label>
 
@@ -284,7 +284,6 @@ export default function EditarPessoaFisica({ id, onClose }: Props) {
         </label>
 
         <div className="formulario-botoes">
-          <button type="button" className="btn-excluir" disabled>EXCLUIR</button>
           <button type="submit" className="btn-confirmar">CONFIRMAR</button>
         </div>
       </form>

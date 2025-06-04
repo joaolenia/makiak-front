@@ -73,30 +73,12 @@
   margin-top: 10px;
 }
 
-.btn-excluir {
-  background-color: #e53935;
-  color: white;
-  border: none;
-  padding: 10px 15px;
-  border-radius: 5px;
-  font-weight: bold;
-  cursor: pointer;
-  transition: background-color 0.3s ease;
-}
-
-.btn-excluir:disabled {
-  background-color: #b30000;
-  cursor: not-allowed;
-}
-
-.btn-excluir:not(:disabled):hover {
-  background-color: #b71c1c;
-}
 
 .btn-confirmar {
   background-color: #43a047;
   color: white;
   border: none;
+  width: 100%;
   padding: 10px 15px;
   border-radius: 5px;
   font-weight: bold;

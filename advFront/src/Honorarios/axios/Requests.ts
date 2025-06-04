@@ -68,4 +68,9 @@ export const atualizarHonorario = async (
   return response.data;
 };
 
+export const deletarHonorario = async (idHonorario: number) => {
+  const response = await api.delete(`/honorarios/${idHonorario}`);
+  return response.data;
+};
+
 

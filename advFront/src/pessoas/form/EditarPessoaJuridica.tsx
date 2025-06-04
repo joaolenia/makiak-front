@@ -127,33 +127,107 @@ export default function EditarPessoaJuridica({ id, onClose }: Props) {
       <form className="formulario" onSubmit={handleSubmit}>
         {errorMessage && <div className="formulario-erro">{errorMessage}</div>}
 
-        <input type="text" name="razaoSocial" placeholder="Razão Social *" value={formData.razaoSocial} onChange={handleChange} />
-        <input type="text" name="cnpj" placeholder="CNPJ *" value={formData.cnpj} onChange={handleChange} />
-        <input type="text" name="endereco" placeholder="Endereço *" value={formData.endereco} onChange={handleChange} />
-        <input type="text" name="cep" placeholder="CEP *" value={formData.cep} onChange={handleChange} />
+        <label>
+          Razão Social:
+          <input
+            type="text"
+            name="razaoSocial"
+            value={formData.razaoSocial}
+            onChange={handleChange}
+            required
+          />
+        </label>
 
-        <select name="uf" value={formData.uf} onChange={handleChange}>
-          <option value="">UF *</option>
-          {["SC", "PR", "AC", "AL", "AP", "AM", "BA", "CE", "DF", "ES", "GO", "MA", "MT", "MS", "MG", "PA", "PB", "PE", "PI", "RJ", "RN", "RO", "RR", "RS", "SP", "SE", "TO"].map(sigla => (
-            <option key={sigla} value={sigla}>{sigla}</option>
-          ))}
-        </select>
+        <label>
+          CNPJ:
+          <input
+            type="text"
+            name="cnpj"
+            value={formData.cnpj}
+            onChange={handleChange}
+            required
+          />
+        </label>
 
-        <input type="email" name="email" placeholder="E-mail" value={formData.email} onChange={handleChange} />
-        <input type="text" name="telefone" placeholder="Telefone" value={formData.telefone} onChange={handleChange} />
+        <label>
+          Endereço:
+          <input
+            type="text"
+            name="endereco"
+            value={formData.endereco}
+            onChange={handleChange}
+            required
+          />
+        </label>
 
-        <AsyncSelect
-          isMulti
-          cacheOptions
-          defaultOptions
-          loadOptions={debouncedLoadOptions}
-          onChange={handleRepresentantesChange}
-          value={formData.representantes}
-          placeholder="Buscar representantes..."
-          styles={{ option: (provided) => ({ ...provided, color: 'black' }) }}
-        />
+        <label>
+          CEP:
+          <input
+            type="text"
+            name="cep"
+            value={formData.cep}
+            onChange={handleChange}
+            required
+          />
+        </label>
 
-        <textarea name="observacoes" placeholder="Observações:" value={formData.observacoes} onChange={handleChange} />
+        <label>
+          UF*:
+          <select
+            name="uf"
+            value={formData.uf}
+            onChange={handleChange}
+            required
+          >
+            <option value="">Selecione</option>
+            {["SC", "PR", "AC", "AL", "AP", "AM", "BA", "CE", "DF", "ES", "GO", "MA", "MT", "MS", "MG", "PA", "PB", "PE", "PI", "RJ", "RN", "RO", "RR", "RS", "SP", "SE", "TO"].map(sigla => (
+              <option key={sigla} value={sigla}>{sigla}</option>
+            ))}
+          </select>
+        </label>
+
+        <label>
+          E-mail:
+          <input
+            type="email"
+            name="email"
+            value={formData.email}
+            onChange={handleChange}
+          />
+        </label>
+
+        <label>
+          Telefone:
+          <input
+            type="text"
+            name="telefone"
+            value={formData.telefone}
+            onChange={handleChange}
+          />
+        </label>
+
+        <label>
+          Representantes*:
+          <AsyncSelect
+            isMulti
+            cacheOptions
+            defaultOptions
+            loadOptions={debouncedLoadOptions}
+            onChange={handleRepresentantesChange}
+            value={formData.representantes}
+            placeholder="Buscar representantes..."
+            styles={{ option: (provided) => ({ ...provided, color: 'black' }) }}
+          />
+        </label>
+
+        <label>
+          Observações:
+          <textarea
+            name="observacoes"
+            value={formData.observacoes}
+            onChange={handleChange}
+          />
+        </label>
 
         <button type="submit" className="btn-confirmar">CONFIRMAR</button>
       </form>
