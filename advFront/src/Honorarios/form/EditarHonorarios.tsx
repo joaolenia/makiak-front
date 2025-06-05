@@ -174,7 +174,6 @@ export default function EditarHonorarios({ id, onClose }: Props) {
 const excluir = async () => {
   try {
     await deletarHonorario(Number(id));
-    alert('Honorário excluído com sucesso.');
     navigate('/honorarios');
   } catch (error) {
     console.error('Erro ao excluir honorário:', error);

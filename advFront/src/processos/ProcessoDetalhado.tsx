@@ -145,7 +145,7 @@ export default function ProcessoDetalhado() {
       <div className="detalhado-corpo">
         <div className="detalhado-observacoes">
           {[...descricoes]
-            .sort((a, b) => b.data.localeCompare(a.data)) 
+            .sort((a, b) => b.data.localeCompare(a.data))
             .map((desc) => (
               <div className="detalhado-observacao" key={desc.id}>
                 <span className="detalhado-bolinha" />
@@ -210,7 +210,10 @@ export default function ProcessoDetalhado() {
             <button className="detalhado-acao" onClick={() => setMostrarFormDescricao(!mostrarFormDescricao)}>
               DESCRIÇÃO
             </button>
-            <button className="detalhado-acao">VALORES</button>
+            <button className="detalhado-acao" onClick={() => navigate(`/processos/${id}/valores`)}>
+              VALORES
+            </button>
+
             <button
               className="detalhado-acao"
               onClick={() => {

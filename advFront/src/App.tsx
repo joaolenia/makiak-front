@@ -6,6 +6,7 @@ import Processos from './processos/Processos';
 import Honorarios from './Honorarios/Honorarios';
 import ProcessoDetalhado from './processos/ProcessoDetalhado';
 import HonorariosDetalhado from './Honorarios/HonorarioDetalhado';
+import ValoresDetalhado from './processos/valores/valores';
 
 function App() {
   return (
@@ -15,6 +16,7 @@ function App() {
         <Route path="/pessoas" element={<Pessoas />} />
         <Route path="/processos" element={<Processos />} />
         <Route path="/processos/:id" element={<ProcessoDetalhado />} />
+        <Route path="/processos/:id/valores" element={<ValoresDetalhado />} />
         <Route path="/honorarios/:id" element={<HonorariosDetalhado />} />
         <Route path="/honorarios" element={<Honorarios />} />
   
