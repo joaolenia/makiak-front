@@ -1,52 +1,13 @@
 import React, { useState } from 'react';
-
-import './Formulariohonorario.css';
-import { criarHonorarioAvista, criarHonorarioParcelado } from '../axios/Requests';
-import { buscarProcessos } from '../../processos/axios/Requests';
-import AsyncSelect from 'react-select/async';
-
-const customStyles = {
-  menu: (provided: any) => ({
-    ...provided,
-    zIndex: 10000,
-  }),
-  option: (provided: any) => ({
-    ...provided,
-    color: 'black',
-  }),
-};
+import './FormularioValores.css';
+import { criarValorAvista, criarValorParcelado } from '../axios/Requests';
 
 interface Props {
   onClose: () => void;
+  processoId: number;
 }
-const carregarProcessos = (() => {
-  let timeoutRef: NodeJS.Timeout | null = null;
 
-  return async (inputValue: string) => {
-    return new Promise<any[]>(resolve => {
-      if (timeoutRef) clearTimeout(timeoutRef);
-
-      timeoutRef = setTimeout(async () => {
-        if (!inputValue.trim()) return resolve([]);
-
-        try {
-          const processos = await buscarProcessos(inputValue, 2);
-          const options = processos.map((p) => ({
-            value: p.id,
-            label: `Nº ${p.numero} | Autor: ${p.autores.join(', ')} | Réu: ${p.reus.join(', ')}`
-          }));
-          resolve(options);
-        } catch (err) {
-          console.error('Erro ao carregar processos:', err);
-          resolve([]);
-        }
-      }, 300);
-    });
-  };
-})();
-
-
-export default function CadastroHonorarios({ onClose }: Props) {
+export default function CadastroValores({ onClose, processoId }: Props) {
   const [mensagemErro, setMensagemErro] = useState('');
   const [mensagemSucesso, setMensagemSucesso] = useState('');
   const [valorTotal, setValorTotal] = useState('');
@@ -55,8 +16,6 @@ export default function CadastroHonorarios({ onClose }: Props) {
   const [quantidadeParcelas, setQuantidadeParcelas] = useState('');
   const [entrada, setEntrada] = useState('');
   const [diaVencimento, setDiaVencimento] = useState('');
-
-  const [processoSelecionado, setProcessoSelecionado] = useState<any>(null);
 
   const valorComDesconto = () => parseFloat(valorTotal) || 0;
 
@@ -76,8 +35,7 @@ export default function CadastroHonorarios({ onClose }: Props) {
     setMensagemErro('');
     setMensagemSucesso('');
 
-    const processoId = processoSelecionado?.value;
-    if (!processoId || !valorTotal) {
+    if (!valorTotal) {
       setMensagemErro('Preencha todos os campos obrigatórios.');
       return;
     }
@@ -87,7 +45,7 @@ export default function CadastroHonorarios({ onClose }: Props) {
 
     try {
       if (parcelado) {
-        await criarHonorarioParcelado({
+        await criarValorParcelado({
           valorTotal: valorTotalNumber,
           tipoPagamento: 'PARCELADO',
           quantidadeParcelas: parseInt(quantidadeParcelas),
@@ -96,7 +54,7 @@ export default function CadastroHonorarios({ onClose }: Props) {
           processoId: processoId,
         });
       } else {
-        await criarHonorarioAvista({
+        await criarValorAvista({
           valorTotal: valorTotalNumber,
           tipoPagamento: 'AVISTA',
           formaPagamento,
@@ -104,15 +62,13 @@ export default function CadastroHonorarios({ onClose }: Props) {
         });
       }
 
-      setMensagemSucesso('Honorário cadastrado com sucesso!');
+      setMensagemSucesso('Valor cadastrado com sucesso!');
       setValorTotal('');
       setParcelado(false);
       setQuantidadeParcelas('');
       setEntrada('');
-      setProcessoSelecionado(null);
       setFormaPagamento('boleto');
       setDiaVencimento('');
-
 
       setTimeout(() => {
         setMensagemSucesso('');
@@ -120,32 +76,18 @@ export default function CadastroHonorarios({ onClose }: Props) {
       }, 2000);
     } catch (error: any) {
       console.error(error);
-
       const mensagemBackend =
         error?.response?.data?.message ||
         error?.message ||
-        'Erro desconhecido ao cadastrar honorário.';
-
+        'Erro desconhecido ao cadastrar valor.';
       setMensagemErro(mensagemBackend);
     }
   };
-
-
 
   return (
     <div className="formulario-modal">
       <button className="formulario-fechar" onClick={onClose}>X</button>
       <form className="formulario" onSubmit={handleSubmit}>
-        <AsyncSelect
-          cacheOptions
-          defaultOptions
-          loadOptions={carregarProcessos}
-          placeholder="Buscar processo por nome do autor..."
-          styles={customStyles}
-          value={processoSelecionado}
-          onChange={setProcessoSelecionado}
-        />
-
         <input
           type="number"
           placeholder="Valor total"
@@ -195,6 +137,7 @@ export default function CadastroHonorarios({ onClose }: Props) {
               onChange={e => setQuantidadeParcelas(e.target.value)}
               min="1"
             />
+
             <input
               type="date"
               placeholder="Dia de vencimento das parcelas"
@@ -202,7 +145,6 @@ export default function CadastroHonorarios({ onClose }: Props) {
               onChange={e => setDiaVencimento(e.target.value)}
               required
             />
-
 
             <input
               type="number"
@@ -224,9 +166,9 @@ export default function CadastroHonorarios({ onClose }: Props) {
 
         <button type="submit" className="btn-cadastrar">CADASTRAR</button>
       </form>
+
       {mensagemErro && <div className="mensagem-erro">{mensagemErro}</div>}
       {mensagemSucesso && <div className="mensagem-sucesso">{mensagemSucesso}</div>}
-
     </div>
   );
 }

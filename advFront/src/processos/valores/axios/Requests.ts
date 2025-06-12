@@ -1,0 +1,58 @@
+import axios from 'axios';
+const api = axios.create({
+  baseURL: import.meta.env.VITE_API_URL,
+});
+
+export interface ValorAvistaDTO {
+  valorTotal: number;
+  tipoPagamento: 'AVISTA';
+  formaPagamento: string;
+  processoId: number;
+}
+
+export interface ValorParceladoDTO {
+  valorTotal: number;
+  tipoPagamento: 'PARCELADO';
+  quantidadeParcelas: number;
+  entrada?: number;
+  diaVencimento: string; 
+  processoId: number;
+}
+
+export const criarValorAvista = async (dados: ValorAvistaDTO) => {
+  const response = await api.post('/valores', dados);
+  return response.data;
+};
+
+export const criarValorParcelado = async (dados: ValorParceladoDTO) => {
+  const response = await api.post('/valores', dados);
+  return response.data;
+};
+
+export const buscarValorPorIdDoProcesso = async (id: number) => {
+  console.log(id)
+  const response = await api.get(`/valores/${id}`);
+  return response.data;
+};
+
+export const pagarParcela = async (parcelaId: number, formaPagamento: string) => {
+  const response = await api.patch(`/valores/parcelas/${parcelaId}/pagar`, {
+    formaPagamento,
+  });
+  return response.data;
+};
+
+export const atualizarValor = async (
+  idvalor: number,
+  dados: ValorAvistaDTO | ValorParceladoDTO
+) => {
+  const response = await api.put(`/valores/${idvalor}`, dados);
+  return response.data;
+};
+
+export const deletarValor = async (idvalor: number) => {
+  const response = await api.delete(`/valores/${idvalor}`);
+  return response.data;
+};
+
+

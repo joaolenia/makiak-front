@@ -1,6 +1,12 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react'; 
 import './Valores.css';
+import CadastroValores from './form/CadastroValores';
+
 import { useNavigate, useParams } from 'react-router-dom';
+import {
+  buscarValorPorIdDoProcesso,
+  pagarParcela as apiPagarParcela
+} from './axios/Requests';
 
 interface Parcela {
   id: number;
@@ -26,7 +32,7 @@ interface ValorProcesso {
 export default function ValoresDetalhado() {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
-
+  const [mostrarCadastro, setMostrarCadastro] = useState(false);
   const [valorProcesso, setValorProcesso] = useState<ValorProcesso | null>(null);
   const [mostrarPagamento, setMostrarPagamento] = useState(false);
   const [parcelaSelecionada, setParcelaSelecionada] = useState<number | null>(null);
@@ -34,185 +40,151 @@ export default function ValoresDetalhado() {
   const [parcelasPendentes, setParcelasPendentes] = useState<Parcela[]>([]);
 
   useEffect(() => {
-    setValorProcesso({
-      id: Number(id),
-      valorTotal: 5000,
-      tipoPagamento: 'PARCELADO',
-      formaPagamento: null,
-      situacao: 'PENDENTE',
-      entrada: 1000,
-      quantidadeParcelas: 4,
-      parcelasPagas: 2,
-      parcelas: [
-        {
-          id: 1,
-          dataVencimento: '2025-06-01T00:00:00Z',
-          dataPagamento: '2025-06-01T00:00:00Z',
-          valor: '1000',
-          formaPagamento: 'PIX',
-          situacao: 'PAGO',
-        },
-        {
-          id: 2,
-          dataVencimento: '2025-07-01T00:00:00Z',
-          dataPagamento: '2025-07-01T00:00:00Z',
-          valor: '1000',
-          formaPagamento: 'PIX',
-          situacao: 'PAGO',
-        },
-        {
-          id: 3,
-          dataVencimento: '2025-08-01T00:00:00Z',
-          dataPagamento: null,
-          valor: '1000',
-          formaPagamento: null,
-          situacao: 'PENDENTE',
-        },
-        {
-          id: 4,
-          dataVencimento: '2025-09-01T00:00:00Z',
-          dataPagamento: null,
-          valor: '1000',
-          formaPagamento: null,
-          situacao: 'PENDENTE',
-        },
-      ],
-    });
+    const carregarDados = async () => {
+      try {
+        const dados = await buscarValorPorIdDoProcesso(Number(id));
+        setValorProcesso(dados);
+      } catch (err) {
+        console.error(err);
+        setValorProcesso(null); // para garantir estado seguro
+      }
+    };
+    carregarDados();
   }, [id]);
 
-  if (!valorProcesso) return <div>Carregando...</div>;
+  const isParcelado = valorProcesso?.tipoPagamento === 'PARCELADO';
 
-  const isParcelado = valorProcesso.tipoPagamento === 'PARCELADO';
+  const formatarData = (dt: string) => new Date(dt).toLocaleDateString('pt-BR');
 
-  function formatarDataLocal(dataISO: string) {
-    if (!dataISO) return '';
-    return dataISO.split('T')[0];
-  }
+  const abrirPagamento = () => {
+    if (!valorProcesso) return;
+    const pend = valorProcesso.parcelas?.filter(p => p.situacao === 'PENDENTE') ?? [];
+    setParcelasPendentes(pend);
+    setMostrarPagamento(true);
+  };
 
-return (
-  <div className="valores-container">
-    <div className="valores-top-bar">
-      <button className="valores-btn">EDITAR</button>
-      <div className="valores-logo">
-        <strong>STASIAK & MAKIAK</strong>
-        <div className="valores-sub-logo">Advogados Associados</div>
+  const confirmarPagamento = async () => {
+    if (!parcelaSelecionada || !formaPagamento) {
+      alert('Selecione parcela e forma de pagamento');
+      return;
+    }
+    try {
+      await apiPagarParcela(parcelaSelecionada, formaPagamento);
+      const dados = await buscarValorPorIdDoProcesso(Number(id));
+      setValorProcesso(dados);
+      setMostrarPagamento(false);
+    } catch (err) {
+      console.error(err);
+      alert('Erro no pagamento');
+    }
+  };
+
+  return (
+    <div className="valores-container">
+      <div className="valores-top-bar">
+        <button className="valores-btn">EDITAR</button>
+        <div className="valores-logo">
+          <strong>STASIAK & MAKIAK</strong>
+          <div className="valores-sub-logo">Advogados Associados</div>
+        </div>
+        <a href="#" className="valores-voltar" onClick={() => navigate(-1)}>VOLTAR</a>
       </div>
-      <a href="#" className="valores-voltar" onClick={() => navigate(-1)}>VOLTAR</a>
-    </div>
 
-    <div className="valores-corpo">
-      <div className="valores-parcelas">
-        {isParcelado && valorProcesso.parcelas.map((parcela) => (
-          <div className="valores-parcela" key={parcela.id}>
-            <span className="valores-bolinha" />
-            <div className="valores-textos">
-              <div className="valores-data">{formatarDataLocal(parcela.dataVencimento)}</div>
-              <div className="valores-descricao">
-                R$ {parcela.valor}{' '}
-                <span style={{ color: parcela.situacao === 'PAGO' ? 'green' : 'red' }}>
-                  {parcela.situacao}
-                </span>
-                <br />
-                <small>{parcela.formaPagamento ?? ''}</small>
+      <div className="valores-corpo">
+        <div className="valores-parcelas">
+          {isParcelado && valorProcesso?.parcelas?.length > 0 && valorProcesso.parcelas.map(p => (
+            <div className="valores-parcela" key={p.id}>
+              <span className="valores-bolinha" />
+              <div className="valores-textos">
+                <div className="valores-data">{formatarData(p.dataVencimento)}</div>
+                <div className="valores-descricao">
+                  R$ {p.valor}{' '}
+                  <span style={{ color: p.situacao === 'PAGO' ? 'green' : 'red' }}>{p.situacao}</span>
+                  <br /><small>{p.formaPagamento ?? ''}</small>
+                </div>
               </div>
             </div>
-          </div>
-        ))}
-      </div>
-
-      <div className="valores-dados">
-        <div className="valores-info-scroll">
-          <div className="valores-total">TOTAL: R$ {valorProcesso.valorTotal}</div>
-          <div><strong>PAGAMENTO</strong></div>
-          <div style={{ color: valorProcesso.situacao === 'PAGO' ? 'green' : 'red' }}>
-            <strong>{valorProcesso.situacao ?? 'PENDENTE'}</strong>
-          </div>
-
-          {isParcelado ? (
-            <>
-              <div><strong>QTD PARCELAS:</strong> {valorProcesso.quantidadeParcelas}</div>
-              <div><strong>ENTRADA:</strong> {valorProcesso.entrada}</div>
-              <div><strong>PARCELAS PAGAS:</strong> {valorProcesso.parcelasPagas}/{valorProcesso.quantidadeParcelas}</div>
-            </>
-          ) : (
-            <>
-              <div><strong>FORMA DE PAGAMENTO:</strong> {valorProcesso.formaPagamento}</div>
-            </>
-          )}
+          ))}
         </div>
 
-        <div className="valores-botoes">
-          {isParcelado && (
+        <div className="valores-dados">
+          <div className="valores-info-scroll">
+            <div className="valores-total">
+              TOTAL: R$ {valorProcesso?.valorTotal ?? '---'}
+            </div>
+            <div><strong>PAGAMENTO</strong></div>
+            <div style={{ color: valorProcesso?.situacao === 'PAGO' ? 'green' : 'red' }}>
+              <strong>{valorProcesso?.situacao ?? '---'}</strong>
+            </div>
+
+            {isParcelado ? (
+              <>
+                <div><strong>QTD PARCELAS:</strong> {valorProcesso?.quantidadeParcelas}</div>
+                <div><strong>ENTRADA:</strong> R$ {valorProcesso?.entrada}</div>
+                <div><strong>PAGAS:</strong> {valorProcesso?.parcelasPagas}/{valorProcesso?.quantidadeParcelas}</div>
+              </>
+            ) : (
+              <div><strong>FORMA:</strong> {valorProcesso?.formaPagamento ?? '---'}</div>
+            )}
+          </div>
+
+          <div className="valores-botoes">
+            {isParcelado && (
+              <button className="valores-acao" onClick={abrirPagamento}>PAGAR</button>
+            )}
+            <button className="valores-acao">EXTRATO</button>
             <button
               className="valores-acao"
-              onClick={() => {
-                const pendentes = valorProcesso.parcelas.filter(p => p.situacao === 'PENDENTE');
-                setParcelasPendentes(pendentes);
-                setMostrarPagamento(true);
-              }}
+              onClick={() => setMostrarCadastro(true)}
+              disabled={!!valorProcesso} // Desabilita se já tiver um valor
+              title={valorProcesso ? "Já existe valor cadastrado" : "Cadastrar novo valor"}
             >
-              PAGAR
+              NOVO VALOR
             </button>
-          )}
-
-          <button className="valores-acao">EXTRATO</button>
-        </div>
-      </div>
-    </div>
-
-    {mostrarPagamento && (
-      <div className="pagamento-modal">
-        <div className="pagamento-formulario">
-          <button className="pagamento-close" onClick={() => setMostrarPagamento(false)}>×</button>
-          <h3>Pagamento de Parcela</h3>
-
-          <label>Selecione a parcela:</label>
-          <select
-            value={parcelaSelecionada ?? ''}
-            onChange={(e) => setParcelaSelecionada(Number(e.target.value))}
-          >
-            <option value="">-- Selecione --</option>
-            {parcelasPendentes.map(parcela => (
-              <option key={parcela.id} value={parcela.id}>
-                {formatarDataLocal(parcela.dataVencimento)} - R$ {parcela.valor}
-              </option>
-            ))}
-          </select>
-
-          <label>Forma de pagamento:</label>
-          <select
-            value={formaPagamento}
-            onChange={(e) => setFormaPagamento(e.target.value)}
-          >
-            <option value="">-- Selecione --</option>
-            <option value="DINHEIRO">Dinheiro</option>
-            <option value="PIX">Pix</option>
-            <option value="TRANSFERENCIA">Transferência</option>
-            <option value="CARTAO">Cartão</option>
-            <option value="BOLETO">Boleto</option>
-          </select>
-
-          <div className="pagamento-botoes">
-            <button
-              onClick={() => {
-                if (parcelaSelecionada && formaPagamento) {
-                  alert('Pagamento simulado.');
-                  setMostrarPagamento(false);
-                  setParcelaSelecionada(null);
-                  setFormaPagamento('');
-                } else {
-                  alert('Selecione a parcela e a forma de pagamento.');
-                }
-              }}
-            >
-              Confirmar Pagamento
-            </button>
-            <button onClick={() => setMostrarPagamento(false)}>Cancelar</button>
           </div>
         </div>
       </div>
-    )}
-  </div>
-);
 
+      {mostrarPagamento && (
+        <div className="pagamento-modal">
+          <div className="pagamento-formulario">
+            <button className="pagamento-close" onClick={() => setMostrarPagamento(false)}>×</button>
+            <h3>Pagamento de Parcela</h3>
+
+            <label>Parcela</label>
+            <select value={parcelaSelecionada ?? ''} onChange={e => setParcelaSelecionada(Number(e.target.value))}>
+              <option value="">-- selecione --</option>
+              {parcelasPendentes.map(p => (
+                <option key={p.id} value={p.id}>
+                  {formatarData(p.dataVencimento)} - R$ {p.valor}
+                </option>
+              ))}
+            </select>
+
+            <label>Forma pgto.</label>
+            <select value={formaPagamento} onChange={e => setFormaPagamento(e.target.value)}>
+              <option value="">-- selecione --</option>
+              <option value="DINHEIRO">Dinheiro</option>
+              <option value="PIX">Pix</option>
+              <option value="TRANSFERENCIA">Transferência</option>
+              <option value="CARTAO">Cartão</option>
+              <option value="BOLETO">Boleto</option>
+            </select>
+
+            <div className="pagamento-botoes">
+              <button onClick={confirmarPagamento}>Confirmar</button>
+              <button onClick={() => setMostrarPagamento(false)}>Cancelar</button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {mostrarCadastro && (
+        <CadastroValores
+          processoId={Number(id)}
+          onClose={() => setMostrarCadastro(false)}
+        />
+      )}
+    </div>
+  );
 }
