@@ -7,6 +7,7 @@ import Honorarios from './Honorarios/Honorarios';
 import ProcessoDetalhado from './processos/ProcessoDetalhado';
 import HonorariosDetalhado from './Honorarios/HonorarioDetalhado';
 import ValoresDetalhado from './processos/valores/valores';
+import { Configuracao } from './configuracao/config';
 
 function App() {
   return (
@@ -19,6 +20,7 @@ function App() {
         <Route path="/processos/:id/valores" element={<ValoresDetalhado />} />
         <Route path="/honorarios/:id" element={<HonorariosDetalhado />} />
         <Route path="/honorarios" element={<Honorarios />} />
+        <Route path="/config" element={<Configuracao />} />
   
       </Routes>
     </BrowserRouter>
