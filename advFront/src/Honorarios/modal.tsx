@@ -12,8 +12,8 @@ export default function ModalConfirmacao({ mensagem, onConfirmar, onCancelar }: 
       <div className="modal-box">
         <p className='mensagem'>{mensagem}</p>
         <div className="modal-botoes">
-          <button className="btn-confirmar" onClick={onConfirmar}>Sim, excluir</button>
-          <button className="btn-cancelar" onClick={onCancelar}>Cancelar</button>
+          <button className="btn-confirmar-modal" onClick={onConfirmar}>Sim, excluir</button>
+          <button className="btn-cancelar-modal" onClick={onCancelar}>Cancelar</button>
         </div>
       </div>
     </div>

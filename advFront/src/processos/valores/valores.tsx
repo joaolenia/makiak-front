@@ -1,12 +1,14 @@
-import { useEffect, useState } from 'react'; 
+import { useEffect, useState } from 'react';
 import './Valores.css';
 import CadastroValores from './form/CadastroValores';
+import { gerarPDFExtratoValores } from './relatorios/relatorios';
 
 import { useNavigate, useParams } from 'react-router-dom';
 import {
   buscarValorPorIdDoProcesso,
   pagarParcela as apiPagarParcela
 } from './axios/Requests';
+import EditarValoresProcesso from './form/EditarValores';
 
 interface Parcela {
   id: number;
@@ -38,6 +40,8 @@ export default function ValoresDetalhado() {
   const [parcelaSelecionada, setParcelaSelecionada] = useState<number | null>(null);
   const [formaPagamento, setFormaPagamento] = useState('');
   const [parcelasPendentes, setParcelasPendentes] = useState<Parcela[]>([]);
+  const [mostrarEdicao, setMostrarEdicao] = useState(false);
+
 
   useEffect(() => {
     const carregarDados = async () => {
@@ -82,7 +86,7 @@ export default function ValoresDetalhado() {
   return (
     <div className="valores-container">
       <div className="valores-top-bar">
-        <button className="valores-btn">EDITAR</button>
+        <button className="valores-btn" onClick={() => setMostrarEdicao(true)}>EDITAR</button>
         <div className="valores-logo">
           <strong>STASIAK & MAKIAK</strong>
           <div className="valores-sub-logo">Advogados Associados</div>
@@ -132,7 +136,14 @@ export default function ValoresDetalhado() {
             {isParcelado && (
               <button className="valores-acao" onClick={abrirPagamento}>PAGAR</button>
             )}
-            <button className="valores-acao">EXTRATO</button>
+            <button
+              className="valores-acao"
+              onClick={() => {
+                if (valorProcesso) gerarPDFExtratoValores(valorProcesso);
+              }}
+            >
+              EXTRATO
+            </button>
             <button
               className="valores-acao"
               onClick={() => setMostrarCadastro(true)}
@@ -185,6 +196,13 @@ export default function ValoresDetalhado() {
           onClose={() => setMostrarCadastro(false)}
         />
       )}
+      {mostrarEdicao && valorProcesso && (
+        <EditarValoresProcesso
+          id={Number(id)}
+          onClose={() => setMostrarEdicao(false)}
+        />
+      )}
+
     </div>
   );
 }

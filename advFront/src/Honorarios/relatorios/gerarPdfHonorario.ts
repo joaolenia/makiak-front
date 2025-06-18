@@ -41,6 +41,7 @@ export function gerarPDFHonorario(honorario: Honorario) {
       <div><strong>Valor Total:</strong> R$ ${valorTotal.toFixed(2)}</div>
       <div><strong>Situação:</strong> ${honorario.situacao ?? 'PENDENTE'}</div>
       <div><strong>Forma de Pagamento:</strong> ${honorario.formaPagamento ?? 'Parcelado'}</div>
+      <div><strong>Entrada:</strong> R$ ${honorario.entrada != null ? Number(honorario.entrada).toFixed(2) : '—'}</div>
 
       ${honorario.tipoPagamento === 'PARCELADO' && honorario.parcelas.length > 0
         ? `

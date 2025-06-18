@@ -1,51 +1,12 @@
 import React, { useEffect, useState } from 'react';
-import AsyncSelect from 'react-select/async';
-import { getProcessoById } from '../../processos/axios/Requests';
-import type { HonorarioAvistaDTO, HonorarioParceladoDTO } from '../axios/Requests';
 import {
-  buscarHonorarioPorId,
-  atualizarHonorario,
-  deletarHonorario,
+  buscarValorPorIdDoProcesso,
+  atualizarValor,
+  deletarValor,
 } from '../axios/Requests';
-import { buscarProcessos } from '../../processos/axios/Requests';
-import './Formulariohonorario.css';
-import {  useNavigate } from 'react-router-dom';
-import ModalConfirmacao from '../modal';
-
-const customStyles = {
-  menu: (provided: any) => ({ ...provided, zIndex: 10000 }),
-  option: (provided: any) => ({ ...provided, color: 'black' }),
-};
-
-
-
-function formatarDataLocal(dataISO: string) {
-  if (!dataISO) return '';
-  return dataISO.split('T')[0];
-}
-
-const carregarProcessos = (() => {
-  let timeoutRef: NodeJS.Timeout | null = null;
-  return async (inputValue: string) => {
-    return new Promise<any[]>(resolve => {
-      if (timeoutRef) clearTimeout(timeoutRef);
-      timeoutRef = setTimeout(async () => {
-        if (!inputValue.trim()) return resolve([]);
-        try {
-          const processos = await buscarProcessos(inputValue, 2);
-          const options = processos.map((p: any) => ({
-            value: p.id,
-            label: `Nº ${p.numero} | Autor: ${p.autores.join(', ')} | Réu: ${p.reus.join(', ')}`,
-          }));
-          resolve(options);
-        } catch (err) {
-          console.error('Erro ao carregar processos:', err);
-          resolve([]);
-        }
-      }, 300);
-    });
-  };
-})();
+import './FormularioValores.css';
+import { useNavigate } from 'react-router-dom';
+import ModalConfirmacao from '../../../Honorarios/modal';
 
 interface Parcela {
   valor: string;
@@ -58,7 +19,7 @@ interface Props {
   onClose: () => void;
 }
 
-export default function EditarHonorarios({ id, onClose }: Props) {
+export default function EditarValoresProcesso({ id, onClose }: Props) {
   const navigate = useNavigate();
   const [valorTotal, setValorTotal] = useState('');
   const [formaPagamento, setFormaPagamento] = useState('boleto');
@@ -68,20 +29,18 @@ export default function EditarHonorarios({ id, onClose }: Props) {
   const [diaVencimento, setDiaVencimento] = useState('');
   const [valorPago, setValorPago] = useState(0);
   const [restante, setRestante] = useState(0);
-  const [processoSelecionado, setProcessoSelecionado] = useState<any>(null);
   const [mensagemErro, setMensagemErro] = useState('');
   const [mensagemSucesso, setMensagemSucesso] = useState('');
   const [mostrarConfirmacao, setMostrarConfirmacao] = useState(false);
-
+  const [idValor, setIdValor] = useState<number | null>(null);
 
   useEffect(() => {
     const carregarDados = async () => {
       try {
-        const honorario = await buscarHonorarioPorId(id);
-        const processo = await getProcessoById(honorario.processo.id);
-        const valorTotalNumber = parseFloat(honorario.valorTotal);
-        const entradaValor = parseFloat(honorario.entrada || '0');
-        const parcelasPagas = honorario.parcelas?.filter((p: Parcela) => p.situacao === 'PAGO') || [];
+        const valor = await buscarValorPorIdDoProcesso(id);
+        const valorTotalNumber = parseFloat(valor.valorTotal);
+        const entradaValor = parseFloat(valor.entrada || '0');
+        const parcelasPagas = valor.parcelas?.filter((p: Parcela) => p.situacao === 'PAGO') || [];
         const valorParcelasPagas = parcelasPagas.reduce(
           (soma: number, p: Parcela) => soma + parseFloat(p.valor),
           0
@@ -93,25 +52,21 @@ export default function EditarHonorarios({ id, onClose }: Props) {
         setEntrada(entradaValor.toFixed(2));
         setValorPago(valorPagoCalculado);
         setRestante(restanteCalculado);
-        setParcelado(honorario.tipoPagamento === 'PARCELADO');
-        setFormaPagamento(honorario.formaPagamento || 'boleto');
-        setQuantidadeParcelas(honorario.quantidadeParcelas?.toString() || '');
+        setParcelado(valor.tipoPagamento === 'PARCELADO');
+        setFormaPagamento(valor.formaPagamento || 'boleto');
+        setQuantidadeParcelas(valor.quantidadeParcelas?.toString() || '');
+        setIdValor(valor.id);
 
-        if (honorario.parcelas?.length > 0) {
-          const ultimaParcela = honorario.parcelas.reduce(
+        if (valor.parcelas?.length > 0) {
+          const ultimaParcela = valor.parcelas.reduce(
             (maisRecente: Parcela, atual: Parcela) =>
               new Date(atual.dataVencimento) > new Date(maisRecente.dataVencimento) ? atual : maisRecente
           );
-          setDiaVencimento(formatarDataLocal(ultimaParcela.dataVencimento));
+          setDiaVencimento(ultimaParcela.dataVencimento.split('T')[0]);
         }
-
-        setProcessoSelecionado({
-          value: processo.id,
-          label: `Nº ${processo.numero} | Autor: ${processo.autores.join(', ')} | Réu: ${processo.reus.join(', ')}`,
-        });
       } catch (error) {
-        console.error('Erro ao carregar honorário:', error);
-        setMensagemErro('Erro ao carregar dados do honorário.');
+        console.error('Erro ao carregar valor:', error);
+        setMensagemErro('Erro ao carregar dados do valor.');
       }
     };
 
@@ -136,69 +91,52 @@ export default function EditarHonorarios({ id, onClose }: Props) {
     setMensagemErro('');
     setMensagemSucesso('');
 
-    const processoId = processoSelecionado?.value;
-    if (!processoId || !valorTotal) {
-      setMensagemErro('Preencha todos os campos obrigatórios.');
+    if (!valorTotal ||  idValor === null) {
+      setMensagemErro('Dados inválidos.');
       return;
     }
 
     try {
-      const payload: HonorarioParceladoDTO | HonorarioAvistaDTO = parcelado
+      const payload = parcelado
         ? {
             valorTotal: parseFloat(valorTotal),
-            tipoPagamento: 'PARCELADO',
+            tipoPagamento: 'PARCELADO' as const,
             quantidadeParcelas: parseInt(quantidadeParcelas),
             diaVencimento,
-            processoId: Number(processoId),
           }
         : {
             valorTotal: parseFloat(valorTotal),
-            tipoPagamento: 'AVISTA',
+            tipoPagamento: 'AVISTA' as const,
             formaPagamento,
-            processoId: Number(processoId),
           };
 
-      await atualizarHonorario(id, payload);
-
-      setMensagemSucesso('Honorário atualizado com sucesso!');
+      await atualizarValor(idValor, payload);
+      setMensagemSucesso('Valor atualizado com sucesso!');
       setTimeout(() => {
         setMensagemSucesso('');
         onClose();
       }, 2000);
     } catch (error: any) {
-      const mensagemBackend = error?.response?.data?.message || error?.message || 'Erro ao atualizar honorário.';
+      const mensagemBackend = error?.response?.data?.message || error?.message || 'Erro ao atualizar valor.';
       setMensagemErro(mensagemBackend);
     }
   };
 
-const excluir = async () => {
-  try {
-    await deletarHonorario(Number(id));
-    navigate('/honorarios');
-  } catch (error) {
-    console.error('Erro ao excluir honorário:', error);
-    alert('Erro ao excluir honorário.');
-  }
-};
-
-
+  const excluir = async () => {
+    if (idValor === null) return;
+    try {
+      await deletarValor(idValor);
+      navigate(`/processos/${id}`);
+    } catch (error) {
+      console.error('Erro ao excluir valor:', error);
+      alert('Erro ao excluir valor.');
+    }
+  };
 
   return (
     <div className="formulario-modal">
       <button className="formulario-fechar" onClick={onClose}>X</button>
       <form className="formulario" onSubmit={handleSubmit}>
-        <label>Processo</label>
-        <AsyncSelect
-          cacheOptions
-          defaultOptions
-          loadOptions={carregarProcessos}
-          placeholder="Buscar processo por nome do autor..."
-          styles={customStyles}
-          value={processoSelecionado}
-          onChange={setProcessoSelecionado}
-          isClearable
-        />
-
         <label>Valor total</label>
         <input
           type="number"
@@ -253,16 +191,15 @@ const excluir = async () => {
         )}
 
         <button type="submit" className="btn-salvar">SALVAR</button>
-         <button  type="button" className="btn-excluir" onClick={() => setMostrarConfirmacao(true)}>EXCLUIR</button>
-
+        <button type="button" className="btn-excluir" onClick={() => setMostrarConfirmacao(true)}>EXCLUIR</button>
       </form>
 
       {mensagemErro && <div className="mensagem-erro">{mensagemErro}</div>}
       {mensagemSucesso && <div className="mensagem-sucesso">{mensagemSucesso}</div>}
 
-        {mostrarConfirmacao && (
+      {mostrarConfirmacao && (
         <ModalConfirmacao
-          mensagem="Tem certeza que deseja excluir este honorário? Essa ação não poderá ser desfeita."
+          mensagem="Tem certeza que deseja excluir este valor? Essa ação não poderá ser desfeita."
           onConfirmar={() => {
             setMostrarConfirmacao(false);
             excluir();
@@ -270,7 +207,6 @@ const excluir = async () => {
           onCancelar={() => setMostrarConfirmacao(false)}
         />
       )}
-
     </div>
   );
 }

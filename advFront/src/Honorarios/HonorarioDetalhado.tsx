@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react';
 import './HonorarioDetalhado.css';
 import { useParams, useNavigate } from 'react-router-dom';
 import EditarHonorarios from './form/EditarHonorarios';
-import { buscarHonorarioPorId, deletarHonorario } from './axios/Requests';
+import { buscarHonorarioPorId } from './axios/Requests';
 import { gerarPDFHonorario } from './relatorios/gerarPdfHonorario';
 import { pagarParcela } from './axios/Requests';
 

@@ -10,7 +10,7 @@ import {
 
 export default function Honorarios() {
   const navigate = useNavigate();
-  const [selectedIndex, setSelectedIndex] = useState<number | null>(null);
+  const [selectedIndex] = useState<number | null>(null);
   const [mostrarCadastro, setMostrarCadastro] = useState(false);
   const [tipoPagamento, setTipoPagamento] = useState<'PARCELADO' | 'AVISTA'>('PARCELADO');
   const [busca, setBusca] = useState('');

@@ -30,7 +30,7 @@
 .mensagem{
   color: black;
 }
-.btn-confirmar {
+.btn-confirmar-modal {
   background-color: red;
   color: white;
   padding: 8px 16px;
@@ -39,7 +39,7 @@
   cursor: pointer;
 }
 
-.btn-cancelar {
+.btn-cancelar-modal {
   background-color: #2cad12;
   padding: 8px 16px;
   border: none;

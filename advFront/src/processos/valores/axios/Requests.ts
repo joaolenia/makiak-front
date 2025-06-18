@@ -19,6 +19,18 @@ export interface ValorParceladoDTO {
   processoId: number;
 }
 
+export interface AtualizarValorAvistaDTO {
+  valorTotal: number;
+  tipoPagamento: 'AVISTA';
+  formaPagamento: string;
+}
+
+export interface AtualizarValorParceladoDTO {
+  valorTotal: number;
+  tipoPagamento: 'PARCELADO';
+  quantidadeParcelas: number;
+  diaVencimento: string;
+}
 export const criarValorAvista = async (dados: ValorAvistaDTO) => {
   const response = await api.post('/valores', dados);
   return response.data;
@@ -44,11 +56,12 @@ export const pagarParcela = async (parcelaId: number, formaPagamento: string) =>
 
 export const atualizarValor = async (
   idvalor: number,
-  dados: ValorAvistaDTO | ValorParceladoDTO
+  dados: AtualizarValorAvistaDTO | AtualizarValorParceladoDTO
 ) => {
   const response = await api.put(`/valores/${idvalor}`, dados);
   return response.data;
 };
+
 
 export const deletarValor = async (idvalor: number) => {
   const response = await api.delete(`/valores/${idvalor}`);
