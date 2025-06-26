@@ -17,16 +17,23 @@ export default function Honorarios() {
   const [honorarios, setHonorarios] = useState<any[]>([]);
   const [honorariosProximos, setHonorariosProximos] = useState<any[]>([]);
 
-  useEffect(() => {
-    const carregarHonorariosProximos = async () => {
+useEffect(() => {
+  const carregarHonorariosProximos = async () => {
+    if (tipoPagamento === 'PARCELADO') {
       const dados = await buscarHonorariosProximosVencimento();
       setHonorariosProximos(dados);
       if (!busca.trim()) {
         setHonorarios(dados);
       }
-    };
-    carregarHonorariosProximos();
-  }, []);
+    } else {
+      setHonorariosProximos([]); 
+      if (!busca.trim()) {
+        setHonorarios([]); 
+      }
+    }
+  };
+  carregarHonorariosProximos();
+}, [tipoPagamento]); 
 
   useEffect(() => {
     const timeout = setTimeout(() => {

@@ -230,3 +230,18 @@
 .pagamento-close:hover {
   color: red;
 }
+
+.edit-save-v{
+  background-color: green;
+  border-radius: 5px;
+  color: white;
+   border: none;
+  
+}
+.edit-cancel-v{
+  padding: 5px;
+  background-color: rgb(128, 8, 0);
+  border-radius: 5px;
+  color: white;
+   border: none;
+}

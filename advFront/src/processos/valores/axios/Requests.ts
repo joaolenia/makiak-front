@@ -53,6 +53,17 @@ export const pagarParcela = async (parcelaId: number, formaPagamento: string) =>
   });
   return response.data;
 };
+export const rollbackParcela = async (
+  parcelaId: number,
+  modo: 0 | 1,
+  observacoes?: string
+) => {
+  const response = await api.patch(`/valores/parcelas/${parcelaId}/rollback`, {
+    modo,
+    observacoes,
+  });
+  return response.data;
+};
 
 export const atualizarValor = async (
   idvalor: number,

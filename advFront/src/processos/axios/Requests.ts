@@ -109,4 +109,9 @@ export async function updateDescricao(id: number, payload: DescricaoPayload) {
   const response = await api.put(`/processos/descricao/${id}`, payload);
   return response.data;
 }
+export async function deleteDescricao(id: number) {
+  const response = await api.delete(`/processos/descricao/${id}`);
+  return response.data;
+}
+
 

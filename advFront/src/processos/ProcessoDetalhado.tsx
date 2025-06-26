@@ -7,7 +7,8 @@ import {
   getProcessoById,
   getDescricoesByProcessoId,
   createDescricao,
-  updateDescricao
+  updateDescricao,
+  deleteDescricao
 } from './axios/Requests';
 import { gerarPDFProcesso } from './relatórios/gerarPDFProcesso';
 interface Pessoa {
@@ -120,6 +121,20 @@ export default function ProcessoDetalhado() {
       console.error('Erro ao atualizar descrição:', error);
     }
   };
+const excluir = async () => {
+  if (editandoId === null) return;
+
+  try {
+    await deleteDescricao(editandoId);
+    const novasDescricoes = await getDescricoesByProcessoId(Number(id));
+    setDescricoes(novasDescricoes);
+    cancelarEdicao();
+  } catch (error) {
+    console.error('Erro ao excluir descrição:', error);
+    alert('Erro ao excluir descrição.');
+  }
+};
+
 
   function formatarData(dataString: string) {
     if (!dataString) return '—';
@@ -184,8 +199,10 @@ export default function ProcessoDetalhado() {
 
                 {editandoId === desc.id && (
                   <div className="descricao-botoes-edicao">
-                    <button onClick={salvarEdicao}>Salvar</button>
-                    <button onClick={cancelarEdicao}>Cancelar</button>
+                    <button className='btn-salvar-desc' onClick={salvarEdicao}>Salvar</button>
+                    <button className='btn-cancel-desc' onClick={cancelarEdicao}>Cancelar</button>
+                    <button onClick={excluir}>Excluir</button>
+
                   </div>
                 )}
               </div>

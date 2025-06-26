@@ -6,7 +6,8 @@ import { gerarPDFExtratoValores } from './relatorios/relatorios';
 import { useNavigate, useParams } from 'react-router-dom';
 import {
   buscarValorPorIdDoProcesso,
-  pagarParcela as apiPagarParcela
+  pagarParcela as apiPagarParcela,
+  rollbackParcela
 } from './axios/Requests';
 import EditarValoresProcesso from './form/EditarValores';
 
@@ -17,6 +18,7 @@ interface Parcela {
   valor: string;
   formaPagamento: string | null;
   situacao: 'PAGO' | 'PENDENTE';
+  observacoes?: string | null;
 }
 
 interface ValorProcesso {
@@ -41,6 +43,10 @@ export default function ValoresDetalhado() {
   const [formaPagamento, setFormaPagamento] = useState('');
   const [parcelasPendentes, setParcelasPendentes] = useState<Parcela[]>([]);
   const [mostrarEdicao, setMostrarEdicao] = useState(false);
+  const [editandoParcelaId, setEditandoParcelaId] = useState<number | null>(null);
+  const [descricaoParcela, setDescricaoParcela] = useState('');
+  const [modoRollback, setModoRollback] = useState<0 | 1>(0);
+
 
 
   useEffect(() => {
@@ -83,6 +89,32 @@ export default function ValoresDetalhado() {
     }
   };
 
+  const iniciarEdicaoParcela = (parcela: Parcela) => {
+    setEditandoParcelaId(parcela.id);
+    setDescricaoParcela(parcela.observacoes ?? '');
+    setModoRollback(0);
+  };
+
+  const salvarEdicaoParcela = async () => {
+    if (!editandoParcelaId) return;
+    try {
+      await rollbackParcela(editandoParcelaId, modoRollback, descricaoParcela);
+      const dados = await buscarValorPorIdDoProcesso(Number(id));
+      setValorProcesso(dados);
+      cancelarEdicaoParcela();
+    } catch (error) {
+      console.error('Erro ao salvar edição da parcela:', error);
+      alert('Erro ao salvar edição da parcela');
+    }
+  };
+
+  const cancelarEdicaoParcela = () => {
+    setEditandoParcelaId(null);
+    setDescricaoParcela('');
+    setModoRollback(0);
+  };
+
+
   return (
     <div className="valores-container">
       <div className="valores-top-bar">
@@ -97,17 +129,48 @@ export default function ValoresDetalhado() {
       <div className="valores-corpo">
         <div className="valores-parcelas">
           {isParcelado && valorProcesso?.parcelas?.length > 0 && valorProcesso.parcelas.map(p => (
-            <div className="valores-parcela" key={p.id}>
+            <div className="valores-parcela" key={p.id} onDoubleClick={() => iniciarEdicaoParcela(p)}>
               <span className="valores-bolinha" />
               <div className="valores-textos">
                 <div className="valores-data">{formatarData(p.dataVencimento)}</div>
-                <div className="valores-descricao">
-                  R$ {p.valor}{' '}
-                  <span style={{ color: p.situacao === 'PAGO' ? 'green' : 'red' }}>{p.situacao}</span>
-                  <br /><small>{p.formaPagamento ?? ''}</small>
-                </div>
+                {editandoParcelaId === p.id ? (
+                  <div className="honorario-edicao">
+                    <textarea
+                      value={descricaoParcela}
+                      onChange={e => setDescricaoParcela(e.target.value)}
+                      rows={3}
+                      placeholder="Observações"
+                    />
+                    {p.situacao === 'PAGO' && (
+                      <label>
+                        <input
+                          type="checkbox"
+                          checked={modoRollback === 1}
+                          onChange={e => setModoRollback(e.target.checked ? 1 : 0)}
+                        />
+                        Reverter pagamento (marcar como pendente)
+                      </label>
+                    )}
+                    <div className="honorario-edicao-botoes">
+                      <button className='edit-save-v' onClick={salvarEdicaoParcela}>Salvar</button>
+                      <button className='edit-cancel-v' onClick={cancelarEdicaoParcela}>Cancelar</button>
+                    </div>
+                  </div>
+                ) : (
+                  <div className="valores-descricao">
+                    R$ {p.valor}{' '}
+                    <span style={{ color: p.situacao === 'PAGO' ? 'green' : 'red' }}>{p.situacao}</span>
+                    <br /><small>{p.formaPagamento ?? ''}</small>
+                    {p.observacoes && (
+                      <div className="honorario-observacoes">
+                        <strong>Observações:</strong> {p.observacoes}
+                      </div>
+                    )}
+                  </div>
+                )}
               </div>
             </div>
+
           ))}
         </div>
 
@@ -172,7 +235,7 @@ export default function ValoresDetalhado() {
               ))}
             </select>
 
-            <label>Forma pgto.</label>
+            <label>Forma de Pagamento</label>
             <select value={formaPagamento} onChange={e => setFormaPagamento(e.target.value)}>
               <option value="">-- selecione --</option>
               <option value="DINHEIRO">Dinheiro</option>
