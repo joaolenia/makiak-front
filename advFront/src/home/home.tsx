@@ -3,9 +3,7 @@ import { Link } from 'react-router-dom';
 import './home.css';
 import pessoasIcon from '../img/home/pessoas.png';
 import processosIcon from '../img/home/processos.png';
-import relatoriosIcon from '../img/home/relatórios.png';
 import honorarioIcon from '../img/home/honorarios.png';
-import configIcon from '../img/home/config.png';
 
 const Home: React.FC = () => {
   return (
@@ -21,9 +19,7 @@ const Home: React.FC = () => {
           <Link to="/honorarios" className="service">
             <img src={honorarioIcon} alt="Honorários" />
           </Link>
-          <Link to="/config" className="service">
-            <img src={configIcon} alt="Configurações" />
-          </Link>
+
 
         </div>
       </div>

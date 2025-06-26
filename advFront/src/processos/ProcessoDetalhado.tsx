@@ -26,6 +26,7 @@ interface Processo {
   tipo: string;
   autores: Pessoa[];
   reus: Pessoa[];
+ valorCausa: string;
   terceiros: Pessoa[];
   vara?: string;
   cidade?: string;
@@ -199,6 +200,7 @@ export default function ProcessoDetalhado() {
             <div>DATA: {formatarData(processo.data)}</div>
             <div>SITUAÇÃO: {processo.situacao}</div>
             <div>TIPO: {processo.tipo}</div>
+            <div>VALOR DA CAUSA: {processo.valorCausa}</div>
             <div>AUTOR: {nomes(processo.autores)}</div>
             <div>RÉU: {nomes(processo.reus)}</div>
             <div>TERCEIRO: {nomes(processo.terceiros)}</div>

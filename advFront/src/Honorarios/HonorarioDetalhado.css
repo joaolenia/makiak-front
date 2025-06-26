@@ -228,3 +228,48 @@
 .pagamento-close:hover {
   color: red;
 }
+.honorario-edicao textarea {
+  width: 100%;
+  resize: vertical;
+}
+
+.honorario-descricao {
+  margin-top: 4px;
+  font-size: 0.9rem;
+}
+
+.honorario-edicao textarea {
+  width: 100%;
+  resize: vertical;
+}
+
+.honorario-edicao-botoes {
+  margin-top: 0.5rem;
+  display: flex;
+  gap: 0.5rem;
+}
+.edit-save{
+  background-color: green;
+  color: white;
+}
+.edit-cancel{
+  background-color: red;
+  color: white;
+}
+.honorario-observacoes {
+  background-color: #2b261d;
+  border-left: 4px solid #a36c2d;
+  padding: 8px 12px;
+  margin-top: 8px;
+  border-radius: 6px;
+  font-size: 0.9em;
+  color: #fff0d0;
+  white-space: pre-wrap;      
+  overflow-wrap: break-word;  
+  word-break: break-word;     
+  display: block;            
+  width: 100%;                
+  box-sizing: border-box;
+}
+
+

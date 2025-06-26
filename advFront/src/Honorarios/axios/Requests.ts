@@ -55,6 +55,19 @@ export const pagarParcela = async (parcelaId: number, formaPagamento: string) =>
   return response.data;
 };
 
+export const rollbackParcela = async (
+  parcelaId: number,
+  modo: 0 | 1,
+  observacoes?: string
+) => {
+  const response = await api.patch(`/honorarios/parcelas/${parcelaId}/rollback`, {
+    modo,
+    observacoes,
+  });
+  return response.data;
+};
+
+
 export const buscarHonorariosProximosVencimento = async () => {
   const response = await api.get('/honorarios/proximos-vencimentos');
   return response.data;
