@@ -1,0 +1,79 @@
+.login-banner {
+  position: relative;
+  width: 100%;
+  height: 100vh;
+  background-image: url('../img/home/fundoLogin.png');
+  background-size: cover;
+  background-position: center;
+}
+
+.login-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.6);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.login-erro {
+  color: red;
+  margin-top: 10px;
+  font-weight: bold;
+}
+    
+.login-container {
+  background-color: rgba(26, 22, 18, 0.9);
+  padding: 40px;
+  border: 2px solid #a9a18f;
+  border-radius: 15px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.login-titulo {
+  font-size: 2.5em;
+  color: #f5efdd;
+  margin-bottom: 0.5em;
+  font-weight: bold;
+}
+
+.login-subtitulo {
+  font-size: 1.2em;
+  color: #ccc;
+  margin-bottom: 2em;
+}
+
+.login-input {
+  width: 300px;
+  padding: 12px;
+  margin: 10px 0;
+  font-size: 1em;
+  border: 1px solid #a9a18f;
+  border-radius: 8px;
+  background-color: #2e271f;
+  color: #fff;
+}
+
+.login-input::placeholder {
+  color: #bdb7a5;
+}
+
+.login-botao {
+  margin-top: 20px;
+  width: 320px;
+  padding: 12px;
+  font-size: 1.1em;
+  background-color: #865a21;
+  color: #f5efdd;
+  border: none;
+  border-radius: 10px;
+  cursor: pointer;
+}
+
+.login-botao:hover {
+  background-color: #a37334;
+}

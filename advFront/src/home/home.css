@@ -49,4 +49,24 @@
   .service p {
     font-size: 1rem;
   }
-  
+.logout-icon {
+  position: absolute;
+  top: 20px;
+  right: 30px;
+  z-index: 100;
+  cursor: pointer;
+  transition: transform 0.2s ease;
+  display: inline-block;
+}
+
+.logout-icon img {
+  width: 40px;    /* ajuste o tamanho da imagem */
+  height: 40px;
+  display: block;
+}
+
+.logout-icon:hover {
+  transform: scale(1.2);
+  filter: brightness(1.2); /* efeito de brilho */
+}
+

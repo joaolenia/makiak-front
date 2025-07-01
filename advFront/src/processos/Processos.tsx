@@ -1,4 +1,4 @@
-import  { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import './Processos.css';
 import { Link, useNavigate } from 'react-router-dom';
 import { buscarProcessos } from './axios/Requests';
@@ -18,8 +18,15 @@ interface Processo {
 }
 
 export default function Processos() {
-  const [filtro, setFiltro] = useState<number>(1);
-  const [termoBusca, setTermoBusca] = useState('');
+  const [filtro, setFiltro] = useState<number>(() => {
+    const stored = localStorage.getItem('filtro-processo');
+    return stored ? Number(stored) : 1;
+  });
+
+  const [termoBusca, setTermoBusca] = useState<string>(() => {
+    return localStorage.getItem('busca-processo') || '';
+  });
+
   const [processos, setProcessos] = useState<Processo[]>([]);
   const [debouncedTermo, setDebouncedTermo] = useState('');
   const [selectedIndex, setSelectedIndex] = useState<number | null>(null);
@@ -29,13 +36,12 @@ export default function Processos() {
   const navigate = useNavigate();
 
   useEffect(() => {
-  if (!showCadastro && !showEditar && termoBusca.trim()) {
-    buscarProcessos(termoBusca, filtro)
-      .then((res) => setProcessos(res))
-      .catch((err) => console.error('Erro ao buscar processos:', err));
-  }
-}, [showCadastro, showEditar]);
-
+    if (!showCadastro && !showEditar && termoBusca.trim()) {
+      buscarProcessos(termoBusca, filtro)
+        .then((res) => setProcessos(res))
+        .catch((err) => console.error('Erro ao buscar processos:', err));
+    }
+  }, [showCadastro, showEditar]);
 
   useEffect(() => {
     const timer = setTimeout(() => {
@@ -55,7 +61,7 @@ export default function Processos() {
   const handleCardClick = (idx: number) => {
     const processoId = processos[idx].id;
     navigate(`/processos/${processoId}`);
-  }; 
+  };
 
   return (
     <div className="processos-container">
@@ -74,21 +80,29 @@ export default function Processos() {
             type="text"
             placeholder="Buscar processo..."
             value={termoBusca}
-            onChange={(e) => setTermoBusca(e.target.value)}
+            onChange={(e) => {
+              const valor = e.target.value;
+              setTermoBusca(valor);
+              localStorage.setItem('busca-processo', valor);
+            }}
           />
-        </div>
 
-        <select
-          className="processos-select-filtro"
-          value={filtro}
-          onChange={(e) => setFiltro(Number(e.target.value))}
-        >
-          <option value={1}>Número do processo</option>
-          <option value={2}>Nome do autor</option>
-          <option value={3}>Nome do réu</option>
-          <option value={4}>Nome do terceiro</option>
-          <option value={5}>Tipo do processo</option>
-        </select>
+          <select
+            className="processos-select-filtro"
+            value={filtro}
+            onChange={(e) => {
+              const valor = Number(e.target.value);
+              setFiltro(valor);
+              localStorage.setItem('filtro-processo', String(valor));
+            }}
+          >
+            <option value={1}>Número do processo</option>
+            <option value={2}>Nome do autor</option>
+            <option value={3}>Nome do réu</option>
+            <option value={4}>Nome do terceiro</option>
+            <option value={5}>Tipo do processo</option>
+          </select>
+        </div>
       </div>
 
       <div className="processos-lista-processos">

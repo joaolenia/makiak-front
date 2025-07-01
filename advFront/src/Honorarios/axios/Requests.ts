@@ -85,5 +85,9 @@ export const deletarHonorario = async (idHonorario: number) => {
   const response = await api.delete(`/honorarios/${idHonorario}`);
   return response.data;
 };
+export const buscarHonorariosVencidos = async () => {
+  const response = await api.get('/honorarios/vencidos');
+  return response.data;
+};
 
 

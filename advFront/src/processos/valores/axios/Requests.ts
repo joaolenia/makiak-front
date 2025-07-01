@@ -73,9 +73,13 @@ export const atualizarValor = async (
   return response.data;
 };
 
-
 export const deletarValor = async (idvalor: number) => {
   const response = await api.delete(`/valores/${idvalor}`);
+  return response.data;
+};
+
+export const buscarValoresVencidos = async () => {
+  const response = await api.get('/valores/vencidos');
   return response.data;
 };
 

@@ -13,7 +13,7 @@ interface Parcela {
   valor: string;
   formaPagamento: string | null;
   situacao: 'PAGO' | 'PENDENTE';
-   observacoes?: string | null;
+  observacoes?: string | null;
 }
 
 interface Honorario {
@@ -66,30 +66,30 @@ export default function HonorariosDetalhado() {
 
   const isParcelado = honorario.tipoPagamento === 'PARCELADO';
 
-const iniciarEdicaoParcela = (parcela: Parcela) => {
-  setEditandoParcelaId(parcela.id);
-  setDescricaoParcela(parcela.observacoes ?? '');
-  setModoRollback( 0);
-};
+  const iniciarEdicaoParcela = (parcela: Parcela) => {
+    setEditandoParcelaId(parcela.id);
+    setDescricaoParcela(parcela.observacoes ?? '');
+    setModoRollback(0);
+  };
 
 
-const salvarEdicaoParcela = async () => {
-  if (!editandoParcelaId) return;
-  try {
-    await rollbackParcela(editandoParcelaId, modoRollback, descricaoParcela);
-    const atualizado = await buscarHonorarioPorId(Number(id));
-    setHonorario(atualizado);
-    cancelarEdicaoParcela();
-  } catch (error) {
-    console.error('Erro ao salvar edição da parcela:', error);
-  }
-};
+  const salvarEdicaoParcela = async () => {
+    if (!editandoParcelaId) return;
+    try {
+      await rollbackParcela(editandoParcelaId, modoRollback, descricaoParcela);
+      const atualizado = await buscarHonorarioPorId(Number(id));
+      setHonorario(atualizado);
+      cancelarEdicaoParcela();
+    } catch (error) {
+      console.error('Erro ao salvar edição da parcela:', error);
+    }
+  };
 
-const cancelarEdicaoParcela = () => {
-  setEditandoParcelaId(null);
-  setDescricaoParcela('');
-  setModoRollback(0);
-};
+  const cancelarEdicaoParcela = () => {
+    setEditandoParcelaId(null);
+    setDescricaoParcela('');
+    setModoRollback(0);
+  };
 
 
 
@@ -110,65 +110,69 @@ const cancelarEdicaoParcela = () => {
           <strong>STASIAK & MAKIAK</strong>
           <div className="honorario-sub-logo">Advogados Associados</div>
         </div>
-        <a href="#" className="honorario-voltar" onClick={() => navigate('/honorarios')}>VOLTAR</a>
+        <a href="#" className="honorario-voltar" onClick={(e) => {
+          e.preventDefault();
+          navigate(-1);
+        }}>VOLTAR</a>
+
       </div>
 
       <div className="honorario-corpo">
         <div className="honorario-parcelas">
-{isParcelado && honorario.parcelas.map((parcela) => (
-  <div
-    className="honorario-parcela"
-    key={parcela.id}
-    onDoubleClick={() => iniciarEdicaoParcela(parcela)}
-  >
-    <span className="honorario-bolinha" />
-    <div className="honorario-textos">
-      <div className="honorario-data">{formatarDataLocal(parcela.dataVencimento)}</div>
+          {isParcelado && honorario.parcelas.map((parcela) => (
+            <div
+              className="honorario-parcela"
+              key={parcela.id}
+              onDoubleClick={() => iniciarEdicaoParcela(parcela)}
+            >
+              <span className="honorario-bolinha" />
+              <div className="honorario-textos">
+                <div className="honorario-data">{formatarDataLocal(parcela.dataVencimento)}</div>
 
-      {editandoParcelaId === parcela.id ? (
-        <div className="honorario-edicao">
-          <textarea
-            value={descricaoParcela}
-            onChange={e => setDescricaoParcela(e.target.value)}
-            rows={3}
-            placeholder="Observações"
-          />
-          {parcela.situacao === 'PAGO' && (
-            <label>
-              <input
-                type="checkbox"
-                checked={modoRollback === 1}
-                onChange={(e) => setModoRollback(e.target.checked ? 1 : 0)}
-              />
-                Reverter pagamento (marcar como pendente)
-            </label>
-          )}
-          <div className="honorario-edicao-botoes">
-            <button className='edit-save' onClick={salvarEdicaoParcela}>Salvar</button>
-            <button className='edit-cancel' onClick={cancelarEdicaoParcela}>Cancelar</button>
-          </div>
-        </div>
-      ) : (
-        <div className="honorario-descricao">
-          <div>
-            <strong>Valor:</strong> R$ {parcela.valor}{' '}
-            <span style={{ color: parcela.situacao === 'PAGO' ? 'green' : 'red' }}>
-              ({parcela.situacao})
-            </span>
-          </div>
-          {parcela.formaPagamento && (
-            <div><strong>Forma de Pagamento:</strong> {parcela.formaPagamento}</div>
-          )}
-         {parcela.observacoes && (
-  <div className="honorario-observacoes">
-    <strong>Observações:</strong> {parcela.observacoes}
-  </div>
-)}
-        </div>
-      )}
-    </div>
-  </div>
-))}
+                {editandoParcelaId === parcela.id ? (
+                  <div className="honorario-edicao">
+                    <textarea
+                      value={descricaoParcela}
+                      onChange={e => setDescricaoParcela(e.target.value)}
+                      rows={3}
+                      placeholder="Observações"
+                    />
+                    {parcela.situacao === 'PAGO' && (
+                      <label>
+                        <input
+                          type="checkbox"
+                          checked={modoRollback === 1}
+                          onChange={(e) => setModoRollback(e.target.checked ? 1 : 0)}
+                        />
+                        Reverter pagamento (marcar como pendente)
+                      </label>
+                    )}
+                    <div className="honorario-edicao-botoes">
+                      <button className='edit-save' onClick={salvarEdicaoParcela}>Salvar</button>
+                      <button className='edit-cancel' onClick={cancelarEdicaoParcela}>Cancelar</button>
+                    </div>
+                  </div>
+                ) : (
+                  <div className="honorario-descricao">
+                    <div>
+                      <strong>Valor:</strong> R$ {parcela.valor}{' '}
+                      <span style={{ color: parcela.situacao === 'PAGO' ? 'green' : 'red' }}>
+                        ({parcela.situacao})
+                      </span>
+                    </div>
+                    {parcela.formaPagamento && (
+                      <div><strong>Forma de Pagamento:</strong> {parcela.formaPagamento}</div>
+                    )}
+                    {parcela.observacoes && (
+                      <div className="honorario-observacoes">
+                        <strong>Observações:</strong> {parcela.observacoes}
+                      </div>
+                    )}
+                  </div>
+                )}
+              </div>
+            </div>
+          ))}
 
 
         </div>
@@ -197,7 +201,7 @@ const cancelarEdicaoParcela = () => {
           <div className="honorario-botoes">
             {honorario.tipoPagamento === 'PARCELADO' && (
               <button
-            
+
                 className="honorario-acao"
                 onClick={(e) => {
                   e.stopPropagation();
@@ -277,7 +281,7 @@ const cancelarEdicaoParcela = () => {
               >
                 Confirmar Pagamento
               </button>
-              <button  onClick={() => setMostrarPagamento(false)}>Cancelar</button>
+              <button onClick={() => setMostrarPagamento(false)}>Cancelar</button>
             </div>
           </div>
         </div>
