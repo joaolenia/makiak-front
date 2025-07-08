@@ -71,7 +71,7 @@ export default function Processos() {
           <strong>STASIAK & MAKIAK</strong>
           <div className="processos-sub-logo">Advogados Associados</div>
         </div>
-        <Link to="/" className="processos-voltar">VOLTAR</Link>
+        <Link to="/home" className="processos-voltar">VOLTAR</Link>
       </header>
 
       <div className="processos-filtros">

@@ -7,7 +7,6 @@ import { buscarValoresVencidos } from '../processos/valores/axios/Requests';
 export default function Vencimentos() {
   const navigate = useNavigate();
 
-  // Inicializa tipo lendo do localStorage ou usa 'HONORARIOS' como padrão
   const [tipo, setTipo] = useState<'HONORARIOS' | 'VALORES'>(() => {
     const saved = localStorage.getItem('vencimentos-tipo');
     return saved === 'VALORES' ? 'VALORES' : 'HONORARIOS';
@@ -15,7 +14,12 @@ export default function Vencimentos() {
 
   const [itens, setItens] = useState<any[]>([]);
 
-  // Quando o filtro muda, salva no localStorage
+  function formatarDataIsoLocal(dataIso: string): string {
+  const [ano, mes, dia] = dataIso.split('T')[0].split('-');
+  return `${dia}/${mes}/${ano}`;
+}
+
+
   const handleTipoChange = (novoTipo: 'HONORARIOS' | 'VALORES') => {
     setTipo(novoTipo);
     localStorage.setItem('vencimentos-tipo', novoTipo);
@@ -53,7 +57,7 @@ export default function Vencimentos() {
     if (!parcelas || parcelas.length === 0) return null;
     const hoje = new Date();
 
-    // Filtra parcelas pendentes com vencimento no passado (vencidas)
+
     const vencidas = parcelas.filter((p) => {
       return (
         p.situacao === 'PENDENTE' &&
@@ -63,7 +67,7 @@ export default function Vencimentos() {
 
     if (vencidas.length === 0) return null;
 
-    // Ordena pela data de vencimento crescente (mais antiga primeiro)
+
     vencidas.sort((a, b) => new Date(a.dataVencimento).getTime() - new Date(b.dataVencimento).getTime());
 
     return vencidas[0];
@@ -77,7 +81,7 @@ export default function Vencimentos() {
           <strong>STASIAK & MAKIAK</strong>
           <div className="vencimento-sub-logo">Advogados Associados</div>
         </div>
-        <a href="#" className="vencimento-voltar" onClick={() => navigate('/')}>
+        <a href="#" className="vencimento-voltar" onClick={() => navigate('/home')}>
           VOLTAR
         </a>
       </header>
@@ -151,7 +155,7 @@ export default function Vencimentos() {
                     <div>
                       <strong>Data Vencimento:</strong>{' '}
                       <span className="vencimentos-data">
-                        {new Date(parcelaVencida.dataVencimento).toLocaleDateString()}
+                    {formatarDataIsoLocal(parcelaVencida.dataVencimento)}
                       </span>
                     </div>
 

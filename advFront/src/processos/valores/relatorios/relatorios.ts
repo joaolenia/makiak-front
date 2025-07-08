@@ -1,4 +1,5 @@
-import html2pdf from 'html2pdf.js';
+import jsPDF from 'jspdf';
+import autoTable from 'jspdf-autotable';
 
 interface Parcela {
   id: number;
@@ -22,69 +23,89 @@ interface ValorProcesso {
 }
 
 export function gerarPDFExtratoValores(valor: ValorProcesso) {
+  const doc = new jsPDF();
+  let y = 15;
+
   const formatarData = (data: string | null): string => {
     if (!data) return '—';
     const dt = new Date(data);
     return dt.toLocaleDateString('pt-BR');
   };
 
-  const totalFormatado = Number(valor.valorTotal).toFixed(2);
+  doc.setFont('helvetica', 'normal');
+  doc.setFontSize(18);
+  doc.text('STASIAK & MAKIAK', 105, y, { align: 'center' });
 
-  const html = `
-    <div style="font-family: Arial; padding: 20px;">
-      <h1 style="text-align: center; margin-bottom: 0;">STASIAK & MAKIAK</h1>
-      <h3 style="text-align: center; margin-top: 0;">Advogados Associados</h3>
+  y += 10;
+  doc.setFontSize(14);
+  doc.text('Advogados Associados', 105, y, { align: 'center' });
 
-      <hr />
+  y += 10;
+  doc.setLineWidth(0.5);
+  doc.line(15, y, 195, y);
 
-      <h2>EXTRATO DE VALORES DO PROCESSO</h2>
-      <div><strong>Tipo de Pagamento:</strong> ${valor.tipoPagamento}</div>
-      <div><strong>Total:</strong> R$ ${totalFormatado}</div>
-      <div><strong>Situação:</strong> ${valor.situacao ?? '—'}</div>
-      ${
-        valor.tipoPagamento === 'PARCELADO'
-          ? `
-        <div><strong>Parcelas:</strong> ${valor.quantidadeParcelas}</div>
-        <div><strong>Entrada:</strong> R$ ${valor.entrada != null ? Number(valor.entrada).toFixed(2) : '—'}</div>
-        <div><strong>Pagas:</strong> ${valor.parcelasPagas}/${valor.quantidadeParcelas}</div>
-      `
-          : `
-        <div><strong>Forma de Pagamento:</strong> ${valor.formaPagamento ?? '—'}</div>
-      `
-      }
+  y += 10;
+  doc.setFontSize(12);
+  doc.text('EXTRATO DE VALORES DO PROCESSO', 15, y);
+  y += 10;
 
-      <hr />
+  doc.text(`Tipo de Pagamento: ${valor.tipoPagamento}`, 15, y);
+  y += 8;
 
-      <h3>Parcelas</h3>
-      <ul>
-        ${valor.parcelas
-          .map(
-            parcela => `
-          <li style="margin-bottom: 10px;">
-            <strong>Vencimento:</strong> ${formatarData(parcela.dataVencimento)}<br />
-            <strong>Pagamento:</strong> ${formatarData(parcela.dataPagamento)}<br />
-            <strong>Valor:</strong> R$ ${Number(parcela.valor).toFixed(2)}<br />
-            <strong>Situação:</strong> ${parcela.situacao}<br />
-            <strong>Forma de Pagamento:</strong> ${parcela.formaPagamento ?? '—'}
-          </li>
-        `
-          )
-          .join('')}
-      </ul>
-    </div>
-  `;
+  doc.text(`Total: R$ ${Number(valor.valorTotal).toFixed(2)}`, 15, y);
+  y += 8;
 
-  const element = document.createElement('div');
-  element.innerHTML = html;
+  doc.text(`Situação: ${valor.situacao ?? '—'}`, 15, y);
+  y += 8;
 
-  html2pdf()
-    .from(element)
-    .set({
-      margin: 10,
-      filename: `extrato_valores_processo_${valor.id}.pdf`,
-      image: { type: 'jpeg', quality: 0.98 },
-      html2canvas: { scale: 2 },
-      jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' }
-    })
-    .save();
+  if (valor.tipoPagamento === 'PARCELADO') {
+    doc.text(`Parcelas: ${valor.quantidadeParcelas}`, 15, y);
+    y += 8;
+
+    doc.text(
+      `Entrada: R$ ${
+        valor.entrada != null ? Number(valor.entrada).toFixed(2) : '—'
+      }`,
+      15,
+      y
+    );
+    y += 8;
+
+    doc.text(
+      `Pagas: ${valor.parcelasPagas}/${valor.quantidadeParcelas}`,
+      15,
+      y
+    );
+    y += 12;
+  } else {
+    doc.text(
+      `Forma de Pagamento: ${valor.formaPagamento ?? '—'}`,
+      15,
+      y
+    );
+    y += 12;
+  }
+
+  const tabelaDados = valor.parcelas.map((p, index) => [
+    index + 1,
+    formatarData(p.dataVencimento),
+    formatarData(p.dataPagamento),
+    `R$ ${Number(p.valor).toFixed(2)}`,
+    p.situacao,
+    p.formaPagamento ?? '—',
+  ]);
+
+  autoTable(doc, {
+    startY: y,
+    head: [['#', 'Vencimento', 'Pagamento', 'Valor', 'Situação', 'Forma Pagto']],
+    body: tabelaDados,
+    styles: { fontSize: 10 },
+    headStyles: { fillColor: [0, 102, 204], textColor: 255, fontStyle: 'bold' },
+    alternateRowStyles: { fillColor: [240, 240, 240] },
+    margin: { left: 15, right: 15 },
+    tableLineWidth: 0.1,
+    tableLineColor: 10,
+  });
+
+  doc.save(`extrato_valores_processo_${valor.id}.pdf`);
 }

@@ -1,4 +1,4 @@
-import html2pdf from 'html2pdf.js';
+import jsPDF from 'jspdf';
 
 interface Parcela {
   id: number;
@@ -22,72 +22,94 @@ interface Honorario {
 }
 
 export function gerarPDFHonorario(honorario: Honorario) {
+  const doc = new jsPDF();
+
   const formatarData = (data?: string): string => {
     if (!data) return '—';
     const [ano, mes, dia] = data.split('-');
     return `${dia}/${mes}/${ano}`;
   };
 
-  const valorTotal = Number(honorario.valorTotal);
+  let y = 15;
 
-  const html = `
-    <div style="font-family: Arial; padding: 20px;">
-      <h1 style="text-align: center; margin-bottom: 0;">STASIAK & MAKIAK</h1>
-      <h3 style="text-align: center; margin-top: 0;">Advogados Associados</h3>
+  doc.setFont('helvetica');
+  doc.setFontSize(18);
+  doc.text('STASIAK & MAKIAK', 105, y, { align: 'center' });
 
-      <hr />
+  y += 10;
+  doc.setFontSize(14);
+  doc.text('Advogados Associados', 105, y, { align: 'center' });
 
-      <h2 style="margin-bottom: 5px;">Extrato de Honorários</h2>
-      <div><strong>Valor Total:</strong> R$ ${valorTotal.toFixed(2)}</div>
-      <div><strong>Situação:</strong> ${honorario.situacao ?? 'PENDENTE'}</div>
-      <div><strong>Forma de Pagamento:</strong> ${honorario.formaPagamento ?? 'Parcelado'}</div>
-      <div><strong>Entrada:</strong> R$ ${honorario.entrada != null ? Number(honorario.entrada).toFixed(2) : '—'}</div>
+  y += 10;
+  doc.setLineWidth(0.5);
+  doc.line(15, y, 195, y);
 
-      ${honorario.tipoPagamento === 'PARCELADO' && honorario.parcelas.length > 0
-        ? `
-        <hr />
-        <h3>Parcelas</h3>
-        <table border="1" cellspacing="0" cellpadding="5" style="width: 100%; border-collapse: collapse;">
-          <thead>
-            <tr>
-              <th>Nº</th>
-              <th>Vencimento</th>
-              <th>Pagamento</th>
-              <th>Valor (R$)</th>
-              <th>Situação</th>
-            </tr>
-          </thead>
-          <tbody>
-            ${honorario.parcelas
-              .sort((a, b) => a.id - b.id)
-              .map((p, index) => `
-                <tr>
-                  <td>${index + 1}</td>
-                  <td>${formatarData(p.dataVencimento)}</td>
-                  <td>${p.dataPagamento ? formatarData(p.dataPagamento) : '—'}</td>
-                  <td>${Number(p.valor).toFixed(2)}</td>
-                  <td>${p.situacao}</td>
-                </tr>
-              `)
-              .join('')}
-          </tbody>
-        </table>
-      `
-        : ''}
-    </div>
-  `;
+  y += 10;
+  doc.setFontSize(12);
 
-  const element = document.createElement('div');
-  element.innerHTML = html;
+  doc.text(`Extrato de Honorários`, 15, y);
+  y += 10;
 
-  html2pdf()
-    .from(element)
-    .set({
-      margin: 10,
-      filename: `honorarios_${honorario.id}.pdf`,
-      image: { type: 'jpeg', quality: 0.98 },
-      html2canvas: { scale: 2 },
-      jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' },
-    })
-    .save();
+  doc.text(`Valor Total: R$ ${Number(honorario.valorTotal).toFixed(2)}`, 15, y);
+  y += 8;
+  doc.text(`Situação: ${honorario.situacao ?? 'PENDENTE'}`, 15, y);
+  y += 8;
+  doc.text(`Forma de Pagamento: ${honorario.formaPagamento ?? 'Parcelado'}`, 15, y);
+  y += 8;
+  doc.text(`Entrada: R$ ${honorario.entrada != null ? Number(honorario.entrada).toFixed(2) : '—'}`, 15, y);
+  y += 12;
+
+  if (honorario.tipoPagamento === 'PARCELADO' && honorario.parcelas.length > 0) {
+    doc.setFontSize(14);
+    doc.text('Parcelas', 15, y);
+    y += 10;
+
+    doc.setFontSize(10);
+
+    // Cabeçalho tabela
+    const startX = 15;
+    const colWidths = [15, 40, 40, 30, 30]; // largura colunas
+    const headers = ['Nº', 'Vencimento', 'Pagamento', 'Valor (R$)', 'Situação'];
+
+    let x = startX;
+    headers.forEach((header, i) => {
+      doc.text(header, x + 1, y);
+      x += colWidths[i];
+    });
+
+    y += 6;
+    doc.setLineWidth(0.2);
+    doc.line(startX, y, startX + colWidths.reduce((a,b) => a+b, 0), y); // linha separadora
+    y += 4;
+
+    // Linhas da tabela
+    honorario.parcelas
+      .sort((a, b) => a.id - b.id)
+      .forEach((p, index) => {
+        x = startX;
+
+        if (y > 280) { // nova página se estiver perto do fim
+          doc.addPage();
+          y = 15;
+        }
+
+        doc.text(String(index + 1), x + 1, y);
+        x += colWidths[0];
+
+        doc.text(formatarData(p.dataVencimento), x + 1, y);
+        x += colWidths[1];
+
+        doc.text(p.dataPagamento ? formatarData(p.dataPagamento) : '—', x + 1, y);
+        x += colWidths[2];
+
+        doc.text(Number(p.valor).toFixed(2), x + 1, y);
+        x += colWidths[3];
+
+        doc.text(p.situacao, x + 1, y);
+
+        y += 7;
+      });
+  }
+
+  doc.save(`honorarios_${honorario.id}.pdf`);
 }

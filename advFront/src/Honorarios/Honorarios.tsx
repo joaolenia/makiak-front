@@ -68,7 +68,7 @@ useEffect(() => {
           <strong>STASIAK & MAKIAK</strong>
           <div className="honorario-sub-logo-p">Advogados Associados</div>
         </div>
-        <a href="#" className="honorario-voltar-p" onClick={() => navigate('/')}>
+        <a href="#" className="honorario-voltar-p" onClick={() => navigate('/home')}>
           VOLTAR
         </a>
       </header>

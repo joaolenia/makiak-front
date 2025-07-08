@@ -1,4 +1,4 @@
-import html2pdf from 'html2pdf.js';
+import jsPDF from 'jspdf';
 
 interface Pessoa {
   nome: string;
@@ -24,9 +24,7 @@ interface Processo {
 }
 
 export function gerarPDFProcesso(processo: Processo, descricoes: Descricao[]) {
-  const autores = processo.autores.map(p => p.nome).join(', ') || '—';
-  const reus = processo.reus.map(p => p.nome).join(', ') || '—';
-  const terceiros = processo.terceiros.map(p => p.nome).join(', ') || '—';
+  const doc = new jsPDF();
 
   const formatarData = (data: string): string => {
     if (!data) return '—';
@@ -34,50 +32,75 @@ export function gerarPDFProcesso(processo: Processo, descricoes: Descricao[]) {
     return `${dia}/${mes}/${ano}`;
   };
 
-  const html = `
-    <div style="font-family: Arial; padding: 20px;">
-      <h1 style="text-align: center; margin-bottom: 0;">STASIAK & MAKIAK</h1>
-      <h3 style="text-align: center; margin-top: 0;">Advogados Associados</h3>
+  let y = 15;
 
-      <hr />
+  doc.setFont('helvetica');
+  doc.setFontSize(18);
+  doc.text('STASIAK & MAKIAK', 105, y, { align: 'center' });
 
-      <h2 style="margin-bottom: 5px;">Processo nº ${processo.numero}</h2>
-      ${processo.subnumero ? `<div><strong>Subnúmero:</strong> ${processo.subnumero}</div>` : ''}
-      <div><strong>Data:</strong> ${formatarData(processo.data)}</div>
-      <div><strong>Situação:</strong> ${processo.situacao}</div>
-      <div><strong>Tipo:</strong> ${processo.tipo}</div>
-      <div><strong>Pasta:</strong> ${processo.pasta || '—'}</div>
-      <div><strong>Autor(es):</strong> ${autores}</div>
-      <div><strong>Réu(s):</strong> ${reus}</div>
-      <div><strong>Terceiro(s):</strong> ${terceiros}</div>
-      <div><strong>Vara:</strong> ${processo.vara || '—'}</div>
-      <div><strong>Cidade:</strong> ${processo.cidade || '—'}</div>
+  y += 10;
+  doc.setFontSize(14);
+  doc.text('Advogados Associados', 105, y, { align: 'center' });
 
-      <hr />
+  y += 10;
+  doc.setLineWidth(0.5);
+  doc.line(15, y, 195, y);
 
-      <h3>Histórico de Descrições</h3>
-      <ul>
-        ${descricoes
-          .sort((a, b) => b.data.localeCompare(a.data))
-          .map(desc => `
-            <li style="margin-bottom: 10px;">
-              <strong>${formatarData(desc.data)}:</strong><br />
-              ${desc.descricao.replace(/\n/g, '<br />')}
-            </li>
-          `)
-          .join('')}
-      </ul>
-    </div>
-  `;
+  y += 10;
+  doc.setFontSize(12);
+  doc.text(`Processo nº: ${processo.numero}`, 15, y);
+  y += 8;
 
-  const element = document.createElement('div');
-  element.innerHTML = html;
+  if (processo.subnumero) {
+    doc.text(`Subnúmero: ${processo.subnumero}`, 15, y);
+    y += 8;
+  }
 
-  html2pdf().from(element).set({
-    margin: 10,
-    filename: `processo_${processo.numero}.pdf`,
-    image: { type: 'jpeg', quality: 0.98 },
-    html2canvas: { scale: 2 },
-    jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' }
-  }).save();
+  doc.text(`Data: ${formatarData(processo.data)}`, 15, y);
+  y += 8;
+  doc.text(`Situação: ${processo.situacao}`, 15, y);
+  y += 8;
+  doc.text(`Tipo: ${processo.tipo}`, 15, y);
+  y += 8;
+  doc.text(`Pasta: ${processo.pasta || '—'}`, 15, y);
+  y += 8;
+  doc.text(`Autor(es): ${processo.autores.map(p => p.nome).join(', ') || '—'}`, 15, y);
+  y += 8;
+  doc.text(`Réu(s): ${processo.reus.map(p => p.nome).join(', ') || '—'}`, 15, y);
+  y += 8;
+  doc.text(`Terceiro(s): ${processo.terceiros.map(p => p.nome).join(', ') || '—'}`, 15, y);
+  y += 8;
+  doc.text(`Vara: ${processo.vara || '—'}`, 15, y);
+  y += 8;
+  doc.text(`Cidade: ${processo.cidade || '—'}`, 15, y);
+  
+  y += 10;
+  doc.line(15, y, 195, y);
+  y += 10;
+
+  doc.setFontSize(14);
+  doc.text('Histórico de Descrições', 15, y);
+  y += 10;
+
+  doc.setFontSize(12);
+
+  descricoes
+    .sort((a, b) => b.data.localeCompare(a.data))
+    .forEach(desc => {
+      const dataFormatada = formatarData(desc.data);
+      const texto = `${dataFormatada}: ${desc.descricao}`;
+
+      const linhas = doc.splitTextToSize(texto, 180);
+
+      if (y + linhas.length * 7 > 290) {
+        doc.addPage();
+        y = 15;
+      }
+
+      doc.text(linhas, 15, y);
+      y += linhas.length * 7;
+      y += 5; 
+    });
+
+  doc.save(`processo_${processo.numero}.pdf`);
 }

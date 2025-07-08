@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import './Pessoas.css';
 import { Link } from 'react-router-dom';
 import FormPessoaFisica from './form/FormPessoaFisica';
@@ -179,7 +179,7 @@ export default function Pessoas() {
           <strong>STASIAK & MAKIAK</strong>
           <div>Advogados Associados</div>
         </div>
-        <Link to="/" className="voltar">VOLTAR</Link>
+        <Link to="/home" className="voltar">VOLTAR</Link>
       </header>
 
       <div className="content-wrapper">
