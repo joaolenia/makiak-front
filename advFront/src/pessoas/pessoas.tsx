@@ -5,6 +5,10 @@ import FormPessoaFisica from './form/FormPessoaFisica';
 import EditarPessoaFisica from './form/EditarPessoaFisica';
 import FormPessoaJuridica from './form/FormPessoaJuridica';
 import EditarPessoaJuridica from './form/EditarPessoaJuridica';
+import { gerarRelatorioPessoaPDF } from './relatorios/relatorio';
+import { gerarRelatorioPessoaJuridicaPDF } from './relatorios/relatorioJuridica';
+
+
 
 import {
   buscarPessoaFisicaPorNome,
@@ -171,177 +175,190 @@ export default function Pessoas() {
     }
   };
 
-  return (
-    <div className="container">
-      <header>
-        <div className="title">PESSOAS</div>
-        <div className="logo">
-          <strong>STASIAK & MAKIAK</strong>
-          <div>Advogados Associados</div>
-        </div>
-        <Link to="/home" className="voltar">VOLTAR</Link>
-      </header>
+return (
+  <div className="container">
+    <header>
+      <div className="title">PESSOAS</div>
+      <div className="logo">
+        <strong>STASIAK & MAKIAK</strong>
+        <div>Advogados Associados</div>
+      </div>
+      <Link to="/home" className="voltar">VOLTAR</Link>
+    </header>
 
-      <div className="content-wrapper">
-        <div className="search-area">
-          <input
-            type="text"
-            placeholder="Buscar"
-            value={busca}
-            onChange={(e) => setBusca(e.target.value)}
-          />
-          <select
-            className="tipo-select"
-            value={tipoPessoa}
-            onChange={(e) => setTipoPessoa(e.target.value as 'fisica' | 'juridica')}
-          >
-            <option value="fisica">Pessoa Física</option>
-            <option value="juridica">Pessoa Jurídica</option>
-          </select>
-        </div>
-
-        <div className="content">
-          <aside>
-            <ul className="pessoa-lista">
-              {pessoas.map((pessoa) => (
-                <li
-                  key={pessoa.id}
-                  className={selected === pessoa.id ? 'active' : ''}
-                  onClick={() => handleSelecionarPessoa(pessoa.id)}
-                >
-                  {pessoa.nome}
-                  <button
-                    className="edit-btn"
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      setShowEditar(true);
-                    }}
-                  >
-                    ✎
-                  </button>
-                </li>
-              ))}
-            </ul>
-          </aside>
-
-          <main>
-            {detalhesPessoa ? (
-              <div className="main-grid">
-                <div className="col-esquerda">
-                  {tipoPessoa === 'fisica' ? (
-                    <>
-                      <h2>{(detalhesPessoa as PessoaDetalhes).nome}</h2>
-                      <p>
-                        <strong>Nacionalidade:</strong>{''} {(detalhesPessoa as PessoaDetalhes).nacionalidade}<br />
-                        <strong>Estado civil:</strong>{' '} {(detalhesPessoa as PessoaDetalhes).estadoCivil}<br />
-                        <strong>Profissão:</strong>{' '} {(detalhesPessoa as PessoaDetalhes).profissao}<br />
-                        <strong>RG:</strong>{' '} {(detalhesPessoa as PessoaDetalhes).rg} {(detalhesPessoa as PessoaDetalhes).orgaoExpedidorRg}<br />
-                        <strong>CPF:</strong>{' '} {(detalhesPessoa as PessoaDetalhes).cpf}<br />
-                        <strong>Endereço:</strong>{' '} {(detalhesPessoa as PessoaDetalhes).endereco}, {(detalhesPessoa as PessoaDetalhes).uf}, {(detalhesPessoa as PessoaDetalhes).cep}<br />
-                        <strong>Email:</strong>{' '} {(detalhesPessoa as PessoaDetalhes).email}<br />
-                        <strong>WhatsApp:</strong>{' '} {(detalhesPessoa as PessoaDetalhes).whatsapp}<br />
-                        <strong>Telefone Fixo:</strong>{' '} {(detalhesPessoa as PessoaDetalhes).telefone}
-                      </p>
-                      <div className="observacoes">
-                        <strong>OBSERVAÇÕES</strong>
-                        <p>{(detalhesPessoa as PessoaDetalhes).observacoes ?? 'Nenhuma observação registrada.'}</p>
-                      </div>
-                    </>
-                  ) : (
-                    <>
-                      <h2>{(detalhesPessoa as PessoaJuridicaDetalhes).razaoSocial}</h2>
-                      <p>
-                        <strong>Razão Social:</strong>{' '} {(detalhesPessoa as PessoaJuridicaDetalhes).razaoSocial}<br />
-                        <strong>CNPJ:</strong>{' '} {(detalhesPessoa as PessoaJuridicaDetalhes).cnpj}<br />
-                        <strong>Endereço:</strong>{' '} {(detalhesPessoa as PessoaJuridicaDetalhes).endereco}, {(detalhesPessoa as PessoaJuridicaDetalhes).uf}, {(detalhesPessoa as PessoaJuridicaDetalhes).cep}<br />
-                        <strong>Email:</strong>{' '} {(detalhesPessoa as PessoaJuridicaDetalhes).email ?? 'N/A'}<br />
-                        <strong>Telefone:</strong>{' '} {(detalhesPessoa as PessoaJuridicaDetalhes).telefone ?? 'N/A'}<br />
-                        <strong>Representante(s):</strong>
-                        <ul>
-                          {(detalhesPessoa as PessoaJuridicaDetalhes).representantes?.map((rep) => (
-                            <li key={rep.id}>{rep.nome}</li>
-                          )) ?? <li>Nenhum representante cadastrado</li>}
-                        </ul>
-                      </p>
-                      <div className="observacoes">
-                        <strong>OBSERVAÇÕES</strong>
-                        <p>{(detalhesPessoa as PessoaJuridicaDetalhes).observacoes ?? 'Nenhuma observação registrada.'}</p>
-                      </div>
-                    </>
-                  )}
-                </div>
-
-                <div className="col-direita">
-                  <div className="processos">
-                    <strong>PROCESSOS</strong>
-                    {('processos' in detalhesPessoa && detalhesPessoa.processos.length > 0) ? (
-                      <ul>
-                        {detalhesPessoa.processos.map((processo) => (
-                          <li key={processo.id} className="processo-item">
-                            <strong className="processo-numero">{processo.numero}</strong>
-                            <div><span className="label">Pasta:</span> {processo.pasta}</div>
-                            <div><span className="label">Tipo:</span> {processo.tipo}</div>
-                            <div><span className="label">Cidade:</span> {processo.cidade} - {processo.vara}</div>
-                            <div><span className="label">Valor da causa:</span> {processo.valorCausa}</div>
-                            <div><span className="label">Situação:</span> {processo.situacao}</div>
-                          </li>
-                        ))}
-                      </ul>
-                    ) : (
-                      <p>Nenhum processo vinculado.</p>
-                    )}
-                  </div>
-                </div>
-
-              </div>
-            ) : (
-              <div style={{ padding: '2rem' }}></div>
-            )}
-
-            <div className="btn-direita">
-              <button className="copiar-btn" onClick={handleCopiar}>COPIAR</button>
-            </div>
-          </main>
-
-
-        </div>
-
-        <div className="btn-cadastrar-container">
-          <button className="cadastrar-btn" onClick={() => setShowCadastro(true)}>CADASTRAR</button>
-        </div>
+    <div className="content-wrapper">
+      <div className="search-area">
+        <input
+          type="text"
+          placeholder="Buscar"
+          value={busca}
+          onChange={(e) => setBusca(e.target.value)}
+        />
+        <select
+          className="tipo-select"
+          value={tipoPessoa}
+          onChange={(e) => setTipoPessoa(e.target.value as 'fisica' | 'juridica')}
+        >
+          <option value="fisica">Pessoa Física</option>
+          <option value="juridica">Pessoa Jurídica</option>
+        </select>
       </div>
 
-      {showCadastro && (
-        <div className="modal-overlay">
-          {tipoPessoa === 'fisica' ? (
-            <FormPessoaFisica onClose={() => setShowCadastro(false)} />
-          ) : (
-            <FormPessoaJuridica onClose={() => setShowCadastro(false)} />
-          )}
-        </div>
-      )}
-      {showEditar && selected && (
-        <div className="modal-overlay">
-          {tipoPessoa === 'fisica' ? (
-            <EditarPessoaFisica
-              id={selected}
-              onClose={() => {
-                setShowEditar(false);
-                atualizarListaEDetalhes();
-              }}
-            />
-          ) : (
-            <EditarPessoaJuridica
-              id={selected}
-              onClose={() => {
-                setShowEditar(false);
-                atualizarListaEDetalhes();
-              }}
-            />
-          )}
-        </div>
-      )}
+      <div className="content">
+        <aside>
+          <ul className="pessoa-lista">
+            {pessoas.map((pessoa) => (
+              <li
+                key={`pessoa-${pessoa.id}`}
+                className={selected === pessoa.id ? 'active' : ''}
+                onClick={() => handleSelecionarPessoa(pessoa.id)}
+              >
+                {pessoa.nome}
+                <button
+                  className="edit-btn"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    setShowEditar(true);
+                  }}
+                >
+                  ✎
+                </button>
+              </li>
+            ))}
+          </ul>
+        </aside>
 
+        <main>
+          {detalhesPessoa ? (
+            <div className="main-grid">
+              <div className="col-esquerda">
+                {tipoPessoa === 'fisica' ? (
+                  <>
+                    <h2>{(detalhesPessoa as PessoaDetalhes).nome}</h2>
+                    <p>
+                      <strong>Nacionalidade:</strong> {(detalhesPessoa as PessoaDetalhes).nacionalidade}<br />
+                      <strong>Estado civil:</strong> {(detalhesPessoa as PessoaDetalhes).estadoCivil}<br />
+                      <strong>Profissão:</strong> {(detalhesPessoa as PessoaDetalhes).profissao}<br />
+                      <strong>RG:</strong> {(detalhesPessoa as PessoaDetalhes).rg} {(detalhesPessoa as PessoaDetalhes).orgaoExpedidorRg}<br />
+                      <strong>CPF:</strong> {(detalhesPessoa as PessoaDetalhes).cpf}<br />
+                      <strong>Endereço:</strong> {(detalhesPessoa as PessoaDetalhes).endereco}, {(detalhesPessoa as PessoaDetalhes).uf}, {(detalhesPessoa as PessoaDetalhes).cep}<br />
+                      <strong>Email:</strong> {(detalhesPessoa as PessoaDetalhes).email}<br />
+                      <strong>WhatsApp:</strong> {(detalhesPessoa as PessoaDetalhes).whatsapp}<br />
+                      <strong>Telefone Fixo:</strong> {(detalhesPessoa as PessoaDetalhes).telefone}
+                    </p>
+                    <div className="observacoes">
+                      <strong>OBSERVAÇÕES</strong>
+                      <p>{(detalhesPessoa as PessoaDetalhes).observacoes ?? 'Nenhuma observação registrada.'}</p>
+                    </div>
+                  </>
+                ) : (
+                  <>
+                    <h2>{(detalhesPessoa as PessoaJuridicaDetalhes).razaoSocial}</h2>
+                    <p>
+                      <strong>Razão Social:</strong> {(detalhesPessoa as PessoaJuridicaDetalhes).razaoSocial}<br />
+                      <strong>CNPJ:</strong> {(detalhesPessoa as PessoaJuridicaDetalhes).cnpj}<br />
+                      <strong>Endereço:</strong> {(detalhesPessoa as PessoaJuridicaDetalhes).endereco}, {(detalhesPessoa as PessoaJuridicaDetalhes).uf}, {(detalhesPessoa as PessoaJuridicaDetalhes).cep}<br />
+                      <strong>Email:</strong> {(detalhesPessoa as PessoaJuridicaDetalhes).email ?? 'N/A'}<br />
+                      <strong>Telefone:</strong> {(detalhesPessoa as PessoaJuridicaDetalhes).telefone ?? 'N/A'}<br />
+                      <strong>Representante(s):</strong>
+                      <ul>
+                        {(detalhesPessoa as PessoaJuridicaDetalhes).representantes?.map((rep) => (
+                          <li key={`representante-${rep.id}`}>{rep.nome}</li>
+                        )) ?? <li>Nenhum representante cadastrado</li>}
+                      </ul>
+                    </p>
+                    <div className="observacoes">
+                      <strong>OBSERVAÇÕES</strong>
+                      <p>{(detalhesPessoa as PessoaJuridicaDetalhes).observacoes ?? 'Nenhuma observação registrada.'}</p>
+                    </div>
+                  </>
+                )}
+              </div>
+
+              <div className="col-direita">
+                <div className="processos">
+                  <strong>PROCESSOS</strong>
+                  {('processos' in detalhesPessoa && detalhesPessoa.processos.length > 0) ? (
+                    <ul>
+                      {detalhesPessoa.processos.map((processo) => (
+                        <li key={`processo-${processo.id}`} className="processo-item">
+                          <strong className="processo-numero">{processo.numero}</strong>
+                          <div><span className="label">Pasta:</span> {processo.pasta}</div>
+                          <div><span className="label">Tipo:</span> {processo.tipo}</div>
+                          <div><span className="label">Cidade:</span> {processo.cidade} - {processo.vara}</div>
+                          <div><span className="label">Valor da causa:</span> {processo.valorCausa}</div>
+                          <div><span className="label">Situação:</span> {processo.situacao}</div>
+                        </li>
+                      ))}
+                    </ul>
+                  ) : (
+                    <p>Nenhum processo vinculado.</p>
+                  )}
+                </div>
+              </div>
+            </div>
+          ) : (
+            <div style={{ padding: '2rem' }}></div>
+          )}
+
+          <div className="btn-direita">
+            <button className="copiar-btn" onClick={handleCopiar}>COPIAR</button>
+            <button
+              className="copiar-btn"
+              style={{ marginLeft: '1rem' }}
+              onClick={() => {
+                if (!selected) return;
+                if (tipoPessoa === 'fisica') {
+                  gerarRelatorioPessoaPDF(Number(selected));
+                } else {
+                  gerarRelatorioPessoaJuridicaPDF(Number(selected));
+                }
+              }}
+              disabled={!selected}
+            >
+              GERAR RELATÓRIO
+            </button>
+          </div>
+        </main>
+      </div>
+
+      <div className="btn-cadastrar-container">
+        <button className="cadastrar-btn" onClick={() => setShowCadastro(true)}>CADASTRAR</button>
+      </div>
     </div>
-  );
+
+    {showCadastro && (
+      <div className="modal-overlay">
+        {tipoPessoa === 'fisica' ? (
+          <FormPessoaFisica onClose={() => setShowCadastro(false)} />
+        ) : (
+          <FormPessoaJuridica onClose={() => setShowCadastro(false)} />
+        )}
+      </div>
+    )}
+
+    {showEditar && selected && (
+      <div className="modal-overlay">
+        {tipoPessoa === 'fisica' ? (
+          <EditarPessoaFisica
+            id={selected}
+            onClose={() => {
+              setShowEditar(false);
+              atualizarListaEDetalhes();
+            }}
+          />
+        ) : (
+          <EditarPessoaJuridica
+            id={selected}
+            onClose={() => {
+              setShowEditar(false);
+              atualizarListaEDetalhes();
+            }}
+          />
+        )}
+      </div>
+    )}
+  </div>
+);
+
 }

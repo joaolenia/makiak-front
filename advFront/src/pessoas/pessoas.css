@@ -99,8 +99,9 @@ main {
   padding: 20px;
   font-size: 14px;
   border-radius: 14px;
-  overflow-y: auto;         
-  max-height: 90%;         
+  overflow-y: auto;
+  max-height: 90%;
+  padding-bottom: 120px; 
 }
 
 

@@ -44,6 +44,7 @@ export const criarValorParcelado = async (dados: ValorParceladoDTO) => {
 export const buscarValorPorIdDoProcesso = async (id: number) => {
   console.log(id)
   const response = await api.get(`/valores/${id}`);
+  console.log(response.data)
   return response.data;
 };
 

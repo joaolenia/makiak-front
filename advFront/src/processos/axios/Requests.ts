@@ -91,6 +91,7 @@ export async function getProcessoById(id: number) {
 }
 
 export async function createDescricao(payload: DescricaoPayload) {
+  console.log(payload)
   const response = await api.post('/processos/descricao', payload);
   return response.data;
 }

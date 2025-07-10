@@ -47,24 +47,27 @@ export default function ValoresDetalhado() {
   const [descricaoParcela, setDescricaoParcela] = useState('');
   const [modoRollback, setModoRollback] = useState<0 | 1>(0);
 
-
+  const carregarDados = async () => {
+    try {
+      const dados = await buscarValorPorIdDoProcesso(Number(id));
+      setValorProcesso(dados);
+    } catch (err) {
+      console.error(err);
+      setValorProcesso(null);
+    }
+  };
 
   useEffect(() => {
-    const carregarDados = async () => {
-      try {
-        const dados = await buscarValorPorIdDoProcesso(Number(id));
-        setValorProcesso(dados);
-      } catch (err) {
-        console.error(err);
-        setValorProcesso(null); // para garantir estado seguro
-      }
-    };
     carregarDados();
   }, [id]);
 
   const isParcelado = valorProcesso?.tipoPagamento === 'PARCELADO';
 
-  const formatarData = (dt: string) => new Date(dt).toLocaleDateString('pt-BR');
+  const formatarData = (dt: string) => {
+    if (!dt) return '—';
+    const [ano, mes, dia] = dt.split('T')[0].split('-');
+    return `${dia}/${mes}/${ano}`;
+  };
 
   const abrirPagamento = () => {
     if (!valorProcesso) return;
@@ -80,8 +83,7 @@ export default function ValoresDetalhado() {
     }
     try {
       await apiPagarParcela(parcelaSelecionada, formaPagamento);
-      const dados = await buscarValorPorIdDoProcesso(Number(id));
-      setValorProcesso(dados);
+      await carregarDados();
       setMostrarPagamento(false);
     } catch (err) {
       console.error(err);
@@ -99,8 +101,7 @@ export default function ValoresDetalhado() {
     if (!editandoParcelaId) return;
     try {
       await rollbackParcela(editandoParcelaId, modoRollback, descricaoParcela);
-      const dados = await buscarValorPorIdDoProcesso(Number(id));
-      setValorProcesso(dados);
+      await carregarDados();
       cancelarEdicaoParcela();
     } catch (error) {
       console.error('Erro ao salvar edição da parcela:', error);
@@ -113,7 +114,6 @@ export default function ValoresDetalhado() {
     setDescricaoParcela('');
     setModoRollback(0);
   };
-
 
   return (
     <div className="valores-container">
@@ -170,7 +170,6 @@ export default function ValoresDetalhado() {
                 )}
               </div>
             </div>
-
           ))}
         </div>
 
@@ -207,14 +206,11 @@ export default function ValoresDetalhado() {
             >
               EXTRATO
             </button>
-            <button
-              className="valores-acao"
-              onClick={() => setMostrarCadastro(true)}
-              disabled={!!valorProcesso} // Desabilita se já tiver um valor
-              title={valorProcesso ? "Já existe valor cadastrado" : "Cadastrar novo valor"}
-            >
-              NOVO VALOR
-            </button>
+            {!valorProcesso && (
+              <button className="valores-acao" onClick={() => setMostrarCadastro(true)}>
+                NOVO VALOR
+              </button>
+            )}
           </div>
         </div>
       </div>
@@ -256,16 +252,21 @@ export default function ValoresDetalhado() {
       {mostrarCadastro && (
         <CadastroValores
           processoId={Number(id)}
-          onClose={() => setMostrarCadastro(false)}
+          onClose={async () => {
+            setMostrarCadastro(false);
+            await carregarDados(); // ← atualiza após cadastro
+          }}
         />
       )}
       {mostrarEdicao && valorProcesso && (
         <EditarValoresProcesso
           id={Number(id)}
-          onClose={() => setMostrarEdicao(false)}
+          onClose={async () => {
+            setMostrarEdicao(false);
+            await carregarDados(); // ← atualiza após edição
+          }}
         />
       )}
-
     </div>
   );
 }

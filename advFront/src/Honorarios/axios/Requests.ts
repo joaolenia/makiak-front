@@ -25,6 +25,7 @@ export const criarHonorarioAvista = async (dados: HonorarioAvistaDTO) => {
 };
 
 export const criarHonorarioParcelado = async (dados: HonorarioParceladoDTO) => {
+  console.log(dados)
   const response = await api.post('/honorarios', dados);
   return response.data;
 };
@@ -76,7 +77,10 @@ export const buscarHonorariosProximosVencimento = async () => {
 export const atualizarHonorario = async (
   idHonorario: number,
   dados: HonorarioAvistaDTO | HonorarioParceladoDTO
+  
 ) => {
+    console.log(dados)
+
   const response = await api.put(`/honorarios/${idHonorario}`, dados);
   return response.data;
 };
