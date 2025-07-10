@@ -1,4 +1,5 @@
 import jsPDF from 'jspdf';
+import autoTable from 'jspdf-autotable';
 
 interface Parcela {
   id: number;
@@ -23,14 +24,13 @@ interface Honorario {
 
 export function gerarPDFHonorario(honorario: Honorario) {
   const doc = new jsPDF();
+  let y = 15;
 
   const formatarData = (data?: string): string => {
     if (!data) return '—';
-    const [ano, mes, dia] = data.split('-');
+    const [ano, mes, dia] = data.split('T')[0].split('-');
     return `${dia}/${mes}/${ano}`;
   };
-
-  let y = 15;
 
   doc.setFont('helvetica');
   doc.setFontSize(18);
@@ -46,70 +46,62 @@ export function gerarPDFHonorario(honorario: Honorario) {
 
   y += 10;
   doc.setFontSize(12);
-
-  doc.text(`Extrato de Honorários`, 15, y);
+  doc.text(`EXTRATO DE HONORÁRIOS`, 15, y);
   y += 10;
 
+  doc.text(`Tipo de Pagamento: ${honorario.tipoPagamento}`, 15, y);
+  y += 8;
   doc.text(`Valor Total: R$ ${Number(honorario.valorTotal).toFixed(2)}`, 15, y);
   y += 8;
-  doc.text(`Situação: ${honorario.situacao ?? 'PENDENTE'}`, 15, y);
+  doc.text(`Situação: ${honorario.situacao ?? '—'}`, 15, y);
   y += 8;
-  doc.text(`Forma de Pagamento: ${honorario.formaPagamento ?? 'Parcelado'}`, 15, y);
-  y += 8;
-  doc.text(`Entrada: R$ ${honorario.entrada != null ? Number(honorario.entrada).toFixed(2) : '—'}`, 15, y);
-  y += 12;
 
+  if (honorario.tipoPagamento === 'PARCELADO') {
+    doc.text(`Parcelas: ${honorario.quantidadeParcelas ?? '—'}`, 15, y);
+    y += 8;
+
+    doc.text(
+      `Entrada: R$ ${honorario.entrada != null ? Number(honorario.entrada).toFixed(2) : '—'}`,
+      15,
+      y
+    );
+    y += 8;
+
+    doc.text(
+      `Pagas: ${honorario.parcelasPagas}/${honorario.quantidadeParcelas}`,
+      15,
+      y
+    );
+    y += 12;
+  } else {
+    doc.text(`Forma de Pagamento: ${honorario.formaPagamento ?? '—'}`, 15, y);
+    y += 12;
+  }
+
+  // Tabela das parcelas
   if (honorario.tipoPagamento === 'PARCELADO' && honorario.parcelas.length > 0) {
-    doc.setFontSize(14);
-    doc.text('Parcelas', 15, y);
-    y += 10;
+    const tabela = honorario.parcelas.map((p, i) => [
+      i + 1,
+      formatarData(p.dataVencimento),
+      formatarData(p.dataPagamento ?? ''),
+      `R$ ${Number(p.valor).toFixed(2)}`,
+      p.situacao,
+      p.formaPagamento ?? '—'
+    ]);
 
-    doc.setFontSize(10);
-
-    // Cabeçalho tabela
-    const startX = 15;
-    const colWidths = [15, 40, 40, 30, 30]; // largura colunas
-    const headers = ['Nº', 'Vencimento', 'Pagamento', 'Valor (R$)', 'Situação'];
-
-    let x = startX;
-    headers.forEach((header, i) => {
-      doc.text(header, x + 1, y);
-      x += colWidths[i];
+    autoTable(doc, {
+      startY: y,
+      head: [['#', 'Vencimento', 'Pagamento', 'Valor', 'Situação', 'Forma Pagto']],
+      body: tabela,
+      styles: { fontSize: 10 },
+      headStyles: { fillColor: [0, 102, 204], textColor: 255, fontStyle: 'bold' },
+      alternateRowStyles: { fillColor: [240, 240, 240] },
+      margin: { left: 15, right: 15 },
+      tableLineWidth: 0.1,
+      tableLineColor: 10,
     });
-
-    y += 6;
-    doc.setLineWidth(0.2);
-    doc.line(startX, y, startX + colWidths.reduce((a,b) => a+b, 0), y); // linha separadora
-    y += 4;
-
-    // Linhas da tabela
-    honorario.parcelas
-      .sort((a, b) => a.id - b.id)
-      .forEach((p, index) => {
-        x = startX;
-
-        if (y > 280) { // nova página se estiver perto do fim
-          doc.addPage();
-          y = 15;
-        }
-
-        doc.text(String(index + 1), x + 1, y);
-        x += colWidths[0];
-
-        doc.text(formatarData(p.dataVencimento), x + 1, y);
-        x += colWidths[1];
-
-        doc.text(p.dataPagamento ? formatarData(p.dataPagamento) : '—', x + 1, y);
-        x += colWidths[2];
-
-        doc.text(Number(p.valor).toFixed(2), x + 1, y);
-        x += colWidths[3];
-
-        doc.text(p.situacao, x + 1, y);
-
-        y += 7;
-      });
   }
 
   doc.save(`honorarios_${honorario.id}.pdf`);
 }
+  
