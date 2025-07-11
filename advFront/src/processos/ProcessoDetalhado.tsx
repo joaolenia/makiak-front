@@ -11,6 +11,7 @@ import {
   deleteDescricao
 } from './axios/Requests';
 import { gerarPDFProcesso } from './relatórios/gerarPDFProcesso';
+
 interface Pessoa {
   id: number;
   nome: string;
@@ -27,7 +28,7 @@ interface Processo {
   tipo: string;
   autores: Pessoa[];
   reus: Pessoa[];
- valorCausa: string;
+  valorCausa: string;
   terceiros: Pessoa[];
   vara?: string;
   cidade?: string;
@@ -49,30 +50,31 @@ export default function ProcessoDetalhado() {
   const [mostrarFormDescricao, setMostrarFormDescricao] = useState(false);
   const [novaDescricao, setNovaDescricao] = useState('');
   const [novaData, setNovaData] = useState('');
-
   const [editandoId, setEditandoId] = useState<number | null>(null);
   const [editandoDescricao, setEditandoDescricao] = useState('');
   const [editandoData, setEditandoData] = useState('');
 
-  useEffect(() => {
-    if (id) {
-      setCarregando(true);
-      const processoId = Number(id);
+  const carregarDados = async () => {
+    if (!id) return;
+    setCarregando(true);
+    const processoId = Number(id);
 
-      Promise.all([
+    try {
+      const [processoRes, descricoesRes] = await Promise.all([
         getProcessoById(processoId),
         getDescricoesByProcessoId(processoId)
-      ])
-        .then(([processoRes, descricoesRes]) => {
-          setProcesso(processoRes);
-          setDescricoes(descricoesRes);
-          setCarregando(false);
-        })
-        .catch(err => {
-          console.error('Erro ao carregar dados:', err);
-          setCarregando(false);
-        });
+      ]);
+      setProcesso(processoRes);
+      setDescricoes(descricoesRes);
+    } catch (err) {
+      console.error('Erro ao carregar dados:', err);
+    } finally {
+      setCarregando(false);
     }
+  };
+
+  useEffect(() => {
+    carregarDados();
   }, [id]);
 
   const handleCadastrarDescricao = async () => {
@@ -121,20 +123,20 @@ export default function ProcessoDetalhado() {
       console.error('Erro ao atualizar descrição:', error);
     }
   };
-const excluir = async () => {
-  if (editandoId === null) return;
 
-  try {
-    await deleteDescricao(editandoId);
-    const novasDescricoes = await getDescricoesByProcessoId(Number(id));
-    setDescricoes(novasDescricoes);
-    cancelarEdicao();
-  } catch (error) {
-    console.error('Erro ao excluir descrição:', error);
-    alert('Erro ao excluir descrição.');
-  }
-};
+  const excluir = async () => {
+    if (editandoId === null) return;
 
+    try {
+      await deleteDescricao(editandoId);
+      const novasDescricoes = await getDescricoesByProcessoId(Number(id));
+      setDescricoes(novasDescricoes);
+      cancelarEdicao();
+    } catch (error) {
+      console.error('Erro ao excluir descrição:', error);
+      alert('Erro ao excluir descrição.');
+    }
+  };
 
   function formatarData(dataString: string) {
     if (!dataString) return '—';
@@ -160,117 +162,112 @@ const excluir = async () => {
 
       <div className="detalhado-corpo">
         <div className="detalhado-observacoes">
-          {[...descricoes]
-            .sort((a, b) => b.data.localeCompare(a.data))
-            .map((desc) => (
-              <div className="detalhado-observacao" key={desc.id}>
-                <span className="detalhado-bolinha" />
-                <div className="detalhado-textos">
-                  <div
-                    className="detalhado-data"
-                    onDoubleClick={() => iniciarEdicao(desc)}
-                  >
-                    {editandoId === desc.id ? (
-                      <input
-                        type="date"
-                        value={editandoData}
-                        onChange={e => setEditandoData(e.target.value)}
-                      />
-                    ) : (
-                      formatarData(desc.data)
-                    )}
-                  </div>
-                  <div
-                    className="detalhado-descricao"
-                    onDoubleClick={() => iniciarEdicao(desc)}
-                  >
-                    {editandoId === desc.id ? (
-                      <textarea
-                        className="descricao-editando"
-                        value={editandoDescricao}
-                        onChange={e => setEditandoDescricao(e.target.value)}
-                        rows={4}
-                      />
-                    ) : (
-                      desc.descricao
-                    )}
-                  </div>
+          {[...descricoes].sort((a, b) => b.data.localeCompare(a.data)).map((desc) => (
+            <div className="detalhado-observacao" key={desc.id}>
+              <span className="detalhado-bolinha" />
+              <div className="detalhado-textos">
+                <div className="detalhado-data" onDoubleClick={() => iniciarEdicao(desc)}>
+                  {editandoId === desc.id ? (
+                    <input
+                      type="date"
+                      value={editandoData}
+                      onChange={e => setEditandoData(e.target.value)}
+                    />
+                  ) : (
+                    formatarData(desc.data)
+                  )}
                 </div>
-
-                {editandoId === desc.id && (
-                  <div className="descricao-botoes-edicao">
-                    <button className='btn-salvar-desc' onClick={salvarEdicao}>Salvar</button>
-                    <button className='btn-cancel-desc' onClick={cancelarEdicao}>Cancelar</button>
-                    <button onClick={excluir}>Excluir</button>
-
-                  </div>
-                )}
+                <div className="detalhado-descricao" onDoubleClick={() => iniciarEdicao(desc)}>
+                  {editandoId === desc.id ? (
+                    <textarea
+                      className="descricao-editando"
+                      value={editandoDescricao}
+                      onChange={e => setEditandoDescricao(e.target.value)}
+                      rows={4}
+                    />
+                  ) : (
+                    desc.descricao
+                  )}
+                </div>
               </div>
-            ))}
-        </div>
 
-        <div className="detalhado-dados-processo">
-          <div className="detalhado-info-scroll">
-            <div className="detalhado-numero-processo">Nº {processo.numero}</div>
-            {processo.subnumero && <div className="detalhado-subnumero">Nº {processo.subnumero}</div>}
-            <div>PASTA: {processo.pasta || '—'}</div>
-            <div>DATA: {formatarData(processo.data)}</div>
-            <div>SITUAÇÃO: {processo.situacao}</div>
-            <div>TIPO: {processo.tipo}</div>
-            <div>VALOR DA CAUSA: {processo.valorCausa}</div>
-            <div>AUTOR: {nomes(processo.autores)}</div>
-            <div>RÉU: {nomes(processo.reus)}</div>
-            <div>TERCEIRO: {nomes(processo.terceiros)}</div>
-            <div>VARA: {processo.vara || '—'}</div>
-            <div>CIDADE: {processo.cidade || '—'}</div>
-          </div>
-
-          <div className="detalhado-botoes-fixos">
-            <button className="detalhado-acao" onClick={() => setMostrarFormDescricao(!mostrarFormDescricao)}>
-              DESCRIÇÃO
-            </button>
-            <button className="detalhado-acao" onClick={() => navigate(`/processos/${id}/valores`)}>
-              VALORES
-            </button>
-
-            <button
-              className="detalhado-acao"
-              onClick={() => {
-                if (processo) {
-                  gerarPDFProcesso(processo, descricoes);
-                }
-              }}
-            >
-              RELATÓRIO
-            </button>
-
-          </div>
-
-          {mostrarFormDescricao && (
-            <div className="descricao-overlay">
-              <div className="descricao-popup">
-                <button className="descricao-fechar" onClick={() => setMostrarFormDescricao(false)}>×</button>
-                <h3>Nova Descrição</h3>
-                <input
-                  type="date"
-                  value={novaData}
-                  onChange={(e) => setNovaData(e.target.value)}
-                />
-                <textarea
-                  value={novaDescricao}
-                  onChange={(e) => setNovaDescricao(e.target.value)}
-                  placeholder="Digite a descrição"
-                />
-                <button onClick={handleCadastrarDescricao}>Cadastrar</button>
-              </div>
+              {editandoId === desc.id && (
+                <div className="descricao-botoes-edicao">
+                  <button className='btn-salvar-desc' onClick={salvarEdicao}>Salvar</button>
+                  <button className='btn-cancel-desc' onClick={cancelarEdicao}>Cancelar</button>
+                  <button onClick={excluir}>Excluir</button>
+                </div>
+              )}
             </div>
-          )}
-
+          ))}
         </div>
+<div className="detalhado-dados-processo">
+  <div className="detalhado-info-scroll">
+    <div className="detalhado-numero-processo">Nº {processo.numero}</div>
+    {processo.subnumero && <div className="detalhado-subnumero">Nº {processo.subnumero}</div>}
+
+    <div className="campo-processo"><span className="rotulo">PASTA:</span> <span className="valor">{processo.pasta || '—'}</span></div>
+    <div className="campo-processo"><span className="rotulo">DATA:</span> <span className="valor">{formatarData(processo.data)}</span></div>
+    <div className="campo-processo"><span className="rotulo">SITUAÇÃO:</span> <span className="valor">{processo.situacao}</span></div>
+    <div className="campo-processo"><span className="rotulo">TIPO:</span> <span className="valor">{processo.tipo}</span></div>
+    <div className="campo-processo"><span className="rotulo">VALOR DA CAUSA:</span> <span className="valor">{processo.valorCausa}</span></div>
+    <div className="campo-processo"><span className="rotulo">AUTOR:</span> <span className="valor">{nomes(processo.autores)}</span></div>
+    <div className="campo-processo"><span className="rotulo">RÉU:</span> <span className="valor">{nomes(processo.reus)}</span></div>
+    <div className="campo-processo"><span className="rotulo">TERCEIRO:</span> <span className="valor">{nomes(processo.terceiros)}</span></div>
+    <div className="campo-processo"><span className="rotulo">VARA:</span> <span className="valor">{processo.vara || '—'}</span></div>
+    <div className="campo-processo"><span className="rotulo">CIDADE:</span> <span className="valor">{processo.cidade || '—'}</span></div>
+  </div>
+
+  <div className="detalhado-botoes-fixos">
+    <button className="detalhado-acao" onClick={() => setMostrarFormDescricao(!mostrarFormDescricao)}>
+      DESCRIÇÃO
+    </button>
+    <button className="detalhado-acao" onClick={() => navigate(`/processos/${id}/valores`)}>
+      VALORES
+    </button>
+    <button
+      className="detalhado-acao"
+      onClick={() => {
+        if (processo) {
+          gerarPDFProcesso(processo, descricoes);
+        }
+      }}
+    >
+      RELATÓRIO
+    </button>
+  </div>
+
+  {mostrarFormDescricao && (
+    <div className="descricao-overlay">
+      <div className="descricao-popup">
+        <button className="descricao-fechar" onClick={() => setMostrarFormDescricao(false)}>×</button>
+        <h3>Nova Descrição</h3>
+        <input
+          type="date"
+          value={novaData}
+          onChange={(e) => setNovaData(e.target.value)}
+        />
+        <textarea
+          value={novaDescricao}
+          onChange={(e) => setNovaDescricao(e.target.value)}
+          placeholder="Digite a descrição"
+        />
+        <button onClick={handleCadastrarDescricao}>Cadastrar</button>
+      </div>
+    </div>
+  )}
+</div>
+
       </div>
 
       {mostrarEditar && (
-        <EditarProcesso id={Number(id)} onClose={() => setMostrarEditar(false)} />
+        <EditarProcesso
+          id={Number(id)}
+          onClose={() => {
+            setMostrarEditar(false);
+            carregarDados(); 
+          }}
+        />
       )}
     </div>
   );

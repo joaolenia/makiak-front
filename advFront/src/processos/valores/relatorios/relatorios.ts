@@ -26,11 +26,11 @@ export function gerarPDFExtratoValores(valor: ValorProcesso) {
   const doc = new jsPDF();
   let y = 15;
 
-  const formatarData = (data: string | null): string => {
-    if (!data) return '—';
-    const dt = new Date(data);
-    return dt.toLocaleDateString('pt-BR');
-  };
+const formatarData = (data: string | null): string => {
+  if (!data) return '—';
+  const [ano, mes, dia] = data.split('-');
+  return `${dia}/${mes}/${ano}`;
+};
 
   doc.setFont('helvetica', 'normal');
   doc.setFontSize(18);

@@ -234,3 +234,24 @@ color:black
 .btn-cancel-desc{
     background-color: rgb(15, 24, 148);
 }
+
+.campo-processo {
+  display: flex;
+  gap: 5px;
+  font-size: 1.0em;
+  margin-bottom: 5px;
+  align-items: baseline;
+}
+
+.campo-processo .rotulo {
+  font-weight: bold;
+  color: #ffffff;       
+  min-width: 100px;
+  font-size: 1.05em;
+  letter-spacing: 0.5px;
+}
+
+.campo-processo .valor {
+  color: #f0e9e9;
+  font-weight: 500;
+}
