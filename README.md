@@ -37,7 +37,7 @@ VITE_API_URL=http://192.168.0.100:3000
 No terminal, dentro da pasta do projeto do front-end, rode:
 
 ```bash
-npm run tauri build
+npx tauri build
 ```
 
 Isso irá gerar o instalador `.msi` na pasta:
