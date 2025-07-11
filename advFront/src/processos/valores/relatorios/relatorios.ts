@@ -31,7 +31,6 @@ const formatarData = (data: string | null): string => {
   const [ano, mes, dia] = data.split('-');
   return `${dia}/${mes}/${ano}`;
 };
-
   doc.setFont('helvetica', 'normal');
   doc.setFontSize(18);
   doc.text('STASIAK & MAKIAK', 105, y, { align: 'center' });
