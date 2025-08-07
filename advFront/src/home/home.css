@@ -60,14 +60,14 @@
 }
 
 .logout-icon img {
-  width: 40px;    /* ajuste o tamanho da imagem */
+  width: 40px;   
   height: 40px;
   display: block;
 }
 
 .logout-icon:hover {
   transform: scale(1.2);
-  filter: brightness(1.2); /* efeito de brilho */
+  filter: brightness(1.2); 
 }
 
 .logout-button {
@@ -88,4 +88,71 @@
 
 .logout-button:hover {
   background-color: #800000;
+}
+@media (max-width: 1024px) {
+  .services {
+    flex-wrap: wrap;
+    gap: 4rem;
+  }
+
+  .service img {
+    width: 160px;
+    height: 160px;
+  }
+
+  .service {
+    margin-top: 20%;
+  }
+}
+
+@media (max-width: 768px) {
+  .services {
+    flex-direction: row;
+    flex-wrap: wrap;
+    gap: 2.5rem;
+  }
+
+  .service img {
+    width: 140px;
+    height: 140px;
+  }
+
+  .service {
+    margin-top: 15%;
+  }
+
+  .logout-button {
+    width: 80px;
+    padding: 8px 12px;
+    font-size: 12px;
+  }
+}
+
+@media (max-width: 480px) {
+  .services {
+    flex-direction: column;
+    gap: 2rem;
+  }
+
+  .service img {
+    width: 120px;
+    height: 120px;
+  }
+
+  .service {
+    margin-top: 10%;
+  }
+
+  .logout-button {
+    width: 70px;
+    padding: 6px 10px;
+    font-size: 12px;
+    top: 10px;
+    right: 10px;
+  }
+
+  .overlay {
+    padding: 1rem;
+    justify-content: flex-start;
+  }
 }

@@ -93,10 +93,11 @@ export default function HonorariosDetalhado() {
 
 
 
-  function formatarDataLocal(dataISO: string) {
-    if (!dataISO) return '';
-    return dataISO.split('T')[0];
-  }
+function formatarDataLocal(dataISO: string) {
+  if (!dataISO) return '';
+  const [ano, mes, dia] = dataISO.split('T')[0].split('-');
+  return `${dia}/${mes}/${ano}`;
+}
 
 
 
