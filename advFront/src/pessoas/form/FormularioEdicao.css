@@ -1,101 +1,175 @@
-.formulario-modal { 
+/* ==========================================================================
+   CSS Modernizado para o Modal de Formulário de Edição
+   ========================================================================== */
+
+/* -- 1. Variáveis Globais (consistente com as outras telas) -- */
+:root {
+  --cor-fundo-principal: #1f1a14;
+  --cor-fundo-secundario: #2c251e;
+  --cor-destaque: #c5a169;
+  --cor-destaque-hover: #b38e56;
+  --cor-texto-principal: #e8e6e3;
+  --cor-texto-secundario: #a19a90;
+  --cor-borda: #443c32;
+  --cor-sucesso: #2a9d8f;
+  --cor-erro: #e76f51;
+  --sombra-padrao: 0 4px 25px rgba(0, 0, 0, 0.3);
+  --border-radius-padrao: 12px;
+  --font-principal: 'Inter', sans-serif;
+  --font-serif: 'Georgia', serif;
+}
+
+/* -- 2. Estilo do Modal (container) -- */
+.formulario-modal {
+  /* Layout e Posição */
   position: fixed;
   top: 50%;
   left: 50%;
   transform: translate(-50%, -50%);
-  background-color: #b5a98a;
-  padding: 20px 30px 30px 30px;
-  border-radius: 10px;
-  width: 400px; /* Ajustei para ficar melhor que 30% */
-  box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
-  z-index: 1000;
+  z-index: 1001; /* Acima de qualquer overlay */
+
+  /* Tamanho e Responsividade */
+  width: 90%;
+  max-width: 550px; /* Um bom tamanho para edição */
   max-height: 90vh;
   overflow-y: auto;
-  font-family: Arial, sans-serif;
+  
+  /* Aparência */
+  background-color: var(--cor-fundo-secundario);
+  border: 1px solid var(--cor-borda);
+  border-radius: var(--border-radius-padrao);
+  box-shadow: var(--sombra-padrao);
+  padding: 2rem;
+  box-sizing: border-box;
+  font-family: var(--font-principal);
 }
 
+/* -- 3. Botão de Fechar -- */
 .formulario-fechar {
-  background: none;
-  border: none;
-  font-size: 1.2em;
-  font-weight: bold;
-  color: #000;
+  /* Posição */
   position: absolute;
-  top: 10px;
-  right: 15px;
+  top: 1rem;
+  right: 1rem;
+
+  /* Aparência */
+  background: transparent;
+  border: none;
+  font-size: 1.8em;
+  color: var(--cor-texto-secundario);
+  line-height: 1;
+  
+  /* Interação */
   cursor: pointer;
+  transition: color 0.2s ease, transform 0.2s ease;
+}
+.formulario-fechar:hover {
+  color: var(--cor-texto-principal);
+  transform: rotate(90deg);
 }
 
+/* -- 4. Estrutura do Formulário Interno -- */
 .formulario {
   display: flex;
   flex-direction: column;
-  gap: 15px;
-  margin-top: 40px;
+  gap: 1.25rem;
+  margin-top: 1rem;
 }
 
 .formulario label {
   display: flex;
   flex-direction: column;
-  font-weight: 600;
-  font-size: 0.9rem;
-  color: #222;
+  gap: 0.5rem; /* Espaço entre o label e o input */
+  font-weight: 500;
+  font-size: 0.9em;
+  color: var(--cor-texto-secundario);
 }
 
+/* -- 5. Campos do Formulário (Inputs, Selects, Textareas) -- */
 .formulario input,
 .formulario select,
 .formulario textarea {
-  margin-top: 5px;
-  padding: 8px 10px;
-  border: 1px solid #000;
-  border-radius: 4px;
-  font-size: 1rem;
-  background-color: #f5f5f5;
-  transition: border-color 0.3s ease;
+  /* Aparência */
+  background-color: var(--cor-fundo-principal);
+  border: 1px solid var(--cor-borda);
+  border-radius: 8px;
+  padding: 0.8rem 1rem;
+  
+  /* Tipografia */
+  font-family: var(--font-principal);
+  font-size: 1em;
+  color: var(--cor-texto-principal);
+  
+  /* Layout e Transições */
+  width: 100%;
+  box-sizing: border-box;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
 }
 
 .formulario input:focus,
 .formulario select:focus,
 .formulario textarea:focus {
   outline: none;
-  border-color: #43a047;
-  background-color: #fff;
+  border-color: var(--cor-destaque);
+  box-shadow: 0 0 0 3px rgba(197, 161, 105, 0.25);
 }
 
 .formulario textarea {
   resize: vertical;
-  min-height: 60px;
-  max-height: 120px;
+  min-height: 100px;
 }
 
+/* -- 6. Botões de Ação -- */
 .formulario-botoes {
   display: flex;
-  justify-content: space-between;
-  margin-top: 10px;
+  justify-content: flex-end; /* Alinha o botão à direita */
+  margin-top: 1rem;
+  gap: 1rem;
 }
 
-
 .btn-confirmar {
-  background-color: #43a047;
-  color: white;
+  /* Aparência */
+  background-color: var(--cor-sucesso); /* Verde de sucesso para confirmar */
   border: none;
-  width: 100%;
-  padding: 10px 15px;
-  border-radius: 5px;
-  font-weight: bold;
+  border-radius: 8px;
+  padding: 0.9rem 2rem;
+  
+  /* Tipografia */
+  color: #ffffff;
+  font-size: 1em;
+  font-weight: 700;
+  
+  /* Interação */
   cursor: pointer;
-  transition: background-color 0.3s ease;
+  transition: background-color 0.2s ease, transform 0.2s ease;
 }
 
 .btn-confirmar:hover {
-  background-color: #2e7d32;
+  background-color: #218838; /* Verde mais escuro no hover */
+  transform: translateY(-2px);
 }
 
+/* -- 7. Mensagem de Erro -- */
 .formulario-erro {
-  background-color: #ffdddd;
-  color: #a94442;
-  padding: 10px;
-  border: 1px solid #a94442;
-  border-radius: 5px;
-  font-weight: bold;
+  background-color: rgba(231, 111, 81, 0.1);
+  color: var(--cor-erro);
+  padding: 1rem;
+  border: 1px solid var(--cor-erro);
+  border-radius: 8px;
+  font-weight: 500;
   text-align: center;
+}
+
+/* -- 8. Scrollbar Customizada -- */
+.formulario-modal::-webkit-scrollbar {
+  width: 8px;
+}
+.formulario-modal::-webkit-scrollbar-track {
+  background: transparent;
+}
+.formulario-modal::-webkit-scrollbar-thumb {
+  background-color: var(--cor-borda);
+  border-radius: 10px;
+}
+.formulario-modal::-webkit-scrollbar-thumb:hover {
+  background-color: var(--cor-texto-secundario);
 }

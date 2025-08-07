@@ -112,7 +112,7 @@ export default function EditarPessoaJuridica({ id, onClose }: Props) {
         observacoes: formData.observacoes || null,
       });
 
-      onClose(); // fecha o modal após edição
+      onClose(); 
     } catch (error: any) {
       const msg = error?.response?.data?.message || 'Erro ao salvar alterações.';
       setErrorMessage(msg);

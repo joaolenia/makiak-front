@@ -1,107 +1,194 @@
 import jsPDF from 'jspdf';
 import autoTable from 'jspdf-autotable';
 
+// --- Interfaces ---
 interface Parcela {
-  id: number;
-  dataVencimento: string;
-  dataPagamento: string | null;
-  valor: string;
-  formaPagamento: string | null;
-  situacao: 'PAGO' | 'PENDENTE';
+    id: number;
+    dataVencimento: string;
+    dataPagamento: string | null;
+    valor: string; // Mantido como string, a formatação lida com a conversão
+    formaPagamento: string | null;
+    situacao: 'PAGO' | 'PENDENTE';
 }
 
 interface Honorario {
-  id: number;
-  valorTotal: number;
-  tipoPagamento: 'AVISTA' | 'PARCELADO';
-  formaPagamento: string | null;
-  situacao: string | null;
-  entrada?: number | null;
-  quantidadeParcelas?: number | null;
-  parcelasPagas: number;
-  parcelas: Parcela[];
+    id: number;
+    valorTotal: number;
+    tipoPagamento: 'AVISTA' | 'PARCELADO';
+    formaPagamento: string | null;
+    situacao: string | null;
+    entrada?: number | null;
+    quantidadeParcelas?: number | null;
+    parcelasPagas: number;
+    parcelas: Parcela[];
 }
+
+
+// ==========================================================================
+//      RELATÓRIO DE HONORÁRIOS (FORMATO PROFISSIONAL)
+// ==========================================================================
 
 export function gerarPDFHonorario(honorario: Honorario) {
-  const doc = new jsPDF();
-  let y = 15;
+    // --- 1. Configurações de Design ---
+    const doc = new jsPDF();
+    const pageHeight = doc.internal.pageSize.height;
+    const pageWidth = doc.internal.pageSize.width;
 
-  const formatarData = (data?: string): string => {
-    if (!data) return '—';
-    const [ano, mes, dia] = data.split('T')[0].split('-');
-    return `${dia}/${mes}/${ano}`;
-  };
+    const CORES = {
+        fundoSecundario: '#2c251e',
+        destaque: '#c5a169',
+        textoPrincipal: '#212529',
+        textoSecundario: '#495057',
+        bordaEscura: '#787878ff',
+        statusPago: '#198754',      // Verde
+        statusPendente: '#dc3545', // Vermelho
+        fundoAlternado: '#F8F9FA'   // Cinza muito claro
+    };
 
-  doc.setFont('helvetica');
-  doc.setFontSize(18);
-  doc.text('STASIAK & MAKIAK', 105, y, { align: 'center' });
+    const MARGENS = {
+        top: 30,
+        bottom: 25,
+        left: 15,
+        right: 15,
+        larguraUtil: pageWidth - 30,
+    };
 
-  y += 10;
-  doc.setFontSize(14);
-  doc.text('Advogados Associados', 105, y, { align: 'center' });
+    let y = MARGENS.top;
 
-  y += 10;
-  doc.setLineWidth(0.5);
-  doc.line(15, y, 195, y);
+    // --- 2. Funções Auxiliares de Desenho e Formatação ---
 
-  y += 10;
-  doc.setFontSize(12);
-  doc.text(`EXTRATO DE HONORÁRIOS`, 15, y);
-  y += 10;
+    const addCabecalhoERodape = () => {
+        const totalPages = (doc.internal as any).getNumberOfPages();
+        for (let i = 1; i <= totalPages; i++) {
+            doc.setPage(i);
+            // (O código do cabeçalho e rodapé é o mesmo dos exemplos anteriores)
+            // Cabeçalho
+            doc.setFillColor(CORES.destaque);
+            doc.rect(MARGENS.left, 10, 8, 8, 'F');
+            doc.setFillColor(CORES.fundoSecundario);
+            doc.rect(MARGENS.left + 2, 12, 8, 8, 'F');
+            doc.setFont('helvetica', 'bold'); doc.setFontSize(14); doc.setTextColor(CORES.textoPrincipal);
+            doc.text('STASIAK & MAKIAK', MARGENS.left + 14, 15);
+            doc.setFont('helvetica', 'normal'); doc.setFontSize(9); doc.setTextColor(CORES.textoSecundario);
+            doc.text('A D V O G A D O S  A S S O C I A D O S', MARGENS.left + 14, 20);
+            
+            // Rodapé
+            doc.setDrawColor(CORES.destaque); doc.setLineWidth(1);
+            doc.line(MARGENS.left, pageHeight - MARGENS.bottom + 5, pageWidth - MARGENS.right, pageHeight - MARGENS.bottom + 5);
+            doc.setFontSize(8); doc.setTextColor(CORES.textoSecundario);
+            doc.text(' Stasiak & Makiak Advogados Associados - Desenvolvido por JG Soluções em Software', MARGENS.left, pageHeight - MARGENS.bottom + 10);
+            doc.text(`Página ${i} de ${totalPages}`, pageWidth - MARGENS.right, pageHeight - MARGENS.bottom + 10, { align: 'right' });
+        }
+    };
+    
+    const verificarPaginacao = (espacoNecessario = 10) => {
+        if (y + espacoNecessario > pageHeight - MARGENS.bottom) {
+            doc.addPage();
+            y = MARGENS.top;
+        }
+    };
 
-  doc.text(`Tipo de Pagamento: ${honorario.tipoPagamento}`, 15, y);
-  y += 8;
-  doc.text(`Valor Total: R$ ${Number(honorario.valorTotal).toFixed(2)}`, 15, y);
-  y += 8;
-  doc.text(`Situação: ${honorario.situacao ?? '—'}`, 15, y);
-  y += 8;
+    const addTituloSecao = (titulo: string) => {
+        verificarPaginacao(20);
+        y += 5;
+        doc.setFontSize(14); doc.setFont('helvetica', 'bold'); doc.setTextColor(CORES.destaque);
+        doc.text(titulo.toUpperCase(), MARGENS.left, y);
+        y += 5;
+        doc.setDrawColor(CORES.bordaEscura); doc.setLineWidth(0.2);
+        doc.line(MARGENS.left, y, pageWidth - MARGENS.right, y);
+        y += 8;
+    };
+    
+    const addLinhaInfo = (label: string, value: string | number | null | undefined) => {
+        if (value === null || value === undefined || String(value).trim() === '') return;
+        
+        verificarPaginacao(8);
+        doc.setFontSize(10); doc.setFont('helvetica', 'bold'); doc.setTextColor(CORES.textoSecundario);
+        doc.text(`${label}:`, MARGENS.left, y);
+        
+        doc.setFont('helvetica', 'normal'); doc.setTextColor(CORES.textoPrincipal);
+        doc.text(String(value), MARGENS.left + 50, y);
+        
+        y += 6;
+    };
+    
+    const formatarData = (data: string | null): string => {
+        if (!data) return '—';
+        const datePart = data.split('T')[0];
+        const [ano, mes, dia] = datePart.split('-');
+        return `${dia}/${mes}/${ano}`;
+    };
 
-  if (honorario.tipoPagamento === 'PARCELADO') {
-    doc.text(`Parcelas: ${honorario.quantidadeParcelas ?? '—'}`, 15, y);
-    y += 8;
+    const formatarMoeda = (val: string | number | null | undefined): string => {
+        if (val === null || val === undefined) return '—';
+        const valorNumerico = Number(val);
+        if (isNaN(valorNumerico)) return '—';
+        return `R$ ${valorNumerico.toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
+    };
 
-    doc.text(
-      `Entrada: R$ ${honorario.entrada != null ? Number(honorario.entrada).toFixed(2) : '—'}`,
-      15,
-      y
-    );
-    y += 8;
+    // --- 3. Construção do PDF ---
 
-    doc.text(
-      `Pagas: ${honorario.parcelasPagas}/${honorario.quantidadeParcelas}`,
-      15,
-      y
-    );
-    y += 12;
-  } else {
-    doc.text(`Forma de Pagamento: ${honorario.formaPagamento ?? '—'}`, 15, y);
-    y += 12;
-  }
+    doc.setFontSize(18); doc.setFont('helvetica', 'bold'); doc.setTextColor(CORES.textoPrincipal);
+    doc.text('EXTRATO DE HONORÁRIOS', pageWidth / 2, y, { align: 'center' });
+    y += 15;
 
-  // Tabela das parcelas
-  if (honorario.tipoPagamento === 'PARCELADO' && honorario.parcelas.length > 0) {
-    const tabela = honorario.parcelas.map((p, i) => [
-      i + 1,
-      formatarData(p.dataVencimento),
-      formatarData(p.dataPagamento ?? ''),
-      `R$ ${Number(p.valor).toFixed(2)}`,
-      p.situacao,
-      p.formaPagamento ?? '—'
-    ]);
+    // Seção de Resumo dos Honorários
+    addTituloSecao('Resumo dos Honorários');
+    addLinhaInfo('Valor Total', formatarMoeda(honorario.valorTotal));
+    addLinhaInfo('Tipo de Pagamento', honorario.tipoPagamento);
+    addLinhaInfo('Situação Geral', honorario.situacao);
+    
+    if (honorario.tipoPagamento === 'PARCELADO') {
+        addLinhaInfo('Valor de Entrada', formatarMoeda(honorario.entrada));
+        addLinhaInfo('Total de Parcelas', honorario.quantidadeParcelas);
+        addLinhaInfo('Parcelas Pagas', `${honorario.parcelasPagas} de ${honorario.quantidadeParcelas}`);
+    } else {
+        addLinhaInfo('Forma de Pagamento', honorario.formaPagamento);
+    }
+    
+    // Seção da Tabela de Parcelas
+    if (honorario.parcelas && honorario.parcelas.length > 0) {
+        addTituloSecao('Detalhamento das Parcelas');
 
-    autoTable(doc, {
-      startY: y,
-      head: [['#', 'Vencimento', 'Pagamento', 'Valor', 'Situação', 'Forma Pagto']],
-      body: tabela,
-      styles: { fontSize: 10 },
-      headStyles: { fillColor: [0, 102, 204], textColor: 255, fontStyle: 'bold' },
-      alternateRowStyles: { fillColor: [240, 240, 240] },
-      margin: { left: 15, right: 15 },
-      tableLineWidth: 0.1,
-      tableLineColor: 10,
-    });
-  }
+        const corpoTabela = honorario.parcelas.map((p, index) => [
+            `#${index + 1}`,
+            formatarData(p.dataVencimento),
+            formatarMoeda(p.valor),
+            p.situacao,
+            formatarData(p.dataPagamento),
+            p.formaPagamento ?? '—',
+        ]);
 
-  doc.save(`honorarios_${honorario.id}.pdf`);
+        autoTable(doc, {
+            startY: y,
+            head: [['#', 'Vencimento', 'Valor', 'Situação', 'Data Pagto.', 'Forma Pagto.']],
+            body: corpoTabela,
+            theme: 'grid',
+            headStyles: {
+                fillColor: CORES.fundoSecundario,
+                textColor: CORES.destaque,
+                fontStyle: 'bold',
+                halign: 'center'
+            },
+            alternateRowStyles: {
+                fillColor: CORES.fundoAlternado
+            },
+            didDrawCell: (data) => {
+                if (data.section === 'body' && data.column.index === 3) {
+                    const texto = data.cell.raw as string;
+                    let cor = CORES.textoPrincipal;
+                    if (texto.toUpperCase() === 'PAGO') {
+                        cor = CORES.statusPago;
+                    } else if (texto.toUpperCase() === 'PENDENTE') {
+                        cor = CORES.statusPendente;
+                    }
+                    doc.setTextColor(cor);
+                }
+            }
+        });
+    }
+
+    // --- 4. Finalização e Download ---
+    addCabecalhoERodape();
+    doc.save(`Honorarios_${honorario.id}_${new Date().toISOString().split('T')[0]}.pdf`);
 }
-  

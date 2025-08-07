@@ -1,69 +1,134 @@
+
+:root {
+  --cor-fundo-principal: #1f1a14;
+  --cor-fundo-secundario: #2c251e;
+  --cor-destaque: #c5a169;
+  --cor-destaque-hover: #b38e56;
+  --cor-texto-principal: #e8e6e3;
+  --cor-texto-secundario: #a19a90;
+  --cor-borda: #443c32;
+  --cor-sucesso: #2a9d8f;
+  --cor-erro: #e76f51;
+  --sombra-padrao: 0 4px 25px rgba(0, 0, 0, 0.3);
+  --border-radius-padrao: 12px;
+  --font-principal: 'Inter', sans-serif;
+  --font-serif: 'Georgia', serif;
+}
+
 .cad-formulario-modal {
   position: fixed;
   top: 50%;
   left: 50%;
   transform: translate(-50%, -50%);
-  background-color: #b5a98a;
-  padding: 20px;
-  border-radius: 10px;
-  box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
-  z-index: 1000;
+  z-index: 1001; 
+
   width: 90%;
-  max-width: 500px;
-  max-height: 85vh; 
+  max-width: 600px; 
+  max-height: 90vh; 
   overflow-y: auto;
-  box-sizing: border-box; 
+  
+  background-color: var(--cor-fundo-secundario);
+  border: 1px solid var(--cor-borda);
+  border-radius: var(--border-radius-padrao);
+  box-shadow: var(--sombra-padrao);
+  padding: 2rem;
+  box-sizing: border-box;
 }
 
 .cad-formulario-fechar {
-  background: none;
-  border: none;
-  font-size: 1.5em; 
-  font-weight: bold;
-  color: #000;
   position: absolute;
-  top: 10px;
-  right: 15px;
+  top: 1rem;
+  right: 1rem;
+
+  background: transparent;
+  border: none;
+  font-size: 1.8em;
+  color: var(--cor-texto-secundario);
+  line-height: 1;
+  
   cursor: pointer;
-  line-height: 1; 
+  transition: color 0.2s ease, transform 0.2s ease;
+}
+.cad-formulario-fechar:hover {
+  color: var(--cor-texto-principal);
+  transform: rotate(90deg);
 }
 
 .cad-formulario {
   display: flex;
   flex-direction: column;
-  gap: 15px; 
-  margin-top: 20px;
+  gap: 1.25rem; 
+  margin-top: 1rem; 
+}
+
+.cad-formulario label {
+    font-weight: 500;
+    margin-bottom: 0.5rem;
+    color: var(--cor-texto-secundario);
+    font-size: 0.9em;
 }
 
 .cad-formulario input,
 .cad-formulario select,
 .cad-formulario textarea {
-  padding: 10px;
-  border: 1px solid #000;
-  border-radius: 4px; 
+  background-color: var(--cor-fundo-principal);
+  border: 1px solid var(--cor-borda);
+  border-radius: 8px;
+  padding: 0.8rem 1rem;
+  
+  font-family: var(--font-principal);
   font-size: 1em;
-  background-color: #f5f5f5;
-  width: 100%; 
-  box-sizing: border-box; 
+  color: var(--cor-texto-principal);
+  
+  width: 100%;
+  box-sizing: border-box;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.cad-formulario input:focus,
+.cad-formulario select:focus,
+.cad-formulario textarea:focus {
+  outline: none;
+  border-color: var(--cor-destaque);
+  box-shadow: 0 0 0 3px rgba(197, 161, 105, 0.25);
 }
 
 .cad-formulario textarea {
-  resize: vertical; 
-  min-height: 80px; 
+  resize: vertical;
+  min-height: 120px;
 }
 
 .cad-formulario-btn {
-  background-color: #865a21;
-  color: #f5efdd;
+  background-color: var(--cor-destaque);
   border: none;
-  padding: 12px; 
-  border-radius: 6px;
-  font-size: 1em;
+  border-radius: 8px;
+  padding: 0.9rem;
+  
+  color: var(--cor-fundo-principal);
+  font-size: 1.1em;
+  font-weight: 700;
+  
   cursor: pointer;
-  font-weight: bold;
-  transition: background-color 0.2s ease; 
+  transition: background-color 0.2s ease, transform 0.2s ease;
+  
+  margin-top: 1rem;
 }
 
 .cad-formulario-btn:hover {
-  background-color: #6d481a; 
+  background-color: var(--cor-destaque-hover);
+  transform: translateY(-2px);
+}
+
+.cad-formulario-modal::-webkit-scrollbar {
+  width: 8px;
+}
+.cad-formulario-modal::-webkit-scrollbar-track {
+  background: transparent;
+}
+.cad-formulario-modal::-webkit-scrollbar-thumb {
+  background-color: var(--cor-borda);
+  border-radius: 10px;
+}
+.cad-formulario-modal::-webkit-scrollbar-thumb:hover {
+  background-color: var(--cor-texto-secundario);
 }

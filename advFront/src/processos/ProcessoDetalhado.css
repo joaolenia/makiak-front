@@ -1,257 +1,323 @@
+/* ==========================================================================
+   CSS Modernizado para a Tela de Processo Detalhado
+   ========================================================================== */
+
+/* -- 1. Importação da Fonte e Variáveis Globais -- */
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+
+:root {
+  --cor-fundo-principal: #1f1a14;
+  --cor-fundo-secundario: #2c251e;
+  --cor-fundo-timeline: #251f18;
+  --cor-destaque: #c5a169;
+  --cor-destaque-hover: #b38e56;
+  --cor-texto-principal: #e8e6e3;
+  --cor-texto-secundario: #a19a90;
+  --cor-borda: #443c32;
+  --cor-sucesso: #2a9d8f;
+  --cor-erro: #e76f51;
+  --cor-info: #3d8bfd;
+  --sombra-padrao: 0 4px 15px rgba(0, 0, 0, 0.2);
+  --border-radius-padrao: 12px;
+  --font-principal: 'Inter', sans-serif;
+  --font-serif: 'Georgia', serif;
+}
+
+/* -- 2. Layout Base -- */
 .detalhado-container {
-    background-color: #1a1612;
-    color: white;
-    font-family: Georgia, serif;
-    padding: 20px;
-    height: 100vh;
-    box-sizing: border-box;
+  background-color: var(--cor-fundo-principal);
+  color: var(--cor-texto-principal);
+  font-family: var(--font-principal);
+  height: 100vh;
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  padding: 1.5rem;
+  gap: 1.5rem;
 }
 
+/* -- 3. Barra Superior (Header) -- */
 .detalhado-top-bar {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 20px;
-}
-
-.detalhado-btn,
-.detalhado-acao {
-    background-color: #a36c2d;
-    color: #fff;
-    border: none;
-    font-weight: bold;
-    border-radius: 5px;
-    cursor: pointer;
-}
-
-.detalhado-btn {
-    padding: 10px 16px;
-    height: 40px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-shrink: 0;
 }
 
 .detalhado-logo {
-    text-align: center;
-    font-size: 1.5em;
+  text-align: center;
+  font-family: var(--font-serif);
 }
-
+.detalhado-logo strong {
+  font-size: 1.25em;
+  color: var(--cor-texto-principal);
+}
 .detalhado-sub-logo {
-    font-size: 0.8em;
+  font-size: 0.8em;
+  color: var(--cor-texto-secundario);
 }
 
+.detalhado-btn,
 .detalhado-voltar {
-    font-size: 1.5em;
-    color: #fff0d0;
-    text-decoration: none;
-    font-weight: bold;
+  background-color: transparent;
+  color: var(--cor-destaque);
+  border: 1px solid var(--cor-destaque);
+  border-radius: 8px;
+  padding: 0.6rem 1.2rem;
+  font-weight: 600;
+  cursor: pointer;
+  text-decoration: none;
+  transition: background-color 0.2s ease, color 0.2s ease;
+}
+.detalhado-btn:hover,
+.detalhado-voltar:hover {
+  background-color: var(--cor-destaque);
+  color: var(--cor-fundo-principal);
 }
 
-/* Corpo com colunas */
+/* -- 4. Corpo Principal -- */
 .detalhado-corpo {
-    display: flex;
-    gap: 30px;
-    width: 100%;
-    height: 85%;
-    margin-left: 5%;
+  display: flex;
+  gap: 1.5rem;
+  flex-grow: 1;
+  overflow: hidden;
 }
 
-/* Coluna: Observações */
+/* -- 5. Coluna da Timeline de Descrições -- */
 .detalhado-observacoes {
-    flex: 1;
-    background-color: #393529;
-    border: 1px solid #a9a18f;
-    border-radius: 10px;
-    padding: 10px;
-    overflow-y: auto;
+  flex: 2; /* Mais espaço para a timeline */
+  background-color: var(--cor-fundo-timeline);
+  border-radius: var(--border-radius-padrao);
+  padding: 1rem 1.5rem;
+  overflow-y: auto;
+  position: relative;
 }
 
 .detalhado-observacao {
-    display: flex;
-    align-items: flex-start;
-    gap: 15px;
-    margin-bottom: 15px;
+  display: flex;
+  gap: 1.5rem;
+  position: relative;
+  padding-bottom: 2rem;
+}
+/* Linha da timeline */
+.detalhado-observacao::before {
+  content: '';
+  position: absolute;
+  left: 5px;
+  top: 5px;
+  bottom: -5px;
+  width: 2px;
+  background-color: var(--cor-borda);
 }
 
 .detalhado-bolinha {
-    width: 12px;
-    height: 12px;
-    background-color: white;
-    border-radius: 50%;
-    margin-top: 20px;
+  width: 12px;
+  height: 12px;
+  background-color: var(--cor-destaque);
+  border-radius: 50%;
+  margin-top: 5px;
+  z-index: 1;
+  flex-shrink: 0;
 }
 
 .detalhado-textos {
-    margin-top: 15px;
-    display: flex;
-    flex-direction: column;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  width: 100%;
 }
 
 .detalhado-data {
-    font-weight: bold;
-    margin-bottom: 4px;
+  font-weight: 600;
+  font-size: 0.9em;
+  color: var(--cor-destaque);
 }
 
 .detalhado-descricao {
-    font-size: 1em;
+  font-size: 1em;
+  line-height: 1.6;
+  color: var(--cor-texto-principal);
 }
 
-/* Coluna: Dados do processo */
+/* -- 6. Coluna de Dados do Processo -- */
 .detalhado-dados-processo {
-    flex: 2;
-    background-color: #2e271f;
-    border-radius: 10px;
-    display: flex;
-    flex-direction: column;
-    overflow: hidden;
-    height: 100%;
-    margin-right: 5%;
+  flex: 3; /* Mais espaço para os dados */
+  background-color: var(--cor-fundo-secundario);
+  border-radius: var(--border-radius-padrao);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  padding: 2rem;
 }
 
 .detalhado-info-scroll {
-    margin-left: 10%;
-    flex: 1;
-    padding: 10px;
-    overflow-y: auto;
-    display: flex;
-    flex-direction: column;
-    gap: 6px;
+  flex-grow: 1;
+  overflow-y: auto;
+  padding-right: 1rem; /* Espaço para a barra de rolagem */
 }
 
+.detalhado-numero-processo, .detalhado-subnumero {
+  font-family: var(--font-serif);
+  font-weight: 700;
+  margin-bottom: 1.5rem;
+}
 .detalhado-numero-processo {
-    font-size: 2em;
-    font-weight: bold;
-    color: #fff;
+  font-size: 2.5em;
+  color: var(--cor-texto-principal);
 }
-
 .detalhado-subnumero {
-    color: red;
-    font-size: 1.5em;
-    font-weight: bold;
-    margin-bottom: 10px;
+  font-size: 1.5em;
+  color: var(--cor-erro);
 }
 
-/* Botões fixos ao final */
+.campo-processo {
+  display: grid;
+  grid-template-columns: 140px 1fr;
+  align-items: baseline;
+  gap: 1rem;
+  padding: 0.75rem 0;
+  border-bottom: 1px solid var(--cor-borda);
+}
+
+.campo-processo .rotulo {
+  font-weight: 600;
+  font-size: 0.9em;
+  color: var(--cor-texto-secundario);
+}
+.campo-processo .valor {
+  font-size: 1em;
+  color: var(--cor-texto-principal);
+}
+
+/* -- 7. Botões de Ação Fixos -- */
 .detalhado-botoes-fixos {
-    display: flex;
-    gap: 10%;
-    padding: 10px;
-    background-color: #2e271f;
-    height: 12%;
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 1rem;
+  padding-top: 1.5rem;
+  flex-shrink: 0;
 }
 
 .detalhado-acao {
-    font-size: 1.2em;
-    padding: 10px 20px;
-    border-radius: 8px;
-    flex: 1;
+  background-color: var(--cor-destaque);
+  color: var(--cor-fundo-principal);
+  border: none;
+  font-weight: 600;
+  font-size: 1em;
+  padding: 0.8rem;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: background-color 0.2s ease, transform 0.2s ease;
+}
+.detalhado-acao:hover {
+  background-color: var(--cor-destaque-hover);
+  transform: translateY(-2px);
 }
 
+/* -- 8. Edição de Descrição -- */
+.descricao-editando,
+.descricao-popup textarea,
+.descricao-popup input[type="date"] {
+  width: 100%;
+  padding: 0.75rem;
+  background: var(--cor-fundo-principal);
+  border: 1px solid var(--cor-borda);
+  border-radius: 8px;
+  color: var(--cor-texto-principal);
+  font-family: var(--font-principal);
+  font-size: 1em;
+  box-sizing: border-box;
+}
+.descricao-editando:focus,
+.descricao-popup textarea:focus,
+.descricao-popup input[type="date"]:focus {
+  outline: none;
+  border-color: var(--cor-destaque);
+}
 
+.descricao-botoes-edicao {
+  max-height: 40px;
+  display: flex;
+  gap: 0.5rem;
+  margin-top: 0.5rem;
+}
+.descricao-botoes-edicao button {
+  padding: 0.5rem 1rem;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  font-weight: 600;
+  transition: opacity 0.2s ease;
+}
+.descricao-botoes-edicao button:hover {
+  opacity: 0.9;
+}
+.btn-salvar-desc { background-color: var(--cor-sucesso); }
+.btn-cancel-desc { background-color: var(--cor-info); }
+.descricao-botoes-edicao button:last-child { background-color: var(--cor-erro); }
+
+
+/* -- 9. Popup/Modal de Nova Descrição -- */
 .descricao-overlay {
   position: fixed;
   top: 0;
   left: 0;
-  width: 100vw;
-  height: 100vh;
-  background-color: rgba(0, 0, 0, 0.5);
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.7);
+  backdrop-filter: blur(5px);
   display: flex;
   justify-content: center;
   align-items: center;
-  z-index: 999;
+  z-index: 1000;
 }
 
 .descricao-popup {
-  background: #fcfcfc;
+  background: var(--cor-fundo-secundario);
   padding: 2rem;
-  border-radius: 12px;
-  width: 400px;
+  border-radius: var(--border-radius-padrao);
+  width: 500px;
   max-width: 90%;
   display: flex;
   flex-direction: column;
   gap: 1rem;
   position: relative;
+  border: 1px solid var(--cor-borda);
+  box-shadow: var(--sombra-padrao);
 }
-.descricao-popup h3{
-color:black
-}
-
-.descricao-popup input,
-.descricao-popup textarea {
-  padding: 0.5rem;
-  border: 1px solid #ccc;
-  border-radius: 6px;
-  font-size: 1rem;
+.descricao-popup h3 {
+  color: var(--cor-texto-principal);
+  font-family: var(--font-serif);
+  margin: 0;
 }
 
 .descricao-popup button {
   align-self: flex-end;
-  padding: 0.5rem 1.2rem;
-  background-color: #007bff;
-  color: white;
+  padding: 0.7rem 1.5rem;
+  background-color: var(--cor-destaque);
+  color: var(--cor-fundo-principal);
   border: none;
-  border-radius: 6px;
+  border-radius: 8px;
   cursor: pointer;
+  font-weight: 600;
+  transition: background-color 0.2s ease;
+}
+.descricao-popup button:hover {
+  background-color: var(--cor-destaque-hover);
 }
 
 .descricao-fechar {
   position: absolute;
-  top: 0.5rem;
-  right: 0.7rem;
+  top: 1rem;
+  right: 1rem;
   background: none;
   border: none;
   font-size: 1.5rem;
   cursor: pointer;
-  color: #333;
+  color: var(--cor-texto-secundario);
+  transition: color 0.2s ease;
 }
-.descricao-editando {
-  width: 100%;
-  padding: 8px;
-  resize: vertical;
-  border-radius: 4px;
-  border: 1px solid #ccc;
-  font-size: 14px;
-}
-
-.descricao-botoes-edicao {
-  margin-top: 8px;
-  display: flex;
-  gap: 8px;
-}
-
-.descricao-botoes-edicao button {
-  padding: 6px 12px;
-  color: white;
-  border: none;
-  border-radius: 4px;
-  cursor: pointer;
-}
-
-.descricao-botoes-edicao button:last-child {
-  background-color: #9b0d0d;
-}
-.btn-salvar-desc{
-    background-color: green;
-}
-.btn-cancel-desc{
-    background-color: rgb(15, 24, 148);
-}
-
-.campo-processo {
-  display: flex;
-  gap: 5px;
-  font-size: 1.0em;
-  margin-bottom: 5px;
-  align-items: baseline;
-}
-
-.campo-processo .rotulo {
-  font-weight: bold;
-  color: #ffffff;       
-  min-width: 100px;
-  font-size: 1.05em;
-  letter-spacing: 0.5px;
-}
-
-.campo-processo .valor {
-  color: #f0e9e9;
-  font-weight: 500;
+.descricao-fechar:hover {
+  color: var(--cor-texto-principal);
 }

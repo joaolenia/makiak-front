@@ -1,97 +1,223 @@
-.cadpro-formulario-modal {
+/* ==========================================================================
+   CSS Modernizado para o Modal de Formulário de Processo (Cadastro/Edição)
+   ========================================================================== */
+
+/* -- 1. Variáveis Globais (consistente com as outras telas) -- */
+:root {
+  --cor-fundo-principal: #1f1a14;
+  --cor-fundo-secundario: #2c251e;
+  --cor-destaque: #c5a169;
+  --cor-destaque-hover: #b38e56;
+  --cor-texto-principal: #e8e6e3;
+  --cor-texto-secundario: #a19a90;
+  --cor-borda: #443c32;
+  --cor-sucesso: #2a9d8f;
+  --cor-erro: #e76f51;
+  --cor-info: #3d8bfd;
+  --sombra-padrao: 0 4px 25px rgba(0, 0, 0, 0.3);
+  --border-radius-padrao: 12px;
+  --font-principal: 'Inter', sans-serif;
+  --font-serif: 'Georgia', serif;
+}
+
+/* -- 2. Estilo do Modal (container) -- */
+.cadpro-formulario-modal, .formulario-modal {
+  /* Layout e Posição */
   position: fixed;
   top: 50%;
   left: 50%;
   transform: translate(-50%, -50%);
-  background-color: #b5a98a;
-  padding: 20px;
-  border-radius: 10px;
-  width: 30%;
-  box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
-  z-index: 1000;
+  z-index: 1001;
+
+  /* Tamanho e Responsividade */
+  width: 90%;
+  max-width: 700px; /* Formulários de processo podem ser maiores */
+  max-height: 90vh;
+  overflow-y: auto;
+  
+  /* Aparência */
+  background-color: var(--cor-fundo-secundario);
+  border: 1px solid var(--cor-borda);
+  border-radius: var(--border-radius-padrao);
+  box-shadow: var(--sombra-padrao);
+  padding: 2rem;
+  box-sizing: border-box;
 }
 
-.cadpro-formulario-fechar {
-  background: none;
-  border: none;
-  font-size: 1.2em;
-  font-weight: bold;
-  color: #000;
+/* -- 3. Botão de Fechar -- */
+.cadpro-formulario-fechar, .formulario-fechar {
   position: absolute;
-  top: 10px;
-  right: 15px;
+  top: 1rem;
+  right: 1rem;
+  background: transparent;
+  border: none;
+  font-size: 1.8em;
+  color: var(--cor-texto-secundario);
+  line-height: 1;
   cursor: pointer;
+  transition: color 0.2s ease, transform 0.2s ease;
+}
+.cadpro-formulario-fechar:hover, .formulario-fechar:hover {
+  color: var(--cor-texto-principal);
+  transform: rotate(90deg);
 }
 
+/* -- 4. Estrutura do Formulário Interno -- */
 .cadpro-formulario {
   display: flex;
   flex-direction: column;
-  gap: 10px;
-  margin-top: 20px;
+  gap: 1.25rem;
 }
 
+.cadpro-label {
+  font-weight: 500;
+  color: var(--cor-texto-secundario);
+  font-size: 0.9em;
+  margin-bottom: -0.75rem; /* Puxa o label para mais perto do campo */
+}
+
+/* -- 5. Campos do Formulário -- */
 .cadpro-formulario input,
 .cadpro-formulario select {
-  padding: 8px;
-  border: 1px solid #000;
-  border-radius: 3px;
+  background-color: var(--cor-fundo-principal);
+  border: 1px solid var(--cor-borda);
+  border-radius: 8px;
+  padding: 0.8rem 1rem;
+  font-family: var(--font-principal);
   font-size: 1em;
-  background-color: #f5f5f5;
+  color: var(--cor-texto-principal);
+  width: 100%;
+  box-sizing: border-box;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
 }
 
-.cadpro-select-multiplos {
-  font-size: 1em;
-  position: relative;
+.cadpro-formulario input:focus,
+.cadpro-formulario select:focus {
+  outline: none;
+  border-color: var(--cor-destaque);
+  box-shadow: 0 0 0 3px rgba(197, 161, 105, 0.25);
 }
 
-/* Reforço para o portal dropdown */
+/* -- 6. Estilização do React-Select (AsyncSelect) -- */
+.cadpro-select-multiplos__control {
+  background-color: var(--cor-fundo-principal) !important;
+  border: 1px solid var(--cor-borda) !important;
+  border-radius: 8px !important;
+  padding: 0.4rem !important;
+  box-shadow: none !important;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+.cadpro-select-multiplos__control--is-focused {
+  border-color: var(--cor-destaque) !important;
+  box-shadow: 0 0 0 3px rgba(197, 161, 105, 0.25) !important;
+}
+.cadpro-select-multiplos__input-container,
+.cadpro-select-multiplos__placeholder,
+.cadpro-select-multiplos__single-value {
+  color: var(--cor-texto-principal) !important;
+}
+.cadpro-select-multiplos__multi-value {
+  background-color: var(--cor-destaque) !important;
+  color: var(--cor-fundo-principal) !important;
+  border-radius: 6px !important;
+}
+.cadpro-select-multiplos__multi-value__label {
+  color: var(--cor-fundo-principal) !important;
+  font-weight: 600;
+}
+.cadpro-select-multiplos__multi-value__remove {
+  color: var(--cor-fundo-principal) !important;
+}
+.cadpro-select-multiplos__multi-value__remove:hover {
+  background-color: var(--cor-destaque-hover) !important;
+  color: var(--cor-fundo-principal) !important;
+}
 .cadpro-select-multiplos__menu {
+  background-color: var(--cor-fundo-secundario) !important;
+  border: 1px solid var(--cor-borda) !important;
+  border-radius: 8px !important;
   z-index: 10000 !important;
-  color: black;
+}
+.cadpro-select-multiplos__option {
+  background-color: transparent !important;
+  color: var(--cor-texto-principal) !important;
+  font-weight: 500 !important;
+}
+.cadpro-select-multiplos__option--is-focused {
+  background-color: var(--cor-fundo-card-hover) !important;
+}
+.cadpro-select-multiplos__option--is-selected {
+  background-color: var(--cor-destaque) !important;
+  color: var(--cor-fundo-principal) !important;
+}
+.cadpro-select-multiplos__indicator-separator {
+  background-color: var(--cor-borda) !important;
 }
 
+/* -- 7. Botões de Ação -- */
 .cadpro-formulario-botoes {
   display: flex;
-  justify-content: space-between;
-  margin-top: 10px;
+  justify-content: flex-end;
+  gap: 1rem;
+  margin-top: 1rem;
 }
 
-.cadpro-btn-cadastrar {
-  background-color: #8a5b25;
-  color: white;
+.cadpro-btn-cadastrar,
+.cadpro-btn-confirmar {
+  background-color: var(--cor-sucesso);
+  color: #ffffff;
   border: none;
-  padding: 10px 15px;
-  border-radius: 5px;
-  font-weight: bold;
+  border-radius: 8px;
+  padding: 0.9rem 2rem;
+  font-size: 1em;
+  font-weight: 700;
   cursor: pointer;
+  transition: background-color 0.2s ease, transform 0.2s ease;
+}
+.cadpro-btn-cadastrar:hover,
+.cadpro-btn-confirmar:hover {
+  background-color: #218838;
+  transform: translateY(-2px);
 }
 
 .cadpro-btn-excluir {
-  background-color: #e53935;
+  background-color: var(--cor-erro);
   color: white;
   border: none;
-  padding: 10px 15px;
-  border-radius: 5px;
-  font-weight: bold;
+  border-radius: 8px;
+  padding: 0.9rem 2rem;
+  font-size: 1em;
+  font-weight: 700;
   cursor: pointer;
+  transition: background-color 0.2s ease, transform 0.2s ease;
+}
+.cadpro-btn-excluir:hover {
+  background-color: #c82333;
+  transform: translateY(-2px);
 }
 
-.cadpro-btn-confirmar {
-  background-color: #43a047;
-  color: white;
-  border: none;
-  padding: 10px 15px;
-  border-radius: 5px;
-  font-weight: bold;
-  cursor: pointer;
-}
-
+/* -- 8. Mensagem de Erro -- */
 .cadpro-erro {
-  color: red;
-  font-weight: bold;
+  background-color: rgba(231, 111, 81, 0.1);
+  color: var(--cor-erro);
+  padding: 1rem;
+  border: 1px solid var(--cor-erro);
+  border-radius: 8px;
+  font-weight: 500;
+  text-align: center;
 }
-.cadpro-label {
-  margin-top: 10px;
-  margin-bottom: -5px;
-  color: #000;
+
+/* -- 9. Scrollbar Customizada -- */
+.cadpro-formulario-modal::-webkit-scrollbar {
+  width: 8px;
+}
+.cadpro-formulario-modal::-webkit-scrollbar-track {
+  background: transparent;
+}
+.cadpro-formulario-modal::-webkit-scrollbar-thumb {
+  background-color: var(--cor-borda);
+  border-radius: 10px;
+}
+.cadpro-formulario-modal::-webkit-scrollbar-thumb:hover {
+  background-color: var(--cor-texto-secundario);
 }
